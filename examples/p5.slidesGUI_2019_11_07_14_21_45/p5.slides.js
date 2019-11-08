@@ -8,16 +8,20 @@
 // UI Object
 p5.slidesUI = function() {
   this.decks = [];
+  TOP_CANVAS = createCanvas(windowWidth, windowHeight);
   CANVAS_TRANSPORTER = null;
   NUMDECKS = 0;
   TOGGLED = false;
   REVISION_TOGGLE = true;
-  CURRENT_DECK = 1;
+  CURRENTDECK = 1;
+  MAXSLIDE = [];
   NEWOBJS_ = null;
+  CANVAS_COUNTER = 0;
 
   SIDEBAR_SIZEY = height/10;
   SIDEBAR_SIZEX = width/6;
   createSidebar();
+  TO_EDITMODE()
 };
 
 // Interaction Checker
@@ -51,10 +55,11 @@ p5.slidesUI.prototype.display = function() {
 
 
   if (this.decks.length != 0) {
-    // revise slide deck if necessary
 
-    if (REVISION_TOGGLE) {
-      this.decks[CURRENT_DECK - 1].addSlides(1);
+    // add slides to existing decks if necessary
+    if (REVISION_TOGGLE || this.decks[CURRENTDECK - 1].deckLength == 0) {
+      this.decks[CURRENTDECK - 1].addSlides(1);
+      MAXSLIDE[CURRENTDECK - 1] += 1;
       REVISION_TOGGLE = null;
     }
 
@@ -62,50 +67,55 @@ p5.slidesUI.prototype.display = function() {
     //define complementary colors for background and text
     background(color(0, 0, 0));
 
-    slideTemplates(this.decks[CURRENT_DECK - 1].templates[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].headings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].subheadings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].numPanels[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].labelVecs[CURRENTSLIDE - 1], color(255, 255, 255));
+    slideTemplates(this.decks[CURRENTDECK - 1].templates[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].headings[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].subheadings[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].numPanels[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].labelVecs[CURRENTSLIDE - 1], color(255, 255, 255));
 
     if (TOGGLED == true) {
-      console.log(CURRENTSLIDE);
-
       // initialize empty canvas holders
-      if (this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
-        this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1] = [];
+      if (this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
+        this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] = [];
       }
 
       // hide previous sketches
       if (PREVSLIDE != null) {
-        let canvases = this.decks[CURRENT_DECK - 1].canvases[PREVSLIDE-1];
-        for (let i = 0; i < canvases.length; i++) {
-          canvases = canvases[i].hide();
+        let canvases = this.decks[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
+        console.log('I will hide ' + canvases.length + ' canvases')
+        for (let c = 0; c < canvases.length; c++) {
+          console.log(canvases[c]);
+          canvases[c].hide();
         }
+      }
 
+        let sketchesForSlide = this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1];
 
         // initialize sketch canvases
-        if (this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1].length == 0) {
-          // place new sketches
-          let sketchesForSlide = this.decks[CURRENT_DECK - 1].sketches[CURRENTSLIDE - 1];
+        if (this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
-          let p = this.decks[CURRENT_DECK - 1].numPanels[CURRENTSLIDE - 1];
+          // place new sketches
+
+          let p = this.decks[CURRENTDECK - 1].numPanels[CURRENTSLIDE - 1];
+
+          console.log('I will add ' +sketchesForSlide.length + ' canvases')
 
           X_BOUNDS = [];
 
           for (let i = 0; i < p; i++) {
 
             X_BOUNDS = [(i) * width / p, (i + 1) * width / p];
+            let ID_ = 'canvas' + (CANVAS_COUNTER + (i+1));
             temp_ = new p5(sketchesForSlide[i]);
             CANVAS_TRANSPORTER.style("pointer-events", "none");
-            //CANVAS_TRANSPORTER.id('canvas' + this.decks[CURRENT_DECK - 1].canvasCounter + (i+1))
-            this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
+            CANVAS_TRANSPORTER.id(ID_);
+            this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
 
             CANVAS_TRANSPORTER = null;
           }
-          this.decks[CURRENT_DECK - 1].canvasCounter += p;
+          CANVAS_COUNTER += p;
         } else {
+          let canvases = this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
           for (let i = 0; i < canvases.length; i++) {
-            let canvases = this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1];
+            console.log('I will show ' + canvases.length + ' canvases')
             canvases = canvases[i].show();
           }
-        }
       }
       TOGGLED = false;
       PREVKEY = "";
@@ -115,7 +125,7 @@ p5.slidesUI.prototype.display = function() {
     // show slide number
     textSize(20);
     textAlign(RIGHT,BOTTOM);
-    text(CURRENTSLIDE + '/' + this.decks[CURRENT_DECK-1].deckLength,width,height);
+    text(CURRENTSLIDE + '/' + this.decks[CURRENTDECK-1].deckLength,width,height);
 
   }
 }
@@ -146,7 +156,6 @@ p5.slideDeck = function(name) {
   CURRENTSLIDE = 1;
   PREVSLIDE = null;
   this.canvases = [];
-  this.canvasCounter = 0;
   this.xBounds = [];
   this.bColors = [];
   this.colorOptions = [color(0,0,0), color(288,288,288)];
@@ -282,7 +291,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength == 0) {
-      this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
+      this.sketches[this.deckLength + (i)] = []; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'full-text';
       this.headings[this.deckLength + (i)] = 'P5.SLIDES,INTERACTIVE PRESENTATIONS FOR THE WEB';
       this.subheadings[this.deckLength + (i)] = '';
@@ -290,7 +299,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength > 1) {
-      this.sketches[this.deckLength + (i)] = [perlinRect,blankSketch,perlinRect];
+      this.sketches[this.deckLength + (i)] = [perlinRect,blankSketch,perlinCircle];
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Panel Mode';
       this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
@@ -363,11 +372,11 @@ p5.slideDeck.prototype.setNavMode = function(navMode) {
 
 // HARDCODED NAVIGATION FUNCTION
 function keyReleased() {
-  if ((key > 0) && (PREVKEY != key)) {
+  if ((key > 0) && (PREVKEY != key) && (key <= MAXSLIDE[CURRENTDECK-1])) {
     PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE = key;
     TOGGLED = true;
-  } else if ((key === 'ArrowRight') && (PREVKEY != key)) {
+  } else if ((key === 'ArrowRight') && (PREVKEY != key) && (CURRENTSLIDE < MAXSLIDE[CURRENTDECK-1])) {
     PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE++;
     TOGGLED = true;
@@ -392,6 +401,8 @@ function TO_EDITMODE() {
   SAVE_BUTTON.show();
   NEWDECK_BUTTON.show();
   ADDSLIDE_BUTTON.show();
+  TOP_CANVAS.size(windowWidth-SIDEBAR_SIZEX,windowHeight);
+  TOP_CANVAS.position(SIDEBAR_SIZEX,0);
 
   TOGGLED = true;
 }
@@ -409,6 +420,9 @@ function TO_PRESENTMODE() {
   NEWDECK_BUTTON.hide();
   ADDSLIDE_BUTTON.hide();
   TOGGLED = true;
+
+  TOP_CANVAS.size(windowWidth,windowHeight);
+  TOP_CANVAS.position(0,0);
 }
 
 // Button Functionality
@@ -487,13 +501,22 @@ function createSidebar(){
 
 
 function NEWDECK() {
+  console.log(NUMDECKS);
+  if (NUMDECKS == 0){
+    TOGGLE = true;
+  }
   NUMDECKS++;
+  MAXSLIDE[NUMDECKS-1] = 0;
   NEWOBJS_ = new p5.slideDeck('Slide ' + NUMDECKS);
 }
 
 function SWITCHDECK() {
-  CURRENT_DECK = this.id();
-  //TOGGLED = true;
+  let ID_ = this.id();
+  let regexp = '\\d+';
+  ID_ = match(ID_, regexp);
+  CURRENTDECK = int(ID_[0]);
+  CURRENTSLIDE = 1;
+  TOGGLED = true;
 }
 
 // Button Styling
@@ -530,21 +553,21 @@ const blankSketch = (sketch) => {
 }
 
 function showDeckTabs(decks){
-  let tabWidth = width/decks.length;
+  let tabWidth = null;
+  let tabDiff = (decks.length - DECK_TABS.length);
 
-  for (let j = 0; j < DECK_TABS.length; j++){
-    DECK_TABS[j].remove();
+  // add new tabs if necessary
+  for (let j = tabDiff; j > 0; j--){
+    DECK_TABS.push(createButton(decks[decks.length-j].name));
+    DECK_TABS[DECK_TABS.length-1].id('decktab' + (j+1));
+    styleButton(DECK_TABS[DECK_TABS.length-1]);
   }
 
-  for (let i = 0; i < decks.length; i++){
-    DECK_TABS[i] = createButton(decks[i].name);
+// update & show created tabs
+  for (let i = 0; i < DECK_TABS.length; i++) {
+    tabWidth = windowWidth/DECK_TABS.length;
     DECK_TABS[i].size(tabWidth,SIDEBAR_SIZEY);
-    DECK_TABS[i].position(tabWidth*(i), height);
-    DECK_TABS[i].id(i+1);
-    styleButton(DECK_TABS[i]);
+    DECK_TABS[i].position(tabWidth*(i),windowHeight);
+    DECK_TABS[i].show;
   }
 }
-
-
-
-
