@@ -1,6 +1,6 @@
 
 function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight,);
+  let canvas = createCanvas(windowWidth, windowHeight);
   UI = new p5.slidesUI(canvas);
 }
 

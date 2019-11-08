@@ -8,8 +8,9 @@
 // UI Object
 p5.slidesUI = function() {
   this.decks = [];
+  CANVAS_TRANSPORTER = null;
   NUMDECKS = 0;
-  TOGGLED = 0;
+  TOGGLED = false;
   REVISION_TOGGLE = true;
   CURRENT_DECK = 1;
   NEWOBJS_ = null;
@@ -49,48 +50,67 @@ p5.slidesUI.prototype.display = function() {
 
 
 
-  if (this.decks.length != 0){
+  if (this.decks.length != 0) {
     // revise slide deck if necessary
 
-    if (REVISION_TOGGLE){
-      this.decks[CURRENT_DECK-1].addSlides(2);
+    if (REVISION_TOGGLE) {
+      this.decks[CURRENT_DECK - 1].addSlides(1);
       REVISION_TOGGLE = null;
     }
 
 
     //define complementary colors for background and text
-    background(color(0,0,0));
+    background(color(0, 0, 0));
 
-    slideTemplates(this.decks[CURRENT_DECK-1].templates[CURRENTSLIDE - 1], this.decks[CURRENT_DECK-1].headings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK-1].subheadings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK-1].numPanels[CURRENTSLIDE - 1], this.decks[CURRENT_DECK-1].labelVecs[CURRENTSLIDE - 1], color(255,255,255));
+    slideTemplates(this.decks[CURRENT_DECK - 1].templates[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].headings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].subheadings[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].numPanels[CURRENTSLIDE - 1], this.decks[CURRENT_DECK - 1].labelVecs[CURRENTSLIDE - 1], color(255, 255, 255));
 
     if (TOGGLED == true) {
+      console.log(CURRENTSLIDE);
 
-      // clear previous sketches
-      for (let i = 0; i < this.decks[CURRENT_DECK-1].active.length; i++) {
-        this.decks[CURRENT_DECK-1].active[i].remove();
+      // initialize empty canvas holders
+      if (this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
+        this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1] = [];
       }
 
+      // hide previous sketches
+      if (PREVSLIDE != null) {
+        let canvases = this.decks[CURRENT_DECK - 1].canvases[PREVSLIDE-1];
+        for (let i = 0; i < canvases.length; i++) {
+          canvases = canvases[i].hide();
+        }
 
-      // place new sketches
-      let sketchesForSlide = this.decks[CURRENT_DECK-1].sketches[CURRENTSLIDE - 1];
 
+        // initialize sketch canvases
+        if (this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1].length == 0) {
+          // place new sketches
+          let sketchesForSlide = this.decks[CURRENT_DECK - 1].sketches[CURRENTSLIDE - 1];
 
-      let p = this.decks[CURRENT_DECK-1].numPanels[CURRENTSLIDE - 1];
+          let p = this.decks[CURRENT_DECK - 1].numPanels[CURRENTSLIDE - 1];
 
-      X_BOUNDS = [];
-      this.decks[CURRENT_DECK-1].active = [];
+          X_BOUNDS = [];
 
-      for (let i = 0; i < p; i++) {
+          for (let i = 0; i < p; i++) {
 
-        X_BOUNDS = [(i) * width / p, (i + 1) * width / p];
+            X_BOUNDS = [(i) * width / p, (i + 1) * width / p];
+            temp_ = new p5(sketchesForSlide[i]);
+            CANVAS_TRANSPORTER.style("pointer-events", "none");
+            //CANVAS_TRANSPORTER.id('canvas' + this.decks[CURRENT_DECK - 1].canvasCounter + (i+1))
+            this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
 
-        this.decks[CURRENT_DECK-1].active[i] = new p5(sketchesForSlide[i]);
-
+            CANVAS_TRANSPORTER = null;
+          }
+          this.decks[CURRENT_DECK - 1].canvasCounter += p;
+        } else {
+          for (let i = 0; i < canvases.length; i++) {
+            let canvases = this.decks[CURRENT_DECK - 1].canvases[CURRENTSLIDE-1];
+            canvases = canvases[i].show();
+          }
+        }
       }
-
       TOGGLED = false;
       PREVKEY = "";
-    }
+  }
+
 
     // show slide number
     textSize(20);
@@ -124,7 +144,9 @@ p5.slideDeck = function(name) {
   this.panelLayouts = [];
   this.labelVecs = [];
   CURRENTSLIDE = 1;
-  this.active = [];
+  PREVSLIDE = null;
+  this.canvases = [];
+  this.canvasCounter = 0;
   this.xBounds = [];
   this.bColors = [];
   this.colorOptions = [color(0,0,0), color(288,288,288)];
@@ -252,7 +274,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
 
     // define template creation order
     if (this.deckLength == 1){
-      this.sketches[this.deckLength + (i)] = [KaleidoParticles]; //[blankSketch]; //
+      this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Showcase Mode';
       this.subheadings[this.deckLength + (i)] = 'Show off a single sketch';
@@ -260,7 +282,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength == 0) {
-      this.sketches[this.deckLength + (i)] = [blankSketch]; //[blankSketch]; //
+      this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'full-text';
       this.headings[this.deckLength + (i)] = 'P5.SLIDES,INTERACTIVE PRESENTATIONS FOR THE WEB';
       this.subheadings[this.deckLength + (i)] = '';
@@ -268,7 +290,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength > 1) {
-      this.sketches[this.deckLength + (i)] = [perlinRect,blankSketch,perlinCircle];
+      this.sketches[this.deckLength + (i)] = [perlinRect,blankSketch,perlinRect];
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Panel Mode';
       this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
@@ -342,13 +364,16 @@ p5.slideDeck.prototype.setNavMode = function(navMode) {
 // HARDCODED NAVIGATION FUNCTION
 function keyReleased() {
   if ((key > 0) && (PREVKEY != key)) {
+    PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE = key;
     TOGGLED = true;
   } else if ((key === 'ArrowRight') && (PREVKEY != key)) {
+    PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE++;
     TOGGLED = true;
     PREVKEY = key;
   } else if ((key === 'ArrowLeft') && (CURRENTSLIDE > 1) && (PREVKEY != key)) {
+    PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE--;
     TOGGLED = true;
     PREVKEY = key;
@@ -402,7 +427,7 @@ function SAVE_SLIDES() {
 
 function ADDSLIDE() {
   REVISION_TOGGLE = true;
-  console.log('as called');
+  TOGGLE = true;
 }
 
 
@@ -463,7 +488,6 @@ function createSidebar(){
 
 function NEWDECK() {
   NUMDECKS++;
-  console.log('called');
   NEWOBJS_ = new p5.slideDeck('Slide ' + NUMDECKS);
 }
 
@@ -497,6 +521,7 @@ const blankSketch = (sketch) => {
   sketch.setup = function() {
     let myCanvas = sketch.createCanvas(sketch.w, sketch.h);
     myCanvas.position(0, 0);
+    CANVAS_TRANSPORTER = myCanvas;
   }
 
   sketch.draw = function() {
@@ -510,6 +535,7 @@ function showDeckTabs(decks){
   for (let j = 0; j < DECK_TABS.length; j++){
     DECK_TABS[j].remove();
   }
+
   for (let i = 0; i < decks.length; i++){
     DECK_TABS[i] = createButton(decks[i].name);
     DECK_TABS[i].size(tabWidth,SIDEBAR_SIZEY);

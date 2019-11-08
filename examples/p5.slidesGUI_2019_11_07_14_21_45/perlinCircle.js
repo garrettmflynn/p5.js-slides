@@ -20,6 +20,7 @@ sketch.flowField = [];
 sketch.setup = function() {
   let myCanvas = sketch.createCanvas(sketch.w,sketch.h);
   myCanvas.position(X_BOUNDS[0], Y_BOUNDS + MARGINS);
+  CANVAS_TRANSPORTER = myCanvas;
   sketch.pixelDensity(1);
   sketch.clear();
   sketch.background(0);

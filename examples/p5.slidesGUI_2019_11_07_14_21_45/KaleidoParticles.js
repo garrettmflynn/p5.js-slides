@@ -14,17 +14,14 @@ const KaleidoParticles = ( sketch ) => {
         sketch.w = width - X_BOUNDS[0]
         
         sketch.totalMargins = (2*MARGINS);
-      console.log(Y_BOUNDS);
         sketch.h = height - sketch.totalMargins - Y_BOUNDS;// + sketch.totalMargins;
-      console.log( sketch.h);
 
       sketch.xTrans = (width-sketch.w)/2;
       
         let myCanvas = sketch.createCanvas(sketch.w,sketch.h);
       
       myCanvas.position(sketch.xTrans, sketch.totalMargins/2);
-      
-      
+      CANVAS_TRANSPORTER = myCanvas;
     r = sketch.h/4;
   
      let dx = 3*sketch.w/density;
