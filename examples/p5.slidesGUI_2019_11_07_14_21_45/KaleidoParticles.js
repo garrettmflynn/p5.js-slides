@@ -10,31 +10,18 @@ const KaleidoParticles = ( sketch ) => {
     slow_down = 40;
 
     sketch.setup = function() {
-      
-        sketch.w = width - X_BOUNDS[0]
-        
+
         sketch.totalMargins = (2*MARGINS);
-        sketch.h = height - sketch.totalMargins - Y_BOUNDS;// + sketch.totalMargins;
 
-      sketch.xTrans = (width-sketch.w)/2;
-      
-        let myCanvas = sketch.createCanvas(sketch.w,sketch.h);
-      
-      myCanvas.position(sketch.xTrans, sketch.totalMargins/2);
+        let myCanvas = sketch.createCanvas(width,height);
       CANVAS_TRANSPORTER = myCanvas;
-    r = sketch.h/4;
+    r = height/4;
   
-     let dx = 3*sketch.w/density;
-     let dy = 3*sketch.h/density;
+     let dx = 3*width*density;
+     let dy = 3*height/density;
 
-     for (i = -1*sketch.w; i < 2*sketch.w; i += dx){
-     for (j = -1*sketch.h; j < 2*sketch.h; j += dy){
-      
-//        let dx = sketch.w/density;
-//     let dy = sketch.h/density;
-
-//     for (i = 0; i < sketch.w; i += dx){
-//     for (j = 0; j < sketch.h; j += dy){
+     for (i = -1*width; i < 2*width; i += dx){
+     for (j = -1*height; j < 2*height; j += dy){
       
     sketch.points.push(new Point(i,j,count));
     count++;
@@ -46,7 +33,7 @@ const KaleidoParticles = ( sketch ) => {
     sketch.draw = function() {
     sketch.clear();
   
-    sketch.attractors.push(createVector(sketch.w/2,sketch.h/2));
+    sketch.attractors.push(createVector(width/2,height/2));
 
     for (let k = 0; k < sketch.points.length; k++) {
       

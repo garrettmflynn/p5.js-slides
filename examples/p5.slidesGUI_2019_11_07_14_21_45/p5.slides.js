@@ -8,10 +8,19 @@
 // UI Object
 p5.slidesUI = function() {
   this.decks = [];
-  TOP_CANVAS = createCanvas(windowWidth, windowHeight);
+  MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
+  MAIN_CANVAS.id('maincanvas');
   CANVAS_TRANSPORTER = null;
   NUMDECKS = 0;
   TOGGLED = false;
+  TEXT_TOGGLES = [];
+  TEXT_TOGGLES[0] = ''; // header toggle
+  TEXT_TOGGLES[1] = ''; // subheader toggle
+  TEXT_TOGGLES[2] = ''; // body text toggle
+  CREATED_TEXT = [];
+  CREATED_TEXT[0] = []; // header cache
+  CREATED_TEXT[1] = []; // subheader cache
+  CREATED_TEXT[2] = []; // body text cache
   REVISION_TOGGLE = true;
   CURRENTDECK = 1;
   MAXSLIDE = [];
@@ -29,8 +38,11 @@ p5.slidesUI.prototype.checkInteraction = function(){
 
   PRESENT_BUTTON.mousePressed(TO_PRESENTMODE);
   EDIT_BUTTON.mousePressed(TO_EDITMODE);
-  //EDIT_BUTTON.mouseOver(TEXT_HEADER);
+  EDIT_BUTTON.mouseOver(ON_HOVER);
+  EDIT_BUTTON.mouseOut(OFF);
   HEADER_BUTTON.mousePressed(TEXT_HEADER);
+  SUBHEADER_BUTTON.mousePressed(TEXT_SUBHEADER);
+  BODYTEXT_BUTTON.mousePressed(TEXT_BODY);
   SAVE_BUTTON.mousePressed(SAVE_SLIDES);
   NEWDECK_BUTTON.mousePressed(NEWDECK);
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
@@ -55,6 +67,8 @@ p5.slidesUI.prototype.display = function() {
 
 
   if (this.decks.length != 0) {
+
+      textResizer();
 
     // add slides to existing decks if necessary
     if (REVISION_TOGGLE || this.decks[CURRENTDECK - 1].deckLength == 0) {
@@ -100,11 +114,19 @@ p5.slidesUI.prototype.display = function() {
 
           for (let i = 0; i < p; i++) {
 
-            X_BOUNDS = [(i) * width / p, (i + 1) * width / p];
-            let ID_ = 'canvas' + (CANVAS_COUNTER + (i+1));
+            X_BOUNDS = [SIDEBAR_SIZEX + ((i) * (MAIN_CANVAS.width / p)), SIDEBAR_SIZEX + ((i + 1) * (MAIN_CANVAS.width / p))];
             temp_ = new p5(sketchesForSlide[i]);
-            CANVAS_TRANSPORTER.style("pointer-events", "none");
-            CANVAS_TRANSPORTER.id(ID_);
+            // console.log(temp_);
+            // console.log(CANVAS_TRANSPORTER);
+            // properly size sketches
+             let x_s = X_BOUNDS[1] - X_BOUNDS[0];
+             let y_s = MAIN_CANVAS.height - Y_BOUNDS - MARGINS;
+            let y_p = 0;
+            CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (i+1)));
+            console.log(CANVAS_TRANSPORTER);
+            CANVAS_TRANSPORTER.size(x_s,y_s);
+            CANVAS_TRANSPORTER.position(X_BOUNDS[0], y_p);
+            //CANVAS_TRANSPORTER.style("pointer-events", "none");
             this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
 
             CANVAS_TRANSPORTER = null;
@@ -113,7 +135,6 @@ p5.slidesUI.prototype.display = function() {
         } else {
           let canvases = this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
           for (let i = 0; i < canvases.length; i++) {
-            console.log('I will show ' + canvases.length + ' canvases')
             canvases = canvases[i].show();
           }
       }
@@ -282,7 +303,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
   for (let i = 0; i < num; i++) {
 
     // define template creation order
-    if (this.deckLength == 1){
+    if (this.deckLength >= 1){
       this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Showcase Mode';
@@ -291,21 +312,21 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength == 0) {
-      this.sketches[this.deckLength + (i)] = []; //[blankSketch]; //
+      this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'full-text';
       this.headings[this.deckLength + (i)] = 'P5.SLIDES,INTERACTIVE PRESENTATIONS FOR THE WEB';
       this.subheadings[this.deckLength + (i)] = '';
       this.numPanels[this.deckLength + (i)] = 1;
       this.panelLayouts[this.deckLength + (i)] = 'horizontal';
       this.labelVecs[this.deckLength + (i)] = '';
-    } else if (this.deckLength > 1) {
-      this.sketches[this.deckLength + (i)] = [perlinRect,blankSketch,perlinCircle];
-      this.templates[this.deckLength + (i)] = 'low-header';
-      this.headings[this.deckLength + (i)] = 'Panel Mode';
-      this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
-      this.numPanels[this.deckLength + (i)] = 3;
-      this.panelLayouts[this.deckLength + (i)] = 'horizontal';
-      this.labelVecs[this.deckLength + (i)] = '';
+    // } else if (this.deckLength > 1) {
+    //   this.sketches[this.deckLength + (i)] = [perlinRect,perlinRect];
+    //   this.templates[this.deckLength + (i)] = 'low-header';
+    //   this.headings[this.deckLength + (i)] = 'Panel Mode';
+    //   this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
+    //   this.numPanels[this.deckLength + (i)] = 3;
+    //   this.panelLayouts[this.deckLength + (i)] = 'horizontal';
+    //   this.labelVecs[this.deckLength + (i)] = '';
     }
 
     // let options = [0,1];
@@ -397,12 +418,8 @@ function TO_EDITMODE() {
   PRESENT_BUTTON.show();
   EDIT_BUTTON.hide();
   EDITSIDEBAR.show();
-  HEADER_BUTTON.show();
-  SAVE_BUTTON.show();
-  NEWDECK_BUTTON.show();
-  ADDSLIDE_BUTTON.show();
-  TOP_CANVAS.size(windowWidth-SIDEBAR_SIZEX,windowHeight);
-  TOP_CANVAS.position(SIDEBAR_SIZEX,0);
+  MAIN_CANVAS.size(windowWidth-SIDEBAR_SIZEX,windowHeight);
+  MAIN_CANVAS.position(SIDEBAR_SIZEX,0);
 
   TOGGLED = true;
 }
@@ -415,24 +432,35 @@ function TO_PRESENTMODE() {
   PRESENT_BUTTON.hide();
   EDIT_BUTTON.show();
   EDITSIDEBAR.hide();
-  HEADER_BUTTON.hide();
-  SAVE_BUTTON.hide();
-  NEWDECK_BUTTON.hide();
-  ADDSLIDE_BUTTON.hide();
   TOGGLED = true;
 
-  TOP_CANVAS.size(windowWidth,windowHeight);
-  TOP_CANVAS.position(0,0);
+  MAIN_CANVAS.size(windowWidth,windowHeight);
+  MAIN_CANVAS.position(0,0);
 }
 
 // Button Functionality
+function ON_HOVER() {
+ this.style('background-color','green');
+  this.style('opacity','.3');
+}
+
+function OFF() {
+  this.style('background-color','transparent');
+  this.style('opacity','1');
+}
+
+
 function TEXT_HEADER() {
-  let field = createInput('Write Your Input Here');
-  field.input(myInputEvent);
-  field.position(100,100);
-  field.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  field.style("background","transparent");
-  field.style("color","white");
+  TEXT_TOGGLES[0] = 'waituntilended';
+  console.log('waituntilended');
+}
+
+function TEXT_SUBHEADER() {
+  TEXT_TOGGLES[1] = 'waituntilended';
+}
+
+function TEXT_BODY() {
+  TEXT_TOGGLES[2] = 'waituntilended';
 }
 
 function SAVE_SLIDES() {
@@ -463,38 +491,45 @@ function createSidebar(){
 
 // create "present mode" button
   PRESENT_BUTTON = createButton('Present Mode');
-  //PRESENT_BUTTON.parent("sidebar");
-  PRESENT_BUTTON.position(0, 0);
+  PRESENT_BUTTON.parent("sidebar");
   PRESENT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
   styleButton(PRESENT_BUTTON);
-
-// create header button
-  HEADER_BUTTON = createButton('Draw Header');
-  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  HEADER_BUTTON.position(0, SIDEBAR_SIZEY);
-  //HEADER_BUTTON.parent('sidebar');
-  styleButton(HEADER_BUTTON);
-
-  // create save button
-  SAVE_BUTTON = createButton('Save Slides');
-  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  SAVE_BUTTON.position(0, 2*SIDEBAR_SIZEY);
-  //SAVE_BUTTON.parent('sidebar');
-  styleButton(SAVE_BUTTON);
 
   // create new deck button
   NEWDECK_BUTTON = createButton('Add Deck');
   NEWDECK_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  NEWDECK_BUTTON.position(0, 3*SIDEBAR_SIZEY);
-  //NEWDECK_BUTTON.parent('sidebar');
+  NEWDECK_BUTTON.parent('sidebar');
   styleButton(NEWDECK_BUTTON);
 
   // create add slides button
   ADDSLIDE_BUTTON = createButton('Add Slide');
   ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  ADDSLIDE_BUTTON.position(0, 4*SIDEBAR_SIZEY);
-  //ADDSLIDE_BUTTON.parent('sidebar');
+  ADDSLIDE_BUTTON.parent('sidebar');
   styleButton(ADDSLIDE_BUTTON);
+
+// create header button
+  HEADER_BUTTON = createButton('Draw Header');
+  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  HEADER_BUTTON.parent('sidebar');
+  styleButton(HEADER_BUTTON);
+
+  // create subheader button
+  SUBHEADER_BUTTON = createButton('Draw Subheader');
+  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SUBHEADER_BUTTON.parent('sidebar');
+  styleButton(SUBHEADER_BUTTON);
+
+  // create body button
+  BODYTEXT_BUTTON = createButton('Draw Body Text');
+  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  BODYTEXT_BUTTON.parent('sidebar');
+  styleButton(BODYTEXT_BUTTON);
+
+  // create save button
+  SAVE_BUTTON = createButton('Save Slides');
+  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SAVE_BUTTON.parent('sidebar');
+  styleButton(SAVE_BUTTON);
 
   DECK_TABS = [];
 }
@@ -569,5 +604,66 @@ function showDeckTabs(decks){
     DECK_TABS[i].size(tabWidth,SIDEBAR_SIZEY);
     DECK_TABS[i].position(tabWidth*(i),windowHeight);
     DECK_TABS[i].show;
+  }
+}
+
+
+function touchStarted(){
+
+  // Text drawing actions
+  for (let i = 0; i < TEXT_TOGGLES.length; i++) {
+    if (TEXT_TOGGLES[i] == 'onstart') {
+      console.log('started');
+      TEXT_TOGGLES[i] = [mouseX,mouseY];
+    }
+  }
+}
+
+function touchEnded() {
+
+
+  // Text drawing actions
+  for (let i = 0; i < TEXT_TOGGLES.length; i++) {
+  if (TEXT_TOGGLES[i] == 'waituntilended') {
+    console.log('onstart');
+    TEXT_TOGGLES[i] = 'onstart';
+  } else if (TEXT_TOGGLES[i].length == 2) {
+    console.log('stopped');
+    let field = createElement('textarea').attribute('maxlength', 500).size(100, 50);
+    field.attribute('wrap', 'hard');
+    TEXT_TOGGLES[i].push(mouseX,mouseY);
+    console.log(TEXT_TOGGLES[i]);
+    field.position(SIDEBAR_SIZEX + TEXT_TOGGLES[i][0], TEXT_TOGGLES[i][1]);
+    field.size(abs(TEXT_TOGGLES[i][2] - TEXT_TOGGLES[i][0]), abs(TEXT_TOGGLES[i][3] - TEXT_TOGGLES[i][1]));
+    field.style("background", "transparent");
+    field.style("color", "white");
+    field.style("border", "none");
+    TEXT_TOGGLES[i] = '';
+    CREATED_TEXT[i].push(field);
+  }
+}
+}
+
+
+
+function textResizer() {
+
+  for (let i = 0; i < CREATED_TEXT.length; i++) {
+    for (let j = 0; j < CREATED_TEXT[i].length; j++) {
+      let font = 0;
+
+      if (i == 0) {
+        font = width / 10;
+      } else if (i == 1) {
+        font = width / 20;
+      } else {
+        font = width / 30;
+      }
+
+      console.log(font);
+
+      CREATED_TEXT[i][j].style("font-size", font + "px");
+
+    }
   }
 }

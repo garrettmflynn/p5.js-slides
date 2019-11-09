@@ -3,8 +3,8 @@ const perlinRect = ( sketch ) => {
 
 let time = 0;
 sketch.s = 20;
-sketch.rows;
-sketch.cols;
+sketch.rows = 0;
+sketch.cols = 0;
 let numParts = 1000;
 let noise_level = 0.1;
 sketch.centerPoint = 0;
@@ -12,33 +12,28 @@ sketch.centerPoint = 0;
 sketch.particle = [];
 sketch.flowField = [];
 
-  sketch.w = X_BOUNDS[1]-X_BOUNDS[0];
-    sketch.h = height - Y_BOUNDS - MARGINS;
-
-
 sketch.setup = function() {
   
-  let myCanvas = sketch.createCanvas(sketch.w,sketch.h);
-  myCanvas.position(X_BOUNDS[0], Y_BOUNDS + MARGINS);
+  let myCanvas = sketch.createCanvas(width,height);
   CANVAS_TRANSPORTER = myCanvas;
   sketch.pixelDensity(1);
   sketch.clear();
-  sketch.sizeArray = [sketch.w,sketch.h];
+
+  sketch.sizeArray = [width,height];
+  let size = min(sketch.sizeArray);
+
+  sketch.cols = floor(size/sketch.s);
+  sketch.rows = floor(size/sketch.s);
   
-  sketch.cols = floor(min(sketch.sizeArray)/sketch.s);
-  sketch.rows = floor(min(sketch.sizeArray)/sketch.s);
-  
-  sketch.centerPoint = createVector(sketch.w/2,sketch.h/2);
+  sketch.centerPoint = createVector(width/2,height/2);
   
   for (let i = 0; i < numParts; i++){
   sketch.particle.push(new Particle(sketch.centerPoint));
-    
   }
 }
   
 sketch.draw = function(){
-    //background(2000);
-  
+
     let yoff = 100;
   for (let y = 0; y < sketch.rows; y++){
     let xoff = 0;
@@ -53,15 +48,7 @@ sketch.draw = function(){
       sketch.flowField[index] = v;
       
       xoff += noise_level;
-      
-//       stroke(0);
-//       strokeWeight(1);
-      
-//       push();
-//       translate(x*s,y*s);
-//       rotate(v.heading());
-//       line(0,0,s,0);
-//       pop();
+
     }
       yoff += noise_level;
   }

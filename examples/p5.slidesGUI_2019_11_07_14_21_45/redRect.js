@@ -1,10 +1,6 @@
 const redRect = ( sketch ) => {
     sketch.setup = function () {
-        sketch.w = width;
-        sketch.h = height;
-        let myCanvas = createCanvas(sketch.w, sketch.h);
-        myCanvas.size(width,height);
-        myCanvas.position(0,0);
+        let myCanvas = createCanvas(width, height);
         CANVAS_TRANSPORTER = myCanvas;
     }
 
