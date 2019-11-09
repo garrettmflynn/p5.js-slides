@@ -423,6 +423,49 @@ function ON_HOVER() {
   this.style('opacity','.3');
 }
 
+// Button Functionality
+function TEXTEDITBUTTONS_ADD() {
+
+  console.log('editing!')
+
+  let b_height = this.height/4;
+  // move text
+  MOVE_TEXT.size(b_height,b_height);
+  MOVE_TEXT.position(this.x, this.y-b_height);
+  MOVE_TEXT.show();
+
+  // color text
+  COLOR_TEXT.position(this.x+b_height, this.y);
+  COLOR_TEXT.size(b_height,b_height);
+  COLOR_TEXT.show();
+
+  // scale text (box)
+  SCALE_TEXT.position(this.x+2*b_height,this.y-b_height);
+  SCALE_TEXT.size(b_height,b_height);
+  SCALE_TEXT.show();
+
+  // animate text
+  ANIMATE_TEXT.position(this.x+3*b_height,this.y-b_height);
+  ANIMATE_TEXT.size(v,b_height);
+  ANIMATE_TEXT.show();
+}
+
+function TEXTEDITBUTTONS_REMOVE() {
+
+  console.log('editing!')
+  // move text
+  MOVE_TEXT.hide();
+
+  // color text
+  COLOR_TEXT.hide();
+
+  // scale text (box)
+  SCALE_TEXT.hide();
+
+  // animate text
+  ANIMATE_TEXT.hide();
+}
+
 function OFF() {
   this.style('background-color','transparent');
   this.style('opacity','1');
@@ -522,6 +565,32 @@ function createSidebar(){
   SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
   SAVE_BUTTON.parent('sidebar');
   styleButton(SAVE_BUTTON);
+
+
+  // create button to move text
+  MOVE_TEXT = createButton('M');
+  MOVE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  MOVE_TEXT.hide();
+  styleButton(MOVE_TEXT);
+
+  // create button to color text
+  COLOR_TEXT = createButton('C');
+  COLOR_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  COLOR_TEXT.hide();
+  styleButton(COLOR_TEXT);
+
+  // create button to scale text (box)
+  SCALE_TEXT = createButton('S');
+  SCALE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  SCALE_TEXT.hide();
+  styleButton(SCALE_TEXT);
+
+  // create button to animate text
+  ANIMATE_TEXT = createButton('A');
+  ANIMATE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  ANIMATE_TEXT.hide();
+  styleButton(ANIMATE_TEXT);
+
 
   DECK_TABS = [];
 }
@@ -652,6 +721,7 @@ function drawFromTouch() {
 
   function textResizer() {
 
+
     for (let i = 0; i < CREATED_TEXT.length; i++) {
       for (let j = 0; j < CREATED_TEXT[i].length; j++) {
         let font = 0;
@@ -663,8 +733,11 @@ function drawFromTouch() {
         } else {
           font = width / 30;
         }
-
+console.log(CREATED_TEXT[i][j].value());
         CREATED_TEXT[i][j].style("font-size", font + "px");
+
+        CREATED_TEXT[i][j].mouseOver(TEXTEDITBUTTONS_ADD);
+        CREATED_TEXT[i][j].mouseOut(TEXTEDITBUTTONS_REMOVE);
 
       }
     }
