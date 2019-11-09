@@ -7,16 +7,14 @@
 
 // UI Object
 p5.slidesUI = function() {
-  this.decks = [];
+  DECKS = [];
   MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
   MAIN_CANVAS.id('maincanvas');
   CANVAS_TRANSPORTER = null;
   NUMDECKS = 0;
   TOGGLED = false;
-  TEXT_TOGGLES = [];
-  TEXT_TOGGLES[0] = ''; // header toggle
-  TEXT_TOGGLES[1] = ''; // subheader toggle
-  TEXT_TOGGLES[2] = ''; // body text toggle
+  TRACKED_TOUCHES = '';
+  DRAW_FROM_TOUCH = '';
   CREATED_TEXT = [];
   CREATED_TEXT[0] = []; // header cache
   CREATED_TEXT[1] = []; // subheader cache
@@ -43,13 +41,14 @@ p5.slidesUI.prototype.checkInteraction = function(){
   HEADER_BUTTON.mousePressed(TEXT_HEADER);
   SUBHEADER_BUTTON.mousePressed(TEXT_SUBHEADER);
   BODYTEXT_BUTTON.mousePressed(TEXT_BODY);
+  ADDSKETCH_BUTTON.mousePressed(SKETCH_PLACEMENT);
   SAVE_BUTTON.mousePressed(SAVE_SLIDES);
   NEWDECK_BUTTON.mousePressed(NEWDECK);
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
 
   if (NEWOBJS_ != null) {
-    this.decks.push(NEWOBJS_);
-    showDeckTabs(this.decks);
+    DECKS.push(NEWOBJS_);
+    showDeckTabs(DECKS);
   }
 
   for (let i = 0; i < DECK_TABS.length; i++){
@@ -66,13 +65,13 @@ p5.slidesUI.prototype.display = function() {
 
 
 
-  if (this.decks.length != 0) {
+  if (DECKS.length != 0) {
 
       textResizer();
 
     // add slides to existing decks if necessary
-    if (REVISION_TOGGLE || this.decks[CURRENTDECK - 1].deckLength == 0) {
-      this.decks[CURRENTDECK - 1].addSlides(1);
+    if (REVISION_TOGGLE || DECKS[CURRENTDECK - 1].deckLength == 0) {
+      DECKS[CURRENTDECK - 1].addSlides(1);
       MAXSLIDE[CURRENTDECK - 1] += 1;
       REVISION_TOGGLE = null;
     }
@@ -81,17 +80,17 @@ p5.slidesUI.prototype.display = function() {
     //define complementary colors for background and text
     background(color(0, 0, 0));
 
-    slideTemplates(this.decks[CURRENTDECK - 1].templates[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].headings[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].subheadings[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].numPanels[CURRENTSLIDE - 1], this.decks[CURRENTDECK - 1].labelVecs[CURRENTSLIDE - 1], color(255, 255, 255));
+    slideTemplates(DECKS[CURRENTDECK - 1].templates[CURRENTSLIDE - 1], DECKS[CURRENTDECK - 1].headings[CURRENTSLIDE - 1], DECKS[CURRENTDECK - 1].subheadings[CURRENTSLIDE - 1], color(255, 255, 255));
 
     if (TOGGLED == true) {
       // initialize empty canvas holders
-      if (this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
-        this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] = [];
+      if (DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
+        DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] = [];
       }
 
       // hide previous sketches
       if (PREVSLIDE != null) {
-        let canvases = this.decks[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
+        let canvases = DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
         console.log('I will hide ' + canvases.length + ' canvases')
         for (let c = 0; c < canvases.length; c++) {
           console.log(canvases[c]);
@@ -99,14 +98,14 @@ p5.slidesUI.prototype.display = function() {
         }
       }
 
-        let sketchesForSlide = this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1];
+        let sketchesForSlide = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1];
 
         // initialize sketch canvases
-        if (this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
+        if (DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
           // place new sketches
 
-          let p = this.decks[CURRENTDECK - 1].numPanels[CURRENTSLIDE - 1];
+          let p = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].length;
 
           console.log('I will add ' +sketchesForSlide.length + ' canvases')
 
@@ -115,27 +114,22 @@ p5.slidesUI.prototype.display = function() {
           for (let i = 0; i < p; i++) {
 
             X_BOUNDS = [SIDEBAR_SIZEX + ((i) * (MAIN_CANVAS.width / p)), SIDEBAR_SIZEX + ((i + 1) * (MAIN_CANVAS.width / p))];
+            Y_BOUNDS =
             temp_ = new p5(sketchesForSlide[i]);
-            // console.log(temp_);
-            // console.log(CANVAS_TRANSPORTER);
+
             // properly size sketches
-             let x_s = X_BOUNDS[1] - X_BOUNDS[0];
-             let y_s = MAIN_CANVAS.height - Y_BOUNDS - MARGINS;
-            let y_p = 0;
             CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (i+1)));
-            console.log(CANVAS_TRANSPORTER);
-            CANVAS_TRANSPORTER.size(x_s,y_s);
-            CANVAS_TRANSPORTER.position(X_BOUNDS[0], y_p);
-            //CANVAS_TRANSPORTER.style("pointer-events", "none");
-            this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
+            DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
 
             CANVAS_TRANSPORTER = null;
           }
           CANVAS_COUNTER += p;
         } else {
-          let canvases = this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
+
+          let canvases = DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
+          console.log('I will show ' + canvases.length + ' canvases')
           for (let i = 0; i < canvases.length; i++) {
-            canvases = canvases[i].show();
+            canvases[i].show();
           }
       }
       TOGGLED = false;
@@ -146,7 +140,7 @@ p5.slidesUI.prototype.display = function() {
     // show slide number
     textSize(20);
     textAlign(RIGHT,BOTTOM);
-    text(CURRENTSLIDE + '/' + this.decks[CURRENTDECK-1].deckLength,width,height);
+    text(CURRENTSLIDE + '/' + DECKS[CURRENTDECK-1].deckLength,width,height);
 
   }
 }
@@ -162,8 +156,8 @@ p5.slideDeck = function(name) {
   TOGGLED = true;
   MARGINS = width / 24;
   PREVKEY = "";
-  Y_BOUNDS = 0;
-  X_BOUNDS = 0;
+  Y_BOUNDS = [];
+  X_BOUNDS = [];
 
   this.name = name;
   this.sketches = []; // initialize the sketch array
@@ -171,9 +165,6 @@ p5.slideDeck = function(name) {
   this.templates = [];
   this.headings = [];
   this.subheadings = [];
-  this.numPanels = [];
-  this.panelLayouts = [];
-  this.labelVecs = [];
   CURRENTSLIDE = 1;
   PREVSLIDE = null;
   this.canvases = [];
@@ -183,7 +174,7 @@ p5.slideDeck = function(name) {
 };
 
 // TEMPLATE CHARACTERISTICS
-function slideTemplates(template, header, subheading, nPanels, labels, textColor) {
+function slideTemplates(template, header, subheading, textColor) {
 
   // Determine header length for automatic sizing
   let headerLength = header.length;
@@ -240,7 +231,7 @@ function slideTemplates(template, header, subheading, nPanels, labels, textColor
   }
 
   if (template == 'full-sketch') {
-    Y_BOUNDS = 0;
+    Y_BOUNDS = [0,height];
   }
 
 
@@ -286,7 +277,7 @@ function slideTemplates(template, header, subheading, nPanels, labels, textColor
     text(header, MARGINS, headerStart);
 
 
-    Y_BOUNDS = subSize + headerSize;
+    Y_BOUNDS = [0, height - subSize + headerSize];
 
   }
 
@@ -303,30 +294,26 @@ p5.slideDeck.prototype.addSlides = function(num) {
   for (let i = 0; i < num; i++) {
 
     // define template creation order
-    if (this.deckLength >= 1){
+    if (this.deckLength == 1){
       this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Showcase Mode';
       this.subheadings[this.deckLength + (i)] = 'Show off a single sketch';
-      this.numPanels[this.deckLength + (i)] = 1;
-      this.panelLayouts[this.deckLength + (i)] = 'horizontal';
-      this.labelVecs[this.deckLength + (i)] = '';
     } else if (this.deckLength == 0) {
       this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'full-text';
       this.headings[this.deckLength + (i)] = 'P5.SLIDES,INTERACTIVE PRESENTATIONS FOR THE WEB';
       this.subheadings[this.deckLength + (i)] = '';
-      this.numPanels[this.deckLength + (i)] = 1;
-      this.panelLayouts[this.deckLength + (i)] = 'horizontal';
-      this.labelVecs[this.deckLength + (i)] = '';
-    // } else if (this.deckLength > 1) {
-    //   this.sketches[this.deckLength + (i)] = [perlinRect,perlinRect];
-    //   this.templates[this.deckLength + (i)] = 'low-header';
-    //   this.headings[this.deckLength + (i)] = 'Panel Mode';
-    //   this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
-    //   this.numPanels[this.deckLength + (i)] = 3;
-    //   this.panelLayouts[this.deckLength + (i)] = 'horizontal';
-    //   this.labelVecs[this.deckLength + (i)] = '';
+    } else if (this.deckLength > 2) {
+        this.sketches[this.deckLength + (i)] = [];
+        this.templates[this.deckLength + (i)] = 'full-sketch';
+        this.headings[this.deckLength + (i)] = '';
+        this.subheadings[this.deckLength + (i)] = '';
+    } else if (this.deckLength == 2) {
+      this.sketches[this.deckLength + (i)] = [perlinRect,perlinCircle,perlinRect];
+      this.templates[this.deckLength + (i)] = 'low-header';
+      this.headings[this.deckLength + (i)] = 'Panel Mode';
+      this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
     }
 
     // let options = [0,1];
@@ -366,14 +353,6 @@ p5.slideDeck.prototype.setSubheading = function(slide, subheading) {
   // assign subheadings to slides in SlideDeck object
 
   this.subheadings[slide - 1] = subheading;
-}
-
-p5.slideDeck.prototype.panelConfig = function(slide, numPanels, layout, labels) {
-  // configure panels for slides in SlideDeck object
-
-  this.numPanels[slide - 1] = numPanels;
-  this.panelLayouts[slide - 1] = layout;
-  this.labelVecs[slide - 1] = labels;
 }
 
 
@@ -451,16 +430,23 @@ function OFF() {
 
 
 function TEXT_HEADER() {
-  TEXT_TOGGLES[0] = 'waituntilended';
-  console.log('waituntilended');
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'header';
 }
 
 function TEXT_SUBHEADER() {
-  TEXT_TOGGLES[1] = 'waituntilended';
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'subheader';
 }
 
 function TEXT_BODY() {
-  TEXT_TOGGLES[2] = 'waituntilended';
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'body';
+}
+
+function SKETCH_PLACEMENT() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'sketch';
 }
 
 function SAVE_SLIDES() {
@@ -525,6 +511,12 @@ function createSidebar(){
   BODYTEXT_BUTTON.parent('sidebar');
   styleButton(BODYTEXT_BUTTON);
 
+  // create sketches into the canvas
+  ADDSKETCH_BUTTON = createButton('Draw Sketches');
+  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSKETCH_BUTTON.parent('sidebar');
+  styleButton(ADDSKETCH_BUTTON);
+
   // create save button
   SAVE_BUTTON = createButton('Save Slides');
   SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
@@ -562,31 +554,6 @@ function styleButton(button){
   button.style("border","none");
 }
 
-
-
-// ADDITIONAL FUNCTIONALITY
-
-// Dynamically resize the window
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-
-// Add a blank sketch to your slide
-const blankSketch = (sketch) => {
-  sketch.w = width;
-  sketch.h = height;
-
-  sketch.setup = function() {
-    let myCanvas = sketch.createCanvas(sketch.w, sketch.h);
-    myCanvas.position(0, 0);
-    CANVAS_TRANSPORTER = myCanvas;
-  }
-
-  sketch.draw = function() {
-
-  }
-}
-
 function showDeckTabs(decks){
   let tabWidth = null;
   let tabDiff = (decks.length - DECK_TABS.length);
@@ -609,61 +576,120 @@ function showDeckTabs(decks){
 
 
 function touchStarted(){
-
-  // Text drawing actions
-  for (let i = 0; i < TEXT_TOGGLES.length; i++) {
-    if (TEXT_TOGGLES[i] == 'onstart') {
-      console.log('started');
-      TEXT_TOGGLES[i] = [mouseX,mouseY];
+    if (TRACKED_TOUCHES == 'onstart') {
+      TRACKED_TOUCHES = [mouseX,mouseY];
+      console.log('touch started');
+      console.log(TRACKED_TOUCHES);
     }
-  }
 }
 
 function touchEnded() {
-
-
-  // Text drawing actions
-  for (let i = 0; i < TEXT_TOGGLES.length; i++) {
-  if (TEXT_TOGGLES[i] == 'waituntilended') {
-    console.log('onstart');
-    TEXT_TOGGLES[i] = 'onstart';
-  } else if (TEXT_TOGGLES[i].length == 2) {
-    console.log('stopped');
-    let field = createElement('textarea').attribute('maxlength', 500).size(100, 50);
-    field.attribute('wrap', 'hard');
-    TEXT_TOGGLES[i].push(mouseX,mouseY);
-    console.log(TEXT_TOGGLES[i]);
-    field.position(SIDEBAR_SIZEX + TEXT_TOGGLES[i][0], TEXT_TOGGLES[i][1]);
-    field.size(abs(TEXT_TOGGLES[i][2] - TEXT_TOGGLES[i][0]), abs(TEXT_TOGGLES[i][3] - TEXT_TOGGLES[i][1]));
-    field.style("background", "transparent");
-    field.style("color", "white");
-    field.style("border", "none");
-    TEXT_TOGGLES[i] = '';
-    CREATED_TEXT[i].push(field);
+  if (TRACKED_TOUCHES == 'waituntilended') {
+    TRACKED_TOUCHES = 'onstart';
+    console.log('waiting');
+  } else if (TRACKED_TOUCHES.length == 2) {
+    console.log('drawing');
+    TRACKED_TOUCHES.push(mouseX, mouseY);
+    drawFromTouch();
+    TRACKED_TOUCHES = '';
   }
 }
+
+function drawFromTouch() {
+  let field = null;
+  switch (DRAW_FROM_TOUCH) {
+    case 'header':
+      field = createInput('Your header here');
+      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
+      field.style("background", "transparent");
+      field.style("color", "white");
+      field.style("border", "none");
+      TRACKED_TOUCHES = '';
+      CREATED_TEXT[0].push(field);
+      break;
+
+    case 'subheader':
+      field = createInput('Your subheader here');
+      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
+      field.style("background", "transparent");
+      field.style("color", "grey");
+      field.style("border", "none");
+      TRACKED_TOUCHES = '';
+      CREATED_TEXT[1].push(field);
+      break;
+
+
+    case 'body':
+      field = createInput('Your body text here');
+      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
+      field.style("background", "transparent");
+      field.style("color", "white");
+      field.style("border", "none");
+      TRACKED_TOUCHES = '';
+      CREATED_TEXT[2].push(field);
+      break;
+
+
+    case 'sketch':
+      let temp_ = new p5(KaleidoParticles);
+
+      // properly size sketches
+      X_BOUNDS = [SIDEBAR_SIZEX +TRACKED_TOUCHES[0], SIDEBAR_SIZEX +TRACKED_TOUCHES[2]];
+      Y_BOUNDS = [TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]];
+      CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (1)));
+      DECKS[CURRENTDECK-1].canvases[CURRENTSLIDE - 1].push(CANVAS_TRANSPORTER);
+
+      CANVAS_TRANSPORTER = null;
+      CANVAS_COUNTER += 1;
+      break;
+
+  }
 }
 
 
+  function textResizer() {
 
-function textResizer() {
+    for (let i = 0; i < CREATED_TEXT.length; i++) {
+      for (let j = 0; j < CREATED_TEXT[i].length; j++) {
+        let font = 0;
 
-  for (let i = 0; i < CREATED_TEXT.length; i++) {
-    for (let j = 0; j < CREATED_TEXT[i].length; j++) {
-      let font = 0;
+        if (i == 0) {
+          font = width / 10;
+        } else if (i == 1) {
+          font = width / 20;
+        } else {
+          font = width / 30;
+        }
 
-      if (i == 0) {
-        font = width / 10;
-      } else if (i == 1) {
-        font = width / 20;
-      } else {
-        font = width / 30;
+        CREATED_TEXT[i][j].style("font-size", font + "px");
+
       }
-
-      console.log(font);
-
-      CREATED_TEXT[i][j].style("font-size", font + "px");
-
     }
+  }
+
+
+// ADDITIONAL FUNCTIONALITY
+
+// Dynamically resize the window
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+// Add a blank sketch to your slide
+const blankSketch = (sketch) => {
+  sketch.w = width;
+  sketch.h = height;
+
+  sketch.setup = function() {
+    let myCanvas = sketch.createCanvas(sketch.w, sketch.h);
+    myCanvas.position(0, 0);
+    CANVAS_TRANSPORTER = myCanvas;
+  }
+
+  sketch.draw = function() {
+
   }
 }
