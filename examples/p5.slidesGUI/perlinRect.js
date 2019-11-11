@@ -25,10 +25,10 @@ const perlinRect = ( sketch ) => {
     sketch.clear();
     sketch.sizeArray = [sketch.w,sketch.h];
 
-    // sketch.cols = floor(min(sketch.sizeArray)/sketch.s);
-    // sketch.rows = floor(min(sketch.sizeArray)/sketch.s);
-    sketch.cols = sketch.w/sketch.s;
-    sketch.rows = sketch.h/sketch.s;
+    sketch.cols = floor(min(sketch.sizeArray)/sketch.s);
+    sketch.rows = floor(min(sketch.sizeArray)/sketch.s);
+    // sketch.cols = sketch.w/sketch.s;
+    // sketch.rows = sketch.h/sketch.s;
 
     sketch.centerPoint = createVector(sketch.w/2,sketch.h/2);
 
