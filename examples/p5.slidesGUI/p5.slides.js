@@ -110,8 +110,8 @@ p5.slidesUI.prototype.display = function() {
           console.log('I will add ' +sketchesForSlide.length + ' canvases')
 
           X_BOUNDS = [];
-          Y_BOUNDS[0] += MARGINS;
-          Y_BOUNDS[1] -= MARGINS;
+          Y_BOUNDS[0] += MARGINS/2;
+          Y_BOUNDS[1] -= MARGINS/2;
           let c;
           let r;
           let y_i;

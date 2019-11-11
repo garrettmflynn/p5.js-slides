@@ -25,8 +25,10 @@ const perlinCircle = ( sketch ) => {
     sketch.clear();
     sketch.background(0);
     sketch.sizeArray = [sketch.w,sketch.h];
-    sketch.cols = floor(width/sketch.scale);
-    sketch.rows = floor(height/sketch.scale);
+    // sketch.cols = floor(width/sketch.scale);
+    // sketch.rows = floor(height/sketch.scale);
+    sketch.cols = sketch.w/sketch.s;
+    sketch.rows = sketch.h/sketch.s;
     sketch.radius = min(sketch.sizeArray)/2;
     sketch.centerPoint = createVector(sketch.w/2,sketch.h/2);
 
