@@ -103,6 +103,8 @@ p5.slidesUI.prototype.display = function() {
         // initialize sketch canvases
         if (DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
+          console.log('drawing');
+
           // place new sketches
 
           let p = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].length;
@@ -158,13 +160,13 @@ p5.slidesUI.prototype.display = function() {
             x_shift ++;
           }
           CANVAS_COUNTER += p;
-        } else {
-
-          let canvases = DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
-          console.log('I will show ' + canvases.length + ' canvases')
-          for (let i = 0; i < canvases.length; i++) {
-            canvases[i].show();
-          }
+        // } else {
+        //
+        //   let canvases = DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
+        //   console.log('I will show ' + canvases.length + ' canvases')
+        //   for (let i = 0; i < canvases.length; i++) {
+        //     canvases[i].show();
+        //   }
       }
       TOGGLED = false;
       PREVKEY = "";
@@ -566,20 +568,23 @@ function createSidebar(){
   styleButton(ADDSLIDE_BUTTON);
 
 // create header button
-  HEADER_BUTTON = createButton('Draw Header');
-  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  HEADER_BUTTON = createButton('Header');
+  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
   HEADER_BUTTON.parent('sidebar');
   styleButton(HEADER_BUTTON);
+  HEADER_BUTTON.style('text-transform', 'uppercase');
+  HEADER_BUTTON.style('font-weight', 'bold');
 
   // create subheader button
-  SUBHEADER_BUTTON = createButton('Draw Subheader');
-  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SUBHEADER_BUTTON = createButton('Subheader');
+  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
   SUBHEADER_BUTTON.parent('sidebar');
   styleButton(SUBHEADER_BUTTON);
+  SUBHEADER_BUTTON.style('font-style', 'italic');
 
   // create body button
-  BODYTEXT_BUTTON = createButton('Draw Body Text');
-  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  BODYTEXT_BUTTON = createButton('Body Text');
+  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
   BODYTEXT_BUTTON.parent('sidebar');
   styleButton(BODYTEXT_BUTTON);
 
@@ -650,6 +655,8 @@ function styleButton(button){
   button.style("background-color",color(random(0,100),random(25,95),random(35,65)));
   button.style("color","#fff");
   button.style("border","none");
+  // button.style("display","block");
+  // button.style("float","left");
 }
 
 function showDeckTabs(decks){
@@ -703,6 +710,8 @@ function drawFromTouch() {
       field.style("background", "transparent");
       field.style("color", "white");
       field.style("border", "none");
+      field.style('text-transform', 'uppercase');
+      field.style('font-weight', 'bold');
       TRACKED_TOUCHES = '';
       CREATED_TEXT[0].push(field);
       break;
@@ -714,6 +723,7 @@ function drawFromTouch() {
       field.style("background", "transparent");
       field.style("color", "grey");
       field.style("border", "none");
+      field.style('font-style', 'italic');
       TRACKED_TOUCHES = '';
       CREATED_TEXT[1].push(field);
       break;
