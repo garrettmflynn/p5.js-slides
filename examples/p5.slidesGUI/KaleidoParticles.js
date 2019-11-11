@@ -24,17 +24,17 @@ const KaleidoParticles = ( sketch ) => {
         CANVAS_TRANSPORTER = myCanvas;
         r = sketch.h/4;
 
-        let dx = 3*sketch.w/density;
-        let dy = 3*sketch.h/density;
+        // let dx = 3*sketch.w/density;
+        // let dy = 3*sketch.h/density;
+        //
+        // for (i = -1*sketch.w; i < 2*sketch.w; i += dx){
+        //     for (j = -1*sketch.h; j < 2*sketch.h; j += dy){
 
-        for (i = -1*sketch.w; i < 2*sketch.w; i += dx){
-            for (j = -1*sketch.h; j < 2*sketch.h; j += dy){
+       let dx = sketch.w/density;
+    let dy = sketch.h/density;
 
-//        let dx = sketch.w/density;
-//     let dy = sketch.h/density;
-
-//     for (i = 0; i < sketch.w; i += dx){
-//     for (j = 0; j < sketch.h; j += dy){
+    for (i = 0; i < sketch.w; i += dx){
+    for (j = 0; j < sketch.h; j += dy){
 
                 sketch.points.push(new Point(i,j,count));
                 count++;

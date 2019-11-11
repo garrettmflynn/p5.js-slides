@@ -88,14 +88,14 @@ p5.slidesUI.prototype.display = function() {
         DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] = [];
       }
 
-      // hide previous sketches
+      // remove previous sketches
       if (PREVSLIDE != null) {
         let canvases = DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
-        console.log('I will hide ' + canvases.length + ' canvases')
+        console.log('I will remove ' + canvases.length + ' canvases')
         for (let c = 0; c < canvases.length; c++) {
-          console.log(canvases[c]);
-          canvases[c].hide();
+          DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1][c].remove();
         }
+        DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1] = [];
       }
 
         let sketchesForSlide = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1];
@@ -110,10 +110,44 @@ p5.slidesUI.prototype.display = function() {
           console.log('I will add ' +sketchesForSlide.length + ' canvases')
 
           X_BOUNDS = [];
+          Y_BOUNDS[0] += MARGINS;
+          Y_BOUNDS[1] -= MARGINS;
+          let c;
+          let r;
+          let y_i;
+          let x_shift = 0;
+
+          if (p > 3) {
+            c = floor(p / sqrt(p));
+            r = ceil(p / sqrt(p));
+            y_i = Y_BOUNDS[1] / r;
+            Y_BOUNDS[1] = y_i;
+          }
 
           for (let i = 0; i < p; i++) {
 
-            X_BOUNDS = [SIDEBAR_SIZEX + ((i) * (MAIN_CANVAS.width / p)), SIDEBAR_SIZEX + ((i + 1) * (MAIN_CANVAS.width / p))];
+            if (x_shift == c) {
+              Y_BOUNDS[0] += y_i;
+              Y_BOUNDS[1] += y_i;
+              x_shift = 0;
+            }
+
+// This is messy...
+            if (p <= 3) {
+              if (EDITSIDEBAR.style('display') == 'block') {
+                X_BOUNDS = [SIDEBAR_SIZEX + ((x_shift) * (MAIN_CANVAS.width / p)), SIDEBAR_SIZEX + ((x_shift + 1) * (MAIN_CANVAS.width / p))];
+              } else {
+                X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / p)), ((x_shift + 1) * (MAIN_CANVAS.width / p))];
+              }
+            } else if(p > 3) {
+
+                if (EDITSIDEBAR.style('display') == 'block') {
+                  X_BOUNDS = [SIDEBAR_SIZEX + ((x_shift) * (MAIN_CANVAS.width / c)), SIDEBAR_SIZEX + ((x_shift + 1) * (MAIN_CANVAS.width / c))];
+                } else {
+                  X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / c)), ((x_shift + 1) * (MAIN_CANVAS.width / c))];
+                }
+              }
+
             temp_ = new p5(sketchesForSlide[i]);
 
             // properly size sketches
@@ -121,6 +155,7 @@ p5.slidesUI.prototype.display = function() {
             DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
 
             CANVAS_TRANSPORTER = null;
+            x_shift ++;
           }
           CANVAS_COUNTER += p;
         } else {
@@ -309,7 +344,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
         this.headings[this.deckLength + (i)] = '';
         this.subheadings[this.deckLength + (i)] = '';
     } else if (this.deckLength == 2) {
-      this.sketches[this.deckLength + (i)] = [perlinRect,perlinCircle,perlinRect];
+      this.sketches[this.deckLength + (i)] = [perlinRect,perlinCircle,perlinRect,perlinCircle];
       this.templates[this.deckLength + (i)] = 'low-header';
       this.headings[this.deckLength + (i)] = 'Panel Mode';
       this.subheadings[this.deckLength + (i)] = 'Expand your visual repertoire';
@@ -360,13 +395,6 @@ p5.slideDeck.prototype.setMargins = function(marginSize) {
   // assign margin sizes to slides in SlideDeck object
 
   MARGINS = marginSize;
-}
-
-
-p5.slideDeck.prototype.setNavMode = function(navMode) {
-  // assign margin sizes to slides in SlideDeck object
-
-  this.navMode = navMode;
 }
 
 // HARDCODED NAVIGATION FUNCTION
@@ -420,6 +448,7 @@ function TO_PRESENTMODE() {
 function ON_HOVER() {
  this.style('background-color','green');
   this.style('opacity','.3');
+  this.style('color','white');
 }
 
 // Button Functionality
@@ -468,6 +497,7 @@ function TEXTEDITBUTTONS_REMOVE() {
 function OFF() {
   this.style('background-color','transparent');
   this.style('opacity','1');
+  this.style('color', 'transparent')
 }
 
 
@@ -702,13 +732,15 @@ function drawFromTouch() {
 
 
     case 'sketch':
-      let temp_ = new p5(KaleidoParticles);
+      let sketch_to_add = KaleidoParticles;
 
       // properly size sketches
-      X_BOUNDS = [SIDEBAR_SIZEX +TRACKED_TOUCHES[0], SIDEBAR_SIZEX +TRACKED_TOUCHES[2]];
+      X_BOUNDS = [SIDEBAR_SIZEX + TRACKED_TOUCHES[0], SIDEBAR_SIZEX +TRACKED_TOUCHES[2]];
       Y_BOUNDS = [TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]];
+      let temp_ = new p5(sketch_to_add);
       CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (1)));
       DECKS[CURRENTDECK-1].canvases[CURRENTSLIDE - 1].push(CANVAS_TRANSPORTER);
+      DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].push(KaleidoParticles)
 
       CANVAS_TRANSPORTER = null;
       CANVAS_COUNTER += 1;

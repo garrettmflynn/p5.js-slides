@@ -122,10 +122,10 @@ const perlinRect = ( sketch ) => {
 
     bounds(){
 
-      let ub_x = min(sketch.sizeArray)*(9/10);
-      let lb_x = min(sketch.sizeArray)/10;
-      let ub_y = min(sketch.sizeArray)*(9/10);
-      let lb_y = min(sketch.sizeArray)/10;
+      let ub_x = min(sketch.sizeArray);
+      let lb_x = min(sketch.sizeArray);
+      let ub_y = min(sketch.sizeArray);
+      let lb_y = min(sketch.sizeArray);
 
 
       if (this.pos.x > ub_x){

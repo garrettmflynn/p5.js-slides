@@ -2,7 +2,7 @@ const perlinCircle = ( sketch ) => {
 
   let time = 0;
   sketch.scale = 20;
-  sketch.rowss = 0;
+  sketch.rows = 0;
   sketch.cols = 0;
   let numParts = 1000;
   let noise_level = 0.1
