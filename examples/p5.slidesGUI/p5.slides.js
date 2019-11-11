@@ -6,7 +6,7 @@
 
 
 // UI Object
-p5.slidesUI = function() {
+p5.slidesUI = function(savedDecks) {
   DECKS = [];
   MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
   MAIN_CANVAS.id('maincanvas');
@@ -27,9 +27,106 @@ p5.slidesUI = function() {
 
   SIDEBAR_SIZEY = height/10;
   SIDEBAR_SIZEX = width/6;
+
+
   createSidebar();
   TO_EDITMODE()
 };
+
+
+function createSidebar(){
+  // Create Sidebar
+  EDITSIDEBAR = createDiv();
+  EDITSIDEBAR.id("sidebar");
+  EDITSIDEBAR.size(SIDEBAR_SIZEX,height);
+  EDITSIDEBAR.position(0,0);
+  EDITSIDEBAR.style("background-color",color(20));
+
+// create "edit mode" button
+  EDIT_BUTTON = createButton('Edit Mode');
+  EDIT_BUTTON.position(0, 0);
+  EDIT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  styleButton(EDIT_BUTTON);
+  EDIT_BUTTON.hide();
+
+// create "present mode" button
+  PRESENT_BUTTON = createButton('Present Mode');
+  PRESENT_BUTTON.parent("sidebar");
+  PRESENT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  styleButton(PRESENT_BUTTON);
+
+  // create new deck button
+  NEWDECK_BUTTON = createButton('Add Deck');
+  NEWDECK_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  NEWDECK_BUTTON.parent('sidebar');
+  styleButton(NEWDECK_BUTTON);
+
+  // create add slides button
+  ADDSLIDE_BUTTON = createButton('Add Slide');
+  ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSLIDE_BUTTON.parent('sidebar');
+  styleButton(ADDSLIDE_BUTTON);
+
+// create header button
+  HEADER_BUTTON = createButton('Header');
+  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  HEADER_BUTTON.parent('sidebar');
+  styleButton(HEADER_BUTTON);
+  HEADER_BUTTON.style('text-transform', 'uppercase');
+  HEADER_BUTTON.style('font-weight', 'bold');
+
+  // create subheader button
+  SUBHEADER_BUTTON = createButton('Subheader');
+  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  SUBHEADER_BUTTON.parent('sidebar');
+  styleButton(SUBHEADER_BUTTON);
+  SUBHEADER_BUTTON.style('font-style', 'italic');
+
+  // create body button
+  BODYTEXT_BUTTON = createButton('Body Text');
+  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  BODYTEXT_BUTTON.parent('sidebar');
+  styleButton(BODYTEXT_BUTTON);
+
+  // create sketches into the canvas
+  ADDSKETCH_BUTTON = createButton('Draw Sketches');
+  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSKETCH_BUTTON.parent('sidebar');
+  styleButton(ADDSKETCH_BUTTON);
+
+  // create save button
+  SAVE_BUTTON = createButton('Save Slides');
+  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SAVE_BUTTON.parent('sidebar');
+  styleButton(SAVE_BUTTON);
+
+
+  // create button to move text
+  MOVE_TEXT = createButton('M');
+  MOVE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  MOVE_TEXT.hide();
+  styleButton(MOVE_TEXT);
+
+  // create button to color text
+  COLOR_TEXT = createButton('C');
+  COLOR_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  COLOR_TEXT.hide();
+  styleButton(COLOR_TEXT);
+
+  // create button to scale text (box)
+  SCALE_TEXT = createButton('S');
+  SCALE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  SCALE_TEXT.hide();
+  styleButton(SCALE_TEXT);
+
+  // create button to animate text
+  ANIMATE_TEXT = createButton('A');
+  ANIMATE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  ANIMATE_TEXT.hide();
+  styleButton(ANIMATE_TEXT);
+
+  DECK_TABS = [];
+}
 
 // Interaction Checker
 p5.slidesUI.prototype.checkInteraction = function(){
@@ -45,6 +142,12 @@ p5.slidesUI.prototype.checkInteraction = function(){
   SAVE_BUTTON.mousePressed(SAVE_SLIDES);
   NEWDECK_BUTTON.mousePressed(NEWDECK);
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
+
+  if (TRACKED_TOUCHES.length == 2){
+    noFill();
+    stroke('white');
+    rect(TRACKED_TOUCHES[0],TRACKED_TOUCHES[1],mouseX-TRACKED_TOUCHES[0],mouseY-TRACKED_TOUCHES[1]);
+  }
 
   if (NEWOBJS_ != null) {
     DECKS.push(NEWOBJS_);
@@ -67,6 +170,7 @@ p5.slidesUI.prototype.display = function() {
 
   if (DECKS.length != 0) {
 
+      // Does this work?
       textResizer();
 
     // add slides to existing decks if necessary
@@ -93,6 +197,7 @@ p5.slidesUI.prototype.display = function() {
         let canvases = DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
         console.log('I will remove ' + canvases.length + ' canvases')
         for (let c = 0; c < canvases.length; c++) {
+          console.log('removing');
           DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1][c].remove();
         }
         DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1] = [];
@@ -533,102 +638,6 @@ function ADDSLIDE() {
 }
 
 
-// Sidebar Creation
-function createSidebar(){
-
-  EDITSIDEBAR = createDiv();
-  EDITSIDEBAR.id("sidebar");
-  EDITSIDEBAR.size(SIDEBAR_SIZEX,height);
-  EDITSIDEBAR.position(0,0);
-  EDITSIDEBAR.style("background-color",color(20));
-
-// create "edit mode" button
-  EDIT_BUTTON = createButton('Edit Mode');
-  EDIT_BUTTON.position(0, 0);
-  EDIT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  styleButton(EDIT_BUTTON);
-  EDIT_BUTTON.hide();
-
-// create "present mode" button
-  PRESENT_BUTTON = createButton('Present Mode');
-  PRESENT_BUTTON.parent("sidebar");
-  PRESENT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  styleButton(PRESENT_BUTTON);
-
-  // create new deck button
-  NEWDECK_BUTTON = createButton('Add Deck');
-  NEWDECK_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  NEWDECK_BUTTON.parent('sidebar');
-  styleButton(NEWDECK_BUTTON);
-
-  // create add slides button
-  ADDSLIDE_BUTTON = createButton('Add Slide');
-  ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  ADDSLIDE_BUTTON.parent('sidebar');
-  styleButton(ADDSLIDE_BUTTON);
-
-// create header button
-  HEADER_BUTTON = createButton('Header');
-  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
-  HEADER_BUTTON.parent('sidebar');
-  styleButton(HEADER_BUTTON);
-  HEADER_BUTTON.style('text-transform', 'uppercase');
-  HEADER_BUTTON.style('font-weight', 'bold');
-
-  // create subheader button
-  SUBHEADER_BUTTON = createButton('Subheader');
-  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
-  SUBHEADER_BUTTON.parent('sidebar');
-  styleButton(SUBHEADER_BUTTON);
-  SUBHEADER_BUTTON.style('font-style', 'italic');
-
-  // create body button
-  BODYTEXT_BUTTON = createButton('Body Text');
-  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
-  BODYTEXT_BUTTON.parent('sidebar');
-  styleButton(BODYTEXT_BUTTON);
-
-  // create sketches into the canvas
-  ADDSKETCH_BUTTON = createButton('Draw Sketches');
-  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  ADDSKETCH_BUTTON.parent('sidebar');
-  styleButton(ADDSKETCH_BUTTON);
-
-  // create save button
-  SAVE_BUTTON = createButton('Save Slides');
-  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  SAVE_BUTTON.parent('sidebar');
-  styleButton(SAVE_BUTTON);
-
-
-  // create button to move text
-  MOVE_TEXT = createButton('M');
-  MOVE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
-  MOVE_TEXT.hide();
-  styleButton(MOVE_TEXT);
-
-  // create button to color text
-  COLOR_TEXT = createButton('C');
-  COLOR_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
-  COLOR_TEXT.hide();
-  styleButton(COLOR_TEXT);
-
-  // create button to scale text (box)
-  SCALE_TEXT = createButton('S');
-  SCALE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
-  SCALE_TEXT.hide();
-  styleButton(SCALE_TEXT);
-
-  // create button to animate text
-  ANIMATE_TEXT = createButton('A');
-  ANIMATE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
-  ANIMATE_TEXT.hide();
-  styleButton(ANIMATE_TEXT);
-
-
-  DECK_TABS = [];
-}
-
 
 function NEWDECK() {
   console.log(NUMDECKS);
@@ -684,14 +693,12 @@ function touchStarted(){
     if (TRACKED_TOUCHES == 'onstart') {
       TRACKED_TOUCHES = [mouseX,mouseY];
       console.log('touch started');
-      console.log(TRACKED_TOUCHES);
     }
 }
 
 function touchEnded() {
   if (TRACKED_TOUCHES == 'waituntilended') {
     TRACKED_TOUCHES = 'onstart';
-    console.log('waiting');
   } else if (TRACKED_TOUCHES.length == 2) {
     console.log('drawing');
     TRACKED_TOUCHES.push(mouseX, mouseY);
@@ -705,7 +712,7 @@ function drawFromTouch() {
   switch (DRAW_FROM_TOUCH) {
     case 'header':
       field = createInput('Your header here');
-      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0],TRACKED_TOUCHES[1]);
       field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
       field.style("background", "transparent");
       field.style("color", "white");
@@ -774,11 +781,11 @@ function drawFromTouch() {
         } else {
           font = width / 30;
         }
-console.log(CREATED_TEXT[i][j].value());
+
         CREATED_TEXT[i][j].style("font-size", font + "px");
 
-        CREATED_TEXT[i][j].mouseOver(TEXTEDITBUTTONS_ADD);
-        CREATED_TEXT[i][j].mouseOut(TEXTEDITBUTTONS_REMOVE);
+        // CREATED_TEXT[i][j].mouseOver(TEXTEDITBUTTONS_ADD);
+        // CREATED_TEXT[i][j].mouseOut(TEXTEDITBUTTONS_REMOVE);
 
       }
     }

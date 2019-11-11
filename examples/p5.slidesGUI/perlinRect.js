@@ -25,10 +25,10 @@ const perlinRect = ( sketch ) => {
     sketch.clear();
     sketch.sizeArray = [sketch.w,sketch.h];
 
-    sketch.cols = floor(min(sketch.sizeArray)/sketch.s);
-    sketch.rows = floor(min(sketch.sizeArray)/sketch.s);
-    // sketch.cols = sketch.w/sketch.s;
-    // sketch.rows = sketch.h/sketch.s;
+    // sketch.cols = floor(min(sketch.sizeArray)/sketch.s);
+    // sketch.rows = floor(min(sketch.sizeArray)/sketch.s);
+    sketch.cols = floor(sketch.w/sketch.s);
+    sketch.rows = floor(sketch.h/sketch.s);
 
     sketch.centerPoint = createVector(sketch.w/2,sketch.h/2);
 
@@ -124,10 +124,10 @@ const perlinRect = ( sketch ) => {
 
     bounds(){
 
-      let ub_x = min(sketch.sizeArray);
-      let lb_x = min(sketch.sizeArray);
-      let ub_y = min(sketch.sizeArray);
-      let lb_y = min(sketch.sizeArray);
+      let ub_x = min(sketch.sizeArray)*(9/10);
+      let lb_x = min(sketch.sizeArray)/10;
+      let ub_y = min(sketch.sizeArray)*(9/10);
+      let lb_y = min(sketch.sizeArray)/10;
 
 
       if (this.pos.x > ub_x){

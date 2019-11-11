@@ -4,7 +4,7 @@ const perlinCircle = ( sketch ) => {
   sketch.scale = 20;
   sketch.rows = 0;
   sketch.cols = 0;
-  let numParts = 1000;
+  let numParts = 400;
   let noise_level = 0.1
   sketch.centerPoint = 0;
 
@@ -25,10 +25,8 @@ const perlinCircle = ( sketch ) => {
     sketch.clear();
     sketch.background(0);
     sketch.sizeArray = [sketch.w,sketch.h];
-    sketch.cols = floor(width/sketch.scale);
-    sketch.rows = floor(height/sketch.scale);
-    // sketch.cols = sketch.w/sketch.scale;
-    // sketch.rows = sketch.h/sketch.scale;
+    sketch.cols = floor(sketch.w/sketch.scale);
+    sketch.rows = floor(sketch.h/sketch.scale);
     sketch.radius = min(sketch.sizeArray)/2;
     sketch.centerPoint = createVector(sketch.w/2,sketch.h/2);
 
