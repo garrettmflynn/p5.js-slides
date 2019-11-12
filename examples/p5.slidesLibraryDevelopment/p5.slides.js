@@ -7,121 +7,145 @@
 
 // UI Object
 p5.slidesUI = function(savedDecks) {
-  DECKS = [];
+  this.decks = [];
+  // load old decks if available, or create a new deck
+  if (savedDecks === undefined) {
+    //this.decks.push(new p5.slideDeck('Intro to P5.Slides'));
+  } else {
+    for (let i = 0; i < savedDecks.length; i++) {
+      this.decks[i] = this.loadData(savedDecks);
+    }
+  }
+
   MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
-  MAIN_CANVAS.id('maincanvas');
+
+  this.margins = width / 24;
+
   CANVAS_TRANSPORTER = null;
-  NUMDECKS = 0;
   TOGGLED = false;
   TRACKED_TOUCHES = '';
   DRAW_FROM_TOUCH = '';
-  CREATED_TEXT = [];
-  CREATED_TEXT[0] = []; // header cache
-  CREATED_TEXT[1] = []; // subheader cache
-  CREATED_TEXT[2] = []; // body text cache
+  this.created_text = [];
+  this.created_text[0] = []; // header cache
+  this.created_text[1] = []; // subheader cache
+  this.created_text[2] = []; // body text cache
   REVISION_TOGGLE = true;
-  CURRENTDECK = 1;
-  MAXSLIDE = [];
+  this.currentDeck = 1;
   NEWOBJS_ = null;
   CANVAS_COUNTER = 0;
+  DRAWNOW = false;
 
-  SIDEBAR_SIZEY = height/10;
-  SIDEBAR_SIZEX = width/6;
+  this.sidebar_y = height/10;
+  this.sidebar_x = width/6;
+  SIDEBAR_SIZEX = 0;
+  NUMDECKS = this.decks.length;
+  MAXSLIDE = 1;
 
 
-  createSidebar();
+  this.createSidebar();
   TO_EDITMODE()
-};
+}
 
 
-function createSidebar(){
+p5.slidesUI.prototype.createSidebar = function(){
   // Create Sidebar
   EDITSIDEBAR = createDiv();
   EDITSIDEBAR.id("sidebar");
-  EDITSIDEBAR.size(SIDEBAR_SIZEX,height);
+  EDITSIDEBAR.size(this.sidebar_x,height);
   EDITSIDEBAR.position(0,0);
   EDITSIDEBAR.style("background-color",color(20));
 
 // create "edit mode" button
   EDIT_BUTTON = createButton('Edit Mode');
   EDIT_BUTTON.position(0, 0);
-  EDIT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  EDIT_BUTTON.size(this.sidebar_x,this.sidebar_y);
   styleButton(EDIT_BUTTON);
   EDIT_BUTTON.hide();
+  EDIT_BUTTON.mousePressed(TO_EDITMODE);
+  EDIT_BUTTON.mouseOver(ON_HOVER);
+  EDIT_BUTTON.mouseOut(OFF);
 
 // create "present mode" button
   PRESENT_BUTTON = createButton('Present Mode');
   PRESENT_BUTTON.parent("sidebar");
-  PRESENT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  PRESENT_BUTTON.size(this.sidebar_x,this.sidebar_y);
   styleButton(PRESENT_BUTTON);
+  PRESENT_BUTTON.mousePressed(TO_PRESENTMODE);
 
   // create new deck button
   NEWDECK_BUTTON = createButton('Add Deck');
-  NEWDECK_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  NEWDECK_BUTTON.size(this.sidebar_x,this.sidebar_y);
   NEWDECK_BUTTON.parent('sidebar');
   styleButton(NEWDECK_BUTTON);
+  NEWDECK_BUTTON.mousePressed(NEWDECK);
 
   // create add slides button
   ADDSLIDE_BUTTON = createButton('Add Slide');
-  ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSLIDE_BUTTON.size(this.sidebar_x,this.sidebar_y);
   ADDSLIDE_BUTTON.parent('sidebar');
   styleButton(ADDSLIDE_BUTTON);
+  ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
 
 // create header button
   HEADER_BUTTON = createButton('Header');
-  HEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  HEADER_BUTTON.size(this.sidebar_x,this.sidebar_y/3);
   HEADER_BUTTON.parent('sidebar');
   styleButton(HEADER_BUTTON);
   HEADER_BUTTON.style('text-transform', 'uppercase');
   HEADER_BUTTON.style('font-weight', 'bold');
+  HEADER_BUTTON.mousePressed(TEXT_HEADER);
 
   // create subheader button
   SUBHEADER_BUTTON = createButton('Subheader');
-  SUBHEADER_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  SUBHEADER_BUTTON.size(this.sidebar_x,this.sidebar_y/3);
   SUBHEADER_BUTTON.parent('sidebar');
   styleButton(SUBHEADER_BUTTON);
   SUBHEADER_BUTTON.style('font-style', 'italic');
+  SUBHEADER_BUTTON.mousePressed(TEXT_SUBHEADER);
 
   // create body button
   BODYTEXT_BUTTON = createButton('Body Text');
-  BODYTEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY/3);
+  BODYTEXT_BUTTON.size(this.sidebar_x,this.sidebar_y/3);
   BODYTEXT_BUTTON.parent('sidebar');
   styleButton(BODYTEXT_BUTTON);
+  BODYTEXT_BUTTON.mousePressed(TEXT_BODY);
 
   // create sketches into the canvas
   ADDSKETCH_BUTTON = createButton('Draw Sketches');
-  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSKETCH_BUTTON.size(this.sidebar_x,this.sidebar_y);
   ADDSKETCH_BUTTON.parent('sidebar');
   styleButton(ADDSKETCH_BUTTON);
+  ADDSKETCH_BUTTON.mousePressed(SKETCH_PLACEMENT);
 
   // create save button
   SAVE_BUTTON = createButton('Save Slides');
-  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SAVE_BUTTON.size(this.sidebar_x,this.sidebar_y);
   SAVE_BUTTON.parent('sidebar');
   styleButton(SAVE_BUTTON);
+  SAVE_BUTTON.mousePressed(SAVE_SLIDES);
 
 
   // create button to move text
   MOVE_TEXT = createButton('M');
-  MOVE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  MOVE_TEXT.size(this.sidebar_y,this.sidebar_y);
   MOVE_TEXT.hide();
   styleButton(MOVE_TEXT);
 
   // create button to color text
   COLOR_TEXT = createButton('C');
-  COLOR_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  COLOR_TEXT.size(this.sidebar_y,this.sidebar_y);
   COLOR_TEXT.hide();
   styleButton(COLOR_TEXT);
 
   // create button to scale text (box)
   SCALE_TEXT = createButton('S');
-  SCALE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  SCALE_TEXT.size(this.sidebar_y,this.sidebar_y);
   SCALE_TEXT.hide();
   styleButton(SCALE_TEXT);
 
   // create button to animate text
   ANIMATE_TEXT = createButton('A');
-  ANIMATE_TEXT.size(SIDEBAR_SIZEY,SIDEBAR_SIZEY);
+  ANIMATE_TEXT.size(this.sidebar_y,this.sidebar_y);
   ANIMATE_TEXT.hide();
   styleButton(ANIMATE_TEXT);
 
@@ -131,18 +155,6 @@ function createSidebar(){
 // Interaction Checker
 p5.slidesUI.prototype.checkInteraction = function(){
 
-  PRESENT_BUTTON.mousePressed(TO_PRESENTMODE);
-  EDIT_BUTTON.mousePressed(TO_EDITMODE);
-  EDIT_BUTTON.mouseOver(ON_HOVER);
-  EDIT_BUTTON.mouseOut(OFF);
-  HEADER_BUTTON.mousePressed(TEXT_HEADER);
-  SUBHEADER_BUTTON.mousePressed(TEXT_SUBHEADER);
-  BODYTEXT_BUTTON.mousePressed(TEXT_BODY);
-  ADDSKETCH_BUTTON.mousePressed(SKETCH_PLACEMENT);
-  SAVE_BUTTON.mousePressed(SAVE_SLIDES);
-  NEWDECK_BUTTON.mousePressed(NEWDECK);
-  ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
-
   if (TRACKED_TOUCHES.length == 2){
     noFill();
     stroke('white');
@@ -150,8 +162,8 @@ p5.slidesUI.prototype.checkInteraction = function(){
   }
 
   if (NEWOBJS_ != null) {
-    DECKS.push(NEWOBJS_);
-    showDeckTabs(DECKS);
+    this.decks.push(NEWOBJS_);
+    showDeckTabs(this.decks);
   }
 
   for (let i = 0; i < DECK_TABS.length; i++){
@@ -166,17 +178,30 @@ p5.slidesUI.prototype.checkInteraction = function(){
 // UI Display
 p5.slidesUI.prototype.display = function() {
 
+  if ((this.decks.length) > 0) {
+  NUMDECKS = this.decks.length;
+  CURRENTDECK = this.currentDeck;
+  MAXSLIDE = this.decks[this.currentDeck-1].length - 1;
+}
+
+  SIZEBAR_SIZEX = this.sidebar_x;
+
+  // Draw Text Now
+  if (DRAWNOW) {
+  this.drawFromTouch();
+  TRACKED_TOUCHES = '';
+  DRAWNOW = false;
+  }
 
 
-  if (DECKS.length != 0) {
+  if (this.decks.length != 0) {
 
-    // Does this work?
-    textResizer();
+      // Does this work?
+      this.textResizer();
 
     // add slides to existing decks if necessary
-    if (REVISION_TOGGLE || DECKS[CURRENTDECK - 1].deckLength == 0) {
-      DECKS[CURRENTDECK - 1].addSlides(1);
-      MAXSLIDE[CURRENTDECK - 1] += 1;
+    if (REVISION_TOGGLE || this.decks[this.currentDeck - 1].deckLength == 0) {
+      this.decks[this.currentDeck - 1].addSlides(1);
       REVISION_TOGGLE = null;
     }
 
@@ -184,104 +209,97 @@ p5.slidesUI.prototype.display = function() {
     //define complementary colors for background and text
     background(color(0, 0, 0));
 
-    slideTemplates(DECKS[CURRENTDECK - 1].templates[CURRENTSLIDE - 1], DECKS[CURRENTDECK - 1].headings[CURRENTSLIDE - 1], DECKS[CURRENTDECK - 1].subheadings[CURRENTSLIDE - 1], color(255, 255, 255));
-
     if (TOGGLED == true) {
+      this.slideTemplates();
+
       // initialize empty canvas holders
-      if (DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] === undefined) {
-        DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1] = [];
+      if (this.decks[this.currentDeck - 1].canvases[CURRENTSLIDE-1] === undefined) {
+        this.decks[this.currentDeck - 1].canvases[CURRENTSLIDE-1] = [];
       }
 
       // remove previous sketches
       if (PREVSLIDE != null) {
-        let canvases = DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1];
-        console.log('I will remove ' + canvases.length + ' canvases')
+        let canvases = this.decks[this.currentDeck - 1].canvases[PREVSLIDE - 1];
         for (let c = 0; c < canvases.length; c++) {
-          console.log('removing');
-          DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1][c].remove();
+          this.decks[this.currentDeck - 1].canvases[PREVSLIDE - 1][c].remove();
         }
-        DECKS[CURRENTDECK - 1].canvases[PREVSLIDE - 1] = [];
+        this.decks[this.currentDeck - 1].canvases[PREVSLIDE - 1] = [];
       }
 
-      let sketchesForSlide = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1];
+        let sketchesForSlide = this.decks[this.currentDeck - 1].sketches[CURRENTSLIDE - 1];
+        // initialize sketch canvases
+        if (this.decks[this.currentDeck - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
-      // initialize sketch canvases
-      if (DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
-        console.log('drawing');
+          // place new sketches
 
-        // place new sketches
+          let p = this.decks[this.currentDeck - 1].sketches[CURRENTSLIDE - 1].length;
 
-        let p = DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].length;
+          X_BOUNDS = [];
+          Y_BOUNDS[0] += this.margins/2;
+          Y_BOUNDS[1] -= this.margins/2;
+          let c;
+          let r;
+          let y_i;
+          let x_shift = 0;
 
-        console.log('I will add ' +sketchesForSlide.length + ' canvases')
-
-        X_BOUNDS = [];
-        Y_BOUNDS[0] += MARGINS/2;
-        Y_BOUNDS[1] -= MARGINS/2;
-        let c;
-        let r;
-        let y_i;
-        let x_shift = 0;
-
-        if (p > 3) {
-          c = floor(p / sqrt(p));
-          r = ceil(p / sqrt(p));
-          y_i = Y_BOUNDS[1] / r;
-          Y_BOUNDS[1] = y_i;
-        }
-
-        for (let i = 0; i < p; i++) {
-
-          if (x_shift == c) {
-            Y_BOUNDS[0] += y_i;
-            Y_BOUNDS[1] += y_i;
-            x_shift = 0;
+          if (p > 3) {
+            c = floor(p / sqrt(p));
+            r = ceil(p / sqrt(p));
+            y_i = Y_BOUNDS[1] / r;
+            Y_BOUNDS[1] = y_i;
           }
+
+          for (let i = 0; i < p; i++) {
+
+            if (x_shift == c) {
+              Y_BOUNDS[0] += y_i;
+              Y_BOUNDS[1] += y_i;
+              x_shift = 0;
+            }
 
 // This is messy...
-          if (p <= 3) {
-            if (EDITSIDEBAR.style('display') == 'block') {
-              X_BOUNDS = [SIDEBAR_SIZEX + ((x_shift) * (MAIN_CANVAS.width / p)), SIDEBAR_SIZEX + ((x_shift + 1) * (MAIN_CANVAS.width / p))];
-            } else {
-              X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / p)), ((x_shift + 1) * (MAIN_CANVAS.width / p))];
-            }
-          } else if(p > 3) {
+            if (p <= 3) {
+              if (EDITSIDEBAR.style('display') == 'block') {
+                X_BOUNDS = [this.sidebar_x + ((x_shift) * (MAIN_CANVAS.width / p)), this.sidebar_x + ((x_shift + 1) * (MAIN_CANVAS.width / p))];
+              } else {
+                X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / p)), ((x_shift + 1) * (MAIN_CANVAS.width / p))];
+              }
+            } else if(p > 3) {
 
-            if (EDITSIDEBAR.style('display') == 'block') {
-              X_BOUNDS = [SIDEBAR_SIZEX + ((x_shift) * (MAIN_CANVAS.width / c)), SIDEBAR_SIZEX + ((x_shift + 1) * (MAIN_CANVAS.width / c))];
-            } else {
-              X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / c)), ((x_shift + 1) * (MAIN_CANVAS.width / c))];
-            }
+                if (EDITSIDEBAR.style('display') == 'block') {
+                  X_BOUNDS = [this.sidebar_x + ((x_shift) * (MAIN_CANVAS.width / c)), this.sidebar_x + ((x_shift + 1) * (MAIN_CANVAS.width / c))];
+                } else {
+                  X_BOUNDS = [((x_shift) * (MAIN_CANVAS.width / c)), ((x_shift + 1) * (MAIN_CANVAS.width / c))];
+                }
+              }
+
+            temp_ = new p5(sketchesForSlide[i]);
+
+            // properly size sketches
+            CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (i+1)));
+            this.decks[this.currentDeck - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
+
+            CANVAS_TRANSPORTER = null;
+            x_shift ++;
           }
-
-          temp_ = new p5(sketchesForSlide[i]);
-
-          // properly size sketches
-          CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (i+1)));
-          DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(CANVAS_TRANSPORTER);
-
-          CANVAS_TRANSPORTER = null;
-          x_shift ++;
-        }
-        CANVAS_COUNTER += p;
+          CANVAS_COUNTER += p;
         // } else {
         //
-        //   let canvases = DECKS[CURRENTDECK - 1].canvases[CURRENTSLIDE-1];
-        //   console.log('I will show ' + canvases.length + ' canvases')
+        //   let canvases = this.decks[this.currentDeck - 1].canvases[CURRENTSLIDE-1];
         //   for (let i = 0; i < canvases.length; i++) {
         //     canvases[i].show();
         //   }
       }
       TOGGLED = false;
       PREVKEY = "";
-    }
+  }
 
 
     // show slide number
     textSize(20);
     textAlign(RIGHT,BOTTOM);
-    text(CURRENTSLIDE + '/' + DECKS[CURRENTDECK-1].deckLength,width,height);
+    text(CURRENTSLIDE + '/' + this.decks[this.currentDeck-1].deckLength,width,height);
 
   }
 }
@@ -295,7 +313,7 @@ p5.slidesUI.prototype.display = function() {
 p5.slideDeck = function(name) {
 
   TOGGLED = true;
-  MARGINS = width / 24;
+  this.margins = width / 24;
   PREVKEY = "";
   Y_BOUNDS = [];
   X_BOUNDS = [];
@@ -315,60 +333,73 @@ p5.slideDeck = function(name) {
 };
 
 // TEMPLATE CHARACTERISTICS
-function slideTemplates(template, header, subheading, textColor) {
+p5.slidesUI.prototype.slideTemplates = function() {
+
+
+  let template = this.decks[this.currentDeck - 1].templates[CURRENTSLIDE - 1];
+  let header = this.decks[this.currentDeck - 1].headings[CURRENTSLIDE - 1];
+  let subheader = this.decks[this.currentDeck - 1].subheadings[CURRENTSLIDE - 1];
+  let textColor = color(0,0,0);
 
   // Determine header length for automatic sizing
-  let headerLength = header.length;
-  noStroke();
-
   if (template == 'full-text') {
-    let headerStrings = split(header, ',');
 
-    // calculate sizes
-    let sizes = [];
-    sizes[0] = 1.5 * (width - 2 * MARGINS) / (headerStrings[0].length);
-    let potentialSizes = [];
+    let H = createInput(header);
+    H.size(MAIN_CANVAS.width-2*this.margins-this.sidebar_x,(2*height/3)-this.margins);
+    H.position(this.sidebar_x+this.margins,this.margins);
+    H.style('background-color','transparent');
+    H.style('color','white');
+    H.style('text-transform', 'uppercase');
+    H.style('font-weight', 'bold');
 
-    let count = 0;
-    for (let i = 1; i < headerStrings.length; i++) {
-      potentialSizes[count] = 1.50 * (width - 2 * MARGINS) / (headerStrings[i].length);
-      count++;
-    }
+    // let size = int(H.style("font-size"));
+    // let ratio = 0;
+    // let inc = 10;
+    // let prevRatio = 0;
+    //
+    // while (ratio < .9 || ratio > 1){
+    //   if (ratio < .9 && prevRatio > 1) {
+    //     size -= inc;
+    //     inc *= -1;
+    //   }
+    //   else if (ratio > 1 && prevRatio < .9){
+    //     inc *= -.1;
+    //   }
+    //
+    //   size += inc;
+    //
+    //   textSize(size);
+    //   ratio = textWidth(header)/width;
+    //   console.log(textWidth(header));
+    // }
+    // H.style("font-size", size + 'px');
+    // console.log('Out of header');
 
-    sizes[1] = min(potentialSizes);
 
-    let accumulatedHeight = MARGINS;
-    let currentSize = 0;
+    let S = createInput(subheader);
+    S.size(MAIN_CANVAS.width-2*this.margins-this.sidebar_x,(height/3)-this.margins);
+    S.position(this.sidebar_x+this.margins, 2*height/3 + this.margins/2);
+    S.style('background-color','transparent');
+    S.style('color','white');
+    S.style('font-style', 'italic');
 
-    for (let s = 0; s < headerStrings.length; s++) {
-      if (s == 0) {
-        currentSize = sizes[s];
-        textAlign(LEFT, BOTTOM);
-        textStyle(BOLD);
-        accumulatedHeight = MARGINS;
-      } else {
-        currentSize = sizes[1];
-        textAlign(LEFT, TOP);
-        textStyle(NORMAL);
-      }
+    size = int(S.style("font-size"));
 
-      textColor.setAlpha(255);
-      fill(textColor);
-      textSize(currentSize);
-      text(headerStrings[s], MARGINS, height / 2 + accumulatedHeight);
-      if (s != 0) {
-        accumulatedHeight += currentSize + MARGINS / 2;
-      } else {
-        accumulatedHeight = 1.5 * MARGINS;
-      }
-    }
+    ratio = 0;
 
-    textColor.setAlpha(100);
-    fill(textColor);
-    textStyle(ITALIC);
-    textAlign(RIGHT, BOTTOM);
-    textSize(sizes[2]);
-    text(subheading, width - MARGINS, height - MARGINS);
+    // while (ratio < .9 || ratio > 1){
+    //   if (ratio < .9) {
+    //     size += 1;
+    //   }
+    //   else if (ratio > 1){
+    //     size -= .1;
+    //   }
+    //   textSize(size);
+    //   ratio = textWidth(subheader)/width;
+    //   console.log(ratio);
+    // }
+    // console.log('Out of subheader');
+    // S.style("font-size", size + 'px');
   }
 
   if (template == 'full-sketch') {
@@ -378,13 +409,13 @@ function slideTemplates(template, header, subheading, textColor) {
 
 
   if (template == 'mid-title') {
-    let headerSize = 1.5 * (width - 2 * MARGINS) / (headerLength);
+    let headerSize = 1.5 * (width - 2 * this.margins) / (headerLength);
     textColor.setAlpha(100);
     fill(textColor);
     textStyle(ITALIC);
     textAlign(LEFT, TOP);
     textSize(headerSize / 2);
-    text(subheading, MARGINS, (height / 2 + MARGINS / 2));
+    text(subheader, this.margins, (height / 2 + this.margins / 2));
 
 
     textColor.setAlpha(255);
@@ -392,20 +423,20 @@ function slideTemplates(template, header, subheading, textColor) {
     textAlign(LEFT, BOTTOM);
     textStyle(BOLD);
     textSize(headerSize);
-    let headerStart = (height / 2 - MARGINS / 2);
-    text(header, MARGINS, headerStart);
+    let headerStart = (height / 2 - this.margins / 2);
+    text(header, this.margins, headerStart);
 
   }
 
   if (template == 'low-header') {
-    let headerSize = 1.5 * (width - 2 * MARGINS) / (2 * headerLength);
+    let headerSize = 1.5 * (width - 2 * this.margins) / (2 * header.length);
 
     textColor.setAlpha(100);
     fill(textColor);
     textStyle(ITALIC);
     textAlign(LEFT, BOTTOM);
     textSize(headerSize / 2);
-    text(subheading, MARGINS, (height - MARGINS));
+    text(subheader, this.margins, (height - this.margins));
 
 
     textColor.setAlpha(255);
@@ -413,9 +444,9 @@ function slideTemplates(template, header, subheading, textColor) {
     textAlign(LEFT, BOTTOM);
     textStyle(BOLD);
     textSize(headerSize);
-    let subSize = MARGINS + headerSize;
+    let subSize = this.margins + headerSize;
     let headerStart = (height - subSize);
-    text(header, MARGINS, headerStart);
+    text(header, this.margins, headerStart);
 
 
     Y_BOUNDS = [0, height - subSize - headerSize];
@@ -441,15 +472,15 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.headings[this.deckLength + (i)] = 'Showcase Mode';
       this.subheadings[this.deckLength + (i)] = 'Show off a single sketch';
     } else if (this.deckLength == 0) {
-      this.sketches[this.deckLength + (i)] = [perlinRect]; //[blankSketch]; //
+      this.sketches[this.deckLength + (i)] = []; //[blankSketch]; //
       this.templates[this.deckLength + (i)] = 'full-text';
-      this.headings[this.deckLength + (i)] = 'P5.SLIDES,INTERACTIVE PRESENTATIONS FOR THE WEB';
-      this.subheadings[this.deckLength + (i)] = '';
+      this.headings[this.deckLength + (i)] = 'P5.SLIDES';
+      this.subheadings[this.deckLength + (i)] = 'INTERACTIVE PRESENTATIONS FOR THE WEB';
     } else if (this.deckLength > 2) {
-      this.sketches[this.deckLength + (i)] = [];
-      this.templates[this.deckLength + (i)] = 'full-sketch';
-      this.headings[this.deckLength + (i)] = '';
-      this.subheadings[this.deckLength + (i)] = '';
+        this.sketches[this.deckLength + (i)] = [];
+        this.templates[this.deckLength + (i)] = 'full-sketch';
+        this.headings[this.deckLength + (i)] = '';
+        this.subheadings[this.deckLength + (i)] = '';
     } else if (this.deckLength == 2) {
       this.sketches[this.deckLength + (i)] = [perlinRect,perlinCircle,perlinRect,perlinCircle];
       this.templates[this.deckLength + (i)] = 'low-header';
@@ -496,12 +527,9 @@ p5.slideDeck.prototype.setSubheading = function(slide, subheading) {
   this.subheadings[slide - 1] = subheading;
 }
 
-
-
 p5.slideDeck.prototype.setMargins = function(marginSize) {
   // assign margin sizes to slides in SlideDeck object
-
-  MARGINS = marginSize;
+  this.margins = marginSize;
 }
 
 // HARDCODED NAVIGATION FUNCTION
@@ -553,15 +581,13 @@ function TO_PRESENTMODE() {
 
 // Button Functionality
 function ON_HOVER() {
-  this.style('background-color','green');
+ this.style('background-color','green');
   this.style('opacity','.3');
   this.style('color','white');
 }
 
 // Button Functionality
 function TEXTEDITBUTTONS_ADD() {
-
-  console.log('editing!')
 
   let b_height = this.height/4;
   // move text
@@ -587,7 +613,6 @@ function TEXTEDITBUTTONS_ADD() {
 
 function TEXTEDITBUTTONS_REMOVE() {
 
-  console.log('editing!')
   // move text
   MOVE_TEXT.hide();
 
@@ -640,12 +665,9 @@ function ADDSLIDE() {
 
 
 function NEWDECK() {
-  console.log(NUMDECKS);
   if (NUMDECKS == 0){
     TOGGLE = true;
   }
-  NUMDECKS++;
-  MAXSLIDE[NUMDECKS-1] = 0;
   NEWOBJS_ = new p5.slideDeck('Slide ' + NUMDECKS);
 }
 
@@ -664,8 +686,6 @@ function styleButton(button){
   button.style("background-color",color(random(0,100),random(25,95),random(35,65)));
   button.style("color","#fff");
   button.style("border","none");
-  // button.style("display","block");
-  // button.style("float","left");
 }
 
 function showDeckTabs(decks){
@@ -682,7 +702,7 @@ function showDeckTabs(decks){
 // update & show created tabs
   for (let i = 0; i < DECK_TABS.length; i++) {
     tabWidth = windowWidth/DECK_TABS.length;
-    DECK_TABS[i].size(tabWidth,SIDEBAR_SIZEY);
+    DECK_TABS[i].size(tabWidth,this.sidebar_y);
     DECK_TABS[i].position(tabWidth*(i),windowHeight);
     DECK_TABS[i].show;
   }
@@ -690,29 +710,26 @@ function showDeckTabs(decks){
 
 
 function touchStarted(){
-  if (TRACKED_TOUCHES == 'onstart') {
-    TRACKED_TOUCHES = [mouseX,mouseY];
-    console.log('touch started');
-  }
+    if (TRACKED_TOUCHES == 'onstart') {
+      TRACKED_TOUCHES = [mouseX,mouseY];
+    }
 }
 
 function touchEnded() {
   if (TRACKED_TOUCHES == 'waituntilended') {
     TRACKED_TOUCHES = 'onstart';
   } else if (TRACKED_TOUCHES.length == 2) {
-    console.log('drawing');
     TRACKED_TOUCHES.push(mouseX, mouseY);
-    drawFromTouch();
-    TRACKED_TOUCHES = '';
+    DRAWNOW = true;
   }
 }
 
-function drawFromTouch() {
+p5.slidesUI.prototype.drawFromTouch = function() {
   let field = null;
   switch (DRAW_FROM_TOUCH) {
     case 'header':
       field = createInput('Your header here');
-      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0],TRACKED_TOUCHES[1]);
+      field.position(this.sidebar_x + TRACKED_TOUCHES[0],TRACKED_TOUCHES[1]);
       field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
       field.style("background", "transparent");
       field.style("color", "white");
@@ -720,31 +737,31 @@ function drawFromTouch() {
       field.style('text-transform', 'uppercase');
       field.style('font-weight', 'bold');
       TRACKED_TOUCHES = '';
-      CREATED_TEXT[0].push(field);
+      this.created_text[0].push(field);
       break;
 
     case 'subheader':
       field = createInput('Your subheader here');
-      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.position(this.sidebar_x + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
       field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
       field.style("background", "transparent");
       field.style("color", "grey");
       field.style("border", "none");
       field.style('font-style', 'italic');
       TRACKED_TOUCHES = '';
-      CREATED_TEXT[1].push(field);
+      this.created_text[1].push(field);
       break;
 
 
     case 'body':
       field = createInput('Your body text here');
-      field.position(SIDEBAR_SIZEX + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
+      field.position(this.sidebar_x + TRACKED_TOUCHES[0], TRACKED_TOUCHES[1]);
       field.size(abs(TRACKED_TOUCHES[2] - TRACKED_TOUCHES[0]), abs(TRACKED_TOUCHES[3] - TRACKED_TOUCHES[1]));
       field.style("background", "transparent");
       field.style("color", "white");
       field.style("border", "none");
       TRACKED_TOUCHES = '';
-      CREATED_TEXT[2].push(field);
+      this.created_text[2].push(field);
       break;
 
 
@@ -752,12 +769,12 @@ function drawFromTouch() {
       let sketch_to_add = KaleidoParticles;
 
       // properly size sketches
-      X_BOUNDS = [SIDEBAR_SIZEX + TRACKED_TOUCHES[0], SIDEBAR_SIZEX +TRACKED_TOUCHES[2]];
+      X_BOUNDS = [this.sidebar_x + TRACKED_TOUCHES[0], this.sidebar_x +TRACKED_TOUCHES[2]];
       Y_BOUNDS = [TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]];
       let temp_ = new p5(sketch_to_add);
       CANVAS_TRANSPORTER.id('c' + (CANVAS_COUNTER + (1)));
-      DECKS[CURRENTDECK-1].canvases[CURRENTSLIDE - 1].push(CANVAS_TRANSPORTER);
-      DECKS[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].push(KaleidoParticles)
+      this.decks[this.currentDeck-1].canvases[CURRENTSLIDE - 1].push(CANVAS_TRANSPORTER);
+      this.decks[this.currentDeck - 1].sketches[CURRENTSLIDE - 1].push(KaleidoParticles)
 
       CANVAS_TRANSPORTER = null;
       CANVAS_COUNTER += 1;
@@ -767,13 +784,11 @@ function drawFromTouch() {
 }
 
 
-function textResizer() {
+p5.slidesUI.prototype.textResizer = function() {
 
-
-  for (let i = 0; i < CREATED_TEXT.length; i++) {
-    for (let j = 0; j < CREATED_TEXT[i].length; j++) {
+  for (let i = 0; i < this.created_text.length; i++) {
+    for (let j = 0; j < this.created_text[i].length; j++) {
       let font = 0;
-
       if (i == 0) {
         font = width / 10;
       } else if (i == 1) {
@@ -782,7 +797,7 @@ function textResizer() {
         font = width / 30;
       }
 
-      CREATED_TEXT[i][j].style("font-size", font + "px");
+      this.created_text[i][j].style("font-size", font + "px");
 
       // CREATED_TEXT[i][j].mouseOver(TEXTEDITBUTTONS_ADD);
       // CREATED_TEXT[i][j].mouseOut(TEXTEDITBUTTONS_REMOVE);

@@ -3,9 +3,11 @@
 //   data = loadJSON('assets/bubbles.json');
 // }
 
+let savedDecks;
+
 
 function setup() {
-  UI = new p5.slidesUI();
+  UI = new p5.slidesUI(savedDecks);
 }
 
 // START PRESENTATION LOOP
