@@ -1,13 +1,15 @@
 
-// function preload() {
-//   data = loadJSON('assets/bubbles.json');
-// }
 
-let savedDecks;
+let sketches = {};
+let myDecks = {};
 
+function preload() {
+ sketches = loadJSON('defaultSketches.json');
+ myDecks = loadJSON('myDecks.json');
+}
 
 function setup() {
-  UI = new p5.slidesUI(savedDecks);
+  UI = new p5.slidesUI(myDecks,sketches);
 }
 
 // START PRESENTATION LOOP
