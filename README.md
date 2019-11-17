@@ -1,10 +1,11 @@
 # [p5.js-slides](https://github.com/GarrettMFlynn/p5.js-slides)
-Create a Slide Deck using p5.js
+Create a slide deck for [p5.js](https://p5js.org/)
 
-Written by Garrett Flynn (gflynn@usc.edu) from the University of Southern California
+Written by Garrett Flynn (gflynn@usc.edu)
+University of Southern California
+
 
 **P5.slides** is a GUI for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
-
 
 **P5.slides** contains two objects:
  1. **p5.slidesUI()**: The GUI and deck holder
