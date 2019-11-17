@@ -332,12 +332,18 @@ p5.slidesUI.prototype.display = function() {
       TOGGLE_SAVE = false;
     }
 
+
+    // Elements to toggle
     if (TOGGLED == true) {
       this.toggleCanvases();
       this.iframeRemapper();
       this.inputRemapper();
-       this.toggleEditText();
-       this.togglePresentText();
+      this.toggleEditText();
+    }
+
+    this.togglePresentText();
+
+    if (TOGGLED == true) {
       TOGGLED = false;
       PREVKEY = "";
     }
@@ -350,8 +356,6 @@ p5.slidesUI.prototype.display = function() {
     text(CURRENTSLIDE + '/' + MAXSLIDE,width-15,height-10);
   }
 }
-
-
 
 
 // SLIDE DECK OBJECT
@@ -434,8 +438,6 @@ p5.slideDeck.prototype.slideTemplates = function(slide) {
     S.attribute('xRelative',S.position().x - SIDEBAR_SIZEX - this.margins);
     S.attribute('yRelative',S.position().y - this.margins);
     S = formatText(S,1);
-    S.style('vertical-align','text-top');
-    S.style('font-style', 'italic');
     S.hide();
     this.created_text[1][slide].push(S);
 
@@ -452,9 +454,6 @@ p5.slideDeck.prototype.slideTemplates = function(slide) {
     H.attribute('xRelative',H.position().x - SIDEBAR_SIZEX - this.margins);
     H.attribute('yRelative',H.position().y - this.margins);
     H = formatText(H,0);
-    H.style('vertical-align','text-bottom');
-    H.style('text-transform', 'uppercase');
-    H.style('font-weight', 'bold');
     H.hide();
 
     this.created_text[0][slide].push(H);
@@ -507,38 +506,6 @@ p5.slideDeck.prototype.addSlides = function(num) {
     this.slideTemplates(this.deckLength);
     this.deckLength += 1;
   }
-}
-
-p5.slideDeck.prototype.addSketches = function(slide, sketchVec) {
-  // assign sketches to slides in SlideDeck object
-
-
-  this.sketches[slide - 1] = sketchVec;
-}
-
-// SLIDE CHARACTERISTICS
-
-p5.slideDeck.prototype.setTemplate = function(slide, template) {
-  // assign headings to slides in SlideDeck object
-
-  this.templates[slide - 1] = template;
-}
-
-p5.slideDeck.prototype.setHeading = function(slide, heading) {
-  // assign headings to slides in SlideDeck object
-
-  this.headings[slide - 1] = heading;
-}
-
-p5.slideDeck.prototype.setSubheading = function(slide, subheading) {
-  // assign subheadings to slides in SlideDeck object
-
-  this.subheadings[slide - 1] = subheading;
-}
-
-p5.slideDeck.prototype.setMargins = function(marginSize) {
-  // assign margin sizes to slides in SlideDeck object
-  this.margins = marginSize;
 }
 
 // HARDCODED NAVIGATION FUNCTION
@@ -890,22 +857,13 @@ p5.slidesUI.prototype.textResizer = function() {
       for (let j = 0; j < this.decks[CURRENTDECK - 1].created_text[i][z].length; j++) {
         // j = specific bit of text
         let font = 0;
+        textSize(1);
+        let w = textWidth(this.decks[CURRENTDECK - 1].created_text[i][z][j].value());
+        let h = this.decks[CURRENTDECK - 1].created_text[i][z][j].size();
+        font = min([(MAIN_CANVAS.width/w)*.9,h.height]);
 
-        if (i == 0) {
-          font = 100
-        } else if (i == 1) {
-          font = 40
-        } else if (i == 2) {
-          font = 20
-        }
-        // textSize(1);
-        // let w = textWidth(this.decks[CURRENTDECK - 1].created_text[i][z][j].value());
-        // let h = this.decks[CURRENTDECK - 1].created_text[i][z][j].size();
-        // font = min([(MAIN_CANVAS.width/w)*.9,h.height]);
-        //
         this.decks[CURRENTDECK - 1].created_text[i][z][j].style("font-size", font + "px");
         this.decks[CURRENTDECK - 1].created_text[i][z][j].mousePressed(TOGGLE_TEXTBAR2);
-        //this.decks[CURRENTDECK - 1].created_text[i][z][j].mouseOut();
       }
     }
   }
@@ -1024,11 +982,11 @@ p5.slidesUI.prototype.toggleCanvases = function(){
           this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE - 1][c].show();
       }
   }
-  TOGGLED = false;
-  PREVKEY = "";
 }
 
 p5.slidesUI.prototype.toggleEditText = function() {
+
+  LOGGED_SIZES = [];
 
   if (EDITSIDEBAR.style('display') == 'block' || SKETCHBAR.style('display') == 'block') {
 
@@ -1069,28 +1027,45 @@ p5.slidesUI.prototype.togglePresentText = function(){
     let allText = this.decks[CURRENTDECK - 1].created_text;
 
     for (let text_iter = 0; text_iter < allText.length; text_iter++) {
-
       let textForSlide = allText[text_iter][CURRENTSLIDE - 1];
 
-      // hide previous text
-      if (PREVSLIDE != null) {
-        let text = allText[text_iter][PREVSLIDE - 1];
-        if (text !== undefined) {
-          for (let t = 0; t < text.length; t++) {
-            this.decks[CURRENTDECK - 1].created_text[text_iter][PREVSLIDE - 1][t].hide();
-          }
-        }
+      if (LOGGED_SIZES[text_iter] === undefined) {
+        LOGGED_SIZES[text_iter] = [];
       }
+
+      let currentText = null;
+      let size = null;
+      let i_s = null;
+      let padding = null
+      let paddingY = null
 
       // show preplaced text
       if (textForSlide !== undefined) {
        if (textForSlide.length != 0) {
          for (let t = 0; t < textForSlide.length; t++) {
-           this.decks[CURRENTDECK - 1].created_text[text_iter][CURRENTSLIDE - 1][t].show();
-           this.decks[CURRENTDECK - 1].created_text[text_iter][CURRENTSLIDE - 1][t].style('z-index', ((allText.length - text_iter) + 1));
+           currentText = this.decks[CURRENTDECK - 1].created_text[text_iter][CURRENTSLIDE - 1][t];
+           if (LOGGED_SIZES[text_iter].length == 0) {
+             LOGGED_SIZES[text_iter][t] = int(match(currentText.style("font-size"), "\\d+")[0]);
+           }
+           textFont(currentText.style('font-family'));
+           textSize(LOGGED_SIZES[text_iter][t]);
+           formatText(currentText,text_iter,true);
          }
        }
       }
+
+      if (TOGGLED) {
+        // hide previous text
+        if (PREVSLIDE != null) {
+          let text = allText[text_iter][PREVSLIDE - 1];
+          if (text !== undefined) {
+            for (let t = 0; t < text.length; t++) {
+              this.decks[CURRENTDECK - 1].created_text[text_iter][PREVSLIDE - 1][t].hide();
+            }
+          }
+        }
+      }
+
     }
   }
 }
@@ -1197,6 +1172,7 @@ p5.slidesUI.prototype.allGlobalVariables = function(set){
   } else if (set == 3){
     NUMDECKS = this.decks.length;
     MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
+    LOGGED_SIZES = [];
   }
 }
 
@@ -1367,22 +1343,55 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
   }
 
 
-  function formatText(text,type){
-  if (type == 0){
-    text.style('vertical-align','text-bottom');
-    text.style('text-transform', 'uppercase');
-    text.style('font-weight', 'bold');
-    text.style('z-index', 4);
-  }else if (type == 1) {
-    text.style('vertical-align','text-top');
-    text.style('font-style', 'italic');
-    text.style('z-index', 3);
-  }else if (type == 2) {
+  function formatText(t,type,flag) {
+    let i_s = null;
+    let padding = null;
+    let paddingY = null;
+    let val = null;
 
-  }
-    text.style('wrap','hard');
-    text.style('background-color','transparent');
-    text.style('color','white');
-    text.style('text-align','left');
-    return text
+    if (flag === undefined) {
+      t.style('wrap', 'hard');
+      t.style('background-color', 'transparent');
+      t.style('color', 'white');
+      t.style('text-align', 'left');
+      padding = t.height - int(match(t.style('font-size'), "\\d+")[0]);
+      console.log(padding);
+    } else {
+      textAlign(LEFT,TOP);
+      fill('white');
+      stroke('white');
+      i_s = t.height;
+      paddingY = i_s * .04;
+      padding = int(match(t.style('padding'), "\\d+")[0]);
+    }
+
+    if (type == 0) {
+      if (flag === undefined) {
+        t.style('vertical-align', 'text-bottom');
+        t.style('text-transform', 'uppercase');
+        t.style('font-weight', 'bold');
+        t.style('padding-top', padding);
+        t.style('z-index', 4);
+      } else {
+        textStyle(BOLD);
+        val = t.value();
+        text(val.toUpperCase(), t.x + padding, t.y + paddingY);
+      }
+    } else if (type == 1) {
+    if (flag === undefined) {
+      t.style('vertical-align', 'text-top');
+      t.style('font-style', 'italic');
+      t.style('z-index', 3);
+    } else {
+      textStyle(ITALIC);
+      text(t.value(),t.x+padding,t.y+paddingY);
+    }
+  } else if (type == 2) {
+
+      if (flag == true) {
+        text(t.value(), t.x + padding, t.y + paddingY);
+      }
+    }
+
+    return t
   }
