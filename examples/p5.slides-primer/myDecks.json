@@ -73,21 +73,25 @@
       }
     ],
     "deckLength": 4,
-    "margins": 12,
+    "margins": 22,
     "slide0": {
       "createdText": {
         "headers": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.6853448275862069",
+            "xRatio": "1",
+            "xRelative": "0",
+            "yRelative": "0",
+            "text": "P5.SLIDES"
           }
         },
         "subheaders": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.30028735632183906",
+            "xRatio": "1",
+            "xRelative": "0",
+            "yRelative": "493",
+            "text": "INTERACTIVE PRESENTATIONS FOR THE WEB"
           }
         }
       },
@@ -132,25 +136,30 @@
       "createdText": {
         "headers": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.1752873563218391",
+            "xRatio": "1",
+            "xRelative": "0",
+            "yRelative": "522",
+            "text": "Showcase Mode"
           }
         },
         "subheaders": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.09195402298850575",
+            "xRatio": "0.5",
+            "xRelative": "0",
+            "yRelative": "638",
+            "text": "Show off a single sketch"
           }
         }
       },
       "canvases": {
         "frame0": {
-          "height": 525,
-          "width": 192,
-          "x": 48,
-          "y": 12
+          "yRatio": "0.7405405405405405",
+          "xRatio": "0.9090909090909091",
+          "xRelative": "0",
+          "yRelative": "-22",
+          "url": "https://editor.p5js.org/gflynn/embed/GqaBRT1hi"
         }
       },
       "bColors": {
@@ -193,31 +202,37 @@
       "createdText": {
         "headers": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.1752873563218391",
+            "xRatio": "1",
+            "xRelative": "0",
+            "yRelative": "522",
+            "text": "Panel Mode"
           }
         },
         "subheaders": {
           "0": {
-            "height": 0,
-            "width": 0,
-            "x": 60
+            "yRatio": "0.09195402298850575",
+            "xRatio": "0.5",
+            "xRelative": "0",
+            "yRelative": "638",
+            "text": "Expand your visual repertoire"
           }
         }
       },
       "canvases": {
         "frame0": {
-          "height": 489,
-          "width": 72,
-          "x": 48,
-          "y": 30
+          "yRatio": "0.7405405405405405",
+          "xRatio": "0.4340909090909091",
+          "xRelative": "0",
+          "yRelative": "-22",
+          "url": "https://editor.p5js.org/gflynn/embed/3LLp5nyXP"
         },
         "frame1": {
-          "height": 477,
-          "width": 72,
-          "x": 168,
-          "y": 36
+          "yRatio": "0.7405405405405405",
+          "xRatio": "0.4340909090909091",
+          "xRelative": "209",
+          "yRelative": "-22",
+          "url": "https://editor.p5js.org/gflynn/embed/3LLp5nyXP"
         }
       },
       "bColors": {
@@ -258,7 +273,15 @@
     },
     "slide3": {
       "createdText": {},
-      "canvases": {},
+      "canvases": {
+        "frame0": {
+          "yRatio": "0.5962643678160919",
+          "xRatio": "0.4898989898989899",
+          "xRelative": "10",
+          "yRelative": "24",
+          "url": "https://editor.p5js.org/gflynn/embed/9HUV7T5IN"
+        }
+      },
       "bColors": {
         "mode": "hsl",
         "maxes": {
