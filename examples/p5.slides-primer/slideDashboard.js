@@ -9,7 +9,7 @@ function preload() {
 }
 
 function setup() {
-  UI = new p5.slidesUI(myDecks,sketches);
+  UI = new p5.slidesUI([],sketches);
 }
 
 // START PRESENTATION LOOP
