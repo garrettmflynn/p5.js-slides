@@ -92,7 +92,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   SIDEBAR.id("sidebar");
   SIDEBAR.size(SIDEBAR_SIZEX,height);
   SIDEBAR.position(0,0);
-  SIDEBAR.style("background-color",color(20));
+  SIDEBAR.style("background-color",'#282828');
   SIDEBAR.style('z-index', 10);
 
       // resize main canvas
@@ -104,7 +104,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   EDITSIDEBAR.parent("sidebar");
   EDITSIDEBAR.size(SIDEBAR_SIZEX,height);
   EDITSIDEBAR.position(0,0);
-  EDITSIDEBAR.style("background-color",color(20));
+  EDITSIDEBAR.style("background-color",'#282828');
   EDITSIDEBAR.style('z-index', 10);
 
   SKETCHBAR = createDiv();
@@ -112,7 +112,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   SKETCHBAR.parent("sidebar");
   SKETCHBAR.size(SIDEBAR_SIZEX,height);
   SKETCHBAR.position(0,0);
-  SKETCHBAR.style("background-color",color(20));
+  SKETCHBAR.style("background-color",'#282828');
   SKETCHBAR.style('z-index', 10);
   SKETCHBAR.hide();
 
@@ -121,7 +121,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   TEXTBAR1.parent("sidebar");
   TEXTBAR1.size(SIDEBAR_SIZEX,height);
   TEXTBAR1.position(0,0);
-  TEXTBAR1.style("background-color",color(20));
+  TEXTBAR1.style("background-color",'#282828');
   TEXTBAR1.style('z-index', 10);
   TEXTBAR1.hide();
 
@@ -130,7 +130,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   TEXTBAR2.parent("sidebar");
   TEXTBAR2.size(SIDEBAR_SIZEX,height);
   TEXTBAR2.position(0,0);
-  TEXTBAR2.style("background-color",color(20));
+  TEXTBAR2.style("background-color",'#282828');
   TEXTBAR2.style('z-index', 10);
   TEXTBAR2.hide();
 
@@ -139,7 +139,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   DECKBAR.parent("sidebar");
   DECKBAR.size(SIDEBAR_SIZEX,height);
   DECKBAR.position(0,0);
-  DECKBAR.style("background-color",color(20));
+  DECKBAR.style("background-color",'#282828');
   DECKBAR.style('z-index', 10);
   DECKBAR.hide();
 
@@ -148,7 +148,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   SHAPEBAR.parent("sidebar");
   SHAPEBAR.size(SIDEBAR_SIZEX,height);
   SHAPEBAR.position(0,0);
-  SHAPEBAR.style("background-color",color(20));
+  SHAPEBAR.style("background-color",'#282828');
   SHAPEBAR.style('z-index', 10);
   SHAPEBAR.hide();
 
@@ -158,6 +158,8 @@ p5.slidesUI.prototype.createSidebars = function(){
   EDIT_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   EDIT_BUTTON.style('z-index', 11);
   EDIT_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
+  EDIT_BUTTON.style('opacity','0');
+  EDIT_BUTTON.style('background-color','#eb7899');
   EDIT_BUTTON.hide();
   EDIT_BUTTON.mousePressed(this.editMode);
   EDIT_BUTTON.mouseOver(ON_HOVER);
@@ -166,10 +168,10 @@ p5.slidesUI.prototype.createSidebars = function(){
 // create "present mode" button
   PRESENT_BUTTON = createImg('icons/monitor.png');
   PRESENT_BUTTON.parent("editbar");
-  PRESENT_BUTTON.size(SIDEBAR_SIZEX/3,SIDEBAR_SIZEX/3);
-  PRESENT_BUTTON.style('padding-left',SIDEBAR_SIZEX/3 + 'px');
-  PRESENT_BUTTON.style('padding-right',SIDEBAR_SIZEX/3 + 'px');
-  styleButton(PRESENT_BUTTON);
+  PRESENT_BUTTON.size(2*SIDEBAR_SIZEX/3,2*SIDEBAR_SIZEX/3);
+  PRESENT_BUTTON.style('padding',SIDEBAR_SIZEX/6 + 'px');
+  PRESENT_BUTTON.style("border","none");
+  PRESENT_BUTTON.style('background-color','#e7425b');
   PRESENT_BUTTON.mousePressed(this.presentMode);
 
   // create new deck button
@@ -180,8 +182,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   VIEWDECKS_BUTTON.style('position','absolute');
   VIEWDECKS_BUTTON.style('left','0');
   VIEWDECKS_BUTTON.style('bottom','0');
-  VIEWDECKS_BUTTON.style("background-color",'#7e42f5');
-  VIEWDECKS_BUTTON.style("color","#ffffff");
+  VIEWDECKS_BUTTON.style("background-color",'#eb7899');
   VIEWDECKS_BUTTON.style("border","none");
   VIEWDECKS_BUTTON.mousePressed(TOGGLE_DECKBAR);
 
@@ -192,7 +193,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   NEWDECK_BUTTON.style('position','absolute');
   NEWDECK_BUTTON.style('left','0');
   NEWDECK_BUTTON.style('bottom','0');
-  styleButton(NEWDECK_BUTTON);
+  NEWDECK_BUTTON.style("border","none");
   NEWDECK_BUTTON.mousePressed(NEWDECK);
 
   // create add slides button
@@ -203,7 +204,8 @@ p5.slidesUI.prototype.createSidebars = function(){
   ADDSLIDE_BUTTON.style('position','absolute');
   ADDSLIDE_BUTTON.style('left',str((SIDEBAR_SIZEX/3)) + 'px');
   ADDSLIDE_BUTTON.style('bottom','0');
-  styleButton(ADDSLIDE_BUTTON);
+  ADDSLIDE_BUTTON.style("background-color",'#9f9498');
+  ADDSLIDE_BUTTON.style("border","none");
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
 
   // create button to add text to your slides
@@ -211,7 +213,8 @@ p5.slidesUI.prototype.createSidebars = function(){
   TEXT_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   TEXT_BUTTON.parent('editbar');
   TEXT_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
-  styleButton(TEXT_BUTTON);
+  TEXT_BUTTON.style("background-color",'#eb7899');
+  TEXT_BUTTON.style("border","none");
   TEXT_BUTTON.mousePressed(TOGGLE_TEXTBAR1);
 
   // create button to add text to your slides
@@ -219,26 +222,30 @@ p5.slidesUI.prototype.createSidebars = function(){
   SHAPE_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   SHAPE_BUTTON.parent('editbar');
   SHAPE_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
-  styleButton(SHAPE_BUTTON);
+  SHAPE_BUTTON.style("background-color",'#ebecec');
+  SHAPE_BUTTON.style("border","none");
   SHAPE_BUTTON.mousePressed(TOGGLE_SHAPEBAR);
 
-// create & display text types
+// create & display (text) types
+  cOptions = ['#eb7899','#ebecec'];
 
   // header text
   TEXT_TYPES = [];
   TEXT_TYPES[0] = createButton('Header');
   TEXT_TYPES[0].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[0].parent('textbar1');
-  styleButton(TEXT_TYPES[0]);
+  TEXT_TYPES[0].style("border","none");
   TEXT_TYPES[0].style('text-transform', 'uppercase');
   TEXT_TYPES[0].style('font-weight', 'bold');
+  TEXT_TYPES[0].style("background-color",cOptions[0]);
   TEXT_TYPES[0].mousePressed(TEXT_HEADER);
 
   // subheader text
   TEXT_TYPES[1] = createButton('Subheader');
   TEXT_TYPES[1].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[1].parent('textbar1');
-  styleButton(TEXT_TYPES[1]);
+  TEXT_TYPES[1].style("background-color",cOptions[1]);
+  TEXT_TYPES[1].style("border","none");
   TEXT_TYPES[1].style('font-style', 'italic');
   TEXT_TYPES[1].mousePressed(TEXT_SUBHEADER);
 
@@ -246,7 +253,8 @@ p5.slidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[2] = createButton('Body Text');
   TEXT_TYPES[2].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[2].parent('textbar1');
-  styleButton(TEXT_TYPES[2]);
+  TEXT_TYPES[2].style("background-color",cOptions[0]);
+  TEXT_TYPES[2].style("border","none");
   TEXT_TYPES[2].mousePressed(TEXT_BODY);
 
   // buttons to place sketches into the canvas
@@ -254,7 +262,8 @@ p5.slidesUI.prototype.createSidebars = function(){
   ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   ADDSKETCH_BUTTON.parent('editbar');
   ADDSKETCH_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
-  styleButton(ADDSKETCH_BUTTON);
+  ADDSKETCH_BUTTON.style("background-color",'#eb7899');
+  ADDSKETCH_BUTTON.style("border","none");
   ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
 
 
@@ -264,7 +273,8 @@ p5.slidesUI.prototype.createSidebars = function(){
     SKETCH_TABS[s] = createButton(this.loadedSketches[s][0]);
     SKETCH_TABS[s].attribute('url', this.loadedSketches[s][1]);
     SKETCH_TABS[s].id('sketchtab' + s);
-    styleButton(SKETCH_TABS[s]);
+    SKETCH_TABS[s].style("border","none");
+    SKETCH_TABS[s].style("background-color",cOptions[s%2]);
     SKETCH_TABS[s].mousePressed(SKETCH_CHOSEN);
     SKETCH_TABS[s].size(SIDEBAR_SIZEX, SIDEBAR_SIZEY);
     SKETCH_TABS[s].parent('sketchbar');
@@ -272,19 +282,18 @@ p5.slidesUI.prototype.createSidebars = function(){
 
   DRAW_BUTTON = createButton('Draw Now');
   DRAW_BUTTON.parent('sketchbar');
-  DRAW_BUTTON.size(SIDEBAR_SIZEX-2*SIDEBAR_SIZEY, SIDEBAR_SIZEY);
+  DRAW_BUTTON.size(2*SIDEBAR_SIZEX/3, SIDEBAR_SIZEX/6);
   DRAW_BUTTON.style('position','absolute');
   DRAW_BUTTON.style('left','0');
-  DRAW_BUTTON.style('bottom',str(SIDEBAR_SIZEY) + 'px');
-  DRAW_BUTTON.style("background-color",'#fca103');
-  DRAW_BUTTON.style("color","#ffffff");
+  DRAW_BUTTON.style('bottom',str(SIDEBAR_SIZEX/6) + 'px');
+  DRAW_BUTTON.style("background-color",'#afcad6');
   DRAW_BUTTON.style("border","none");
   DRAW_BUTTON.mousePressed(SKETCH_PLACEMENT);
 
   URL_INPUT = createInput('URL');
   URL_INPUT.id('url_input')
   URL_INPUT.parent('sketchbar');
-  URL_INPUT.size(SIDEBAR_SIZEX-2*SIDEBAR_SIZEY, SIDEBAR_SIZEY);
+  URL_INPUT.size(2*SIDEBAR_SIZEX/3, SIDEBAR_SIZEX/6);
   URL_INPUT.style('position','absolute');
   URL_INPUT.style("text-align","center");
   URL_INPUT.style('left','0');
@@ -300,8 +309,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   SAVE_BUTTON.style('position','absolute');
   SAVE_BUTTON.style('right','0');
   SAVE_BUTTON.style('bottom','0');
-  SAVE_BUTTON.style("background-color",'#427bf5');
-  SAVE_BUTTON.style("color","#ffffff");
+  SAVE_BUTTON.style("background-color",'#afcad6');
   SAVE_BUTTON.style("border","none");
   SAVE_BUTTON.mousePressed(SAVE_DECKS);
 
@@ -310,28 +318,32 @@ TEXT_TABS = [];
 TEXT_TABS[0] = createButton('Move Text');
 TEXT_TABS[0].parent('textbar2');
 TEXT_TABS[0].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
-styleButton(TEXT_TABS[0]);
+TEXT_TABS[0].style("background-color",cOptions[0]);
+TEXT_TABS[0].style("border","none");
 TEXT_TABS[0].mousePressed(BUTTON_CHOSEN);
 
   // create button to color text
 TEXT_TABS[1] = createButton('Color Text');
 TEXT_TABS[1].parent('textbar2');
 TEXT_TABS[1].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
-styleButton(TEXT_TABS[1]);
+TEXT_TABS[1].style("background-color",cOptions[1]);
+TEXT_TABS[1].style("border","none");
 TEXT_TABS[1].mousePressed(BUTTON_CHOSEN);
 
   // create button to scale text (box)
 TEXT_TABS[2] = createButton('Scale Text');
 TEXT_TABS[2].parent('textbar2');
 TEXT_TABS[2].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
-styleButton(TEXT_TABS[2]);
+TEXT_TABS[2].style("background-color",cOptions[0]);
+TEXT_TABS[2].style("border","none");
 TEXT_TABS[2].mousePressed(BUTTON_CHOSEN);
 
   // create button to animate text
 TEXT_TABS[3] = createButton('Animate Text');
 TEXT_TABS[3].parent('textbar2');
 TEXT_TABS[3].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
-styleButton(TEXT_TABS[3]);
+TEXT_TABS[3].style("background-color",cOptions[1]);
+TEXT_TABS[3].style("border","none");
 TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
 
 
@@ -341,7 +353,8 @@ TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
   SHAPE_TABS[0].parent('shapebar');
   SHAPE_TABS[0].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
   SHAPE_TABS[0].style('padding',SIDEBAR_SIZEX/16 + 'px');
-  styleButton(SHAPE_TABS[0]);
+  SHAPE_TABS[0].style("border","none");
+  SHAPE_TABS[0].style("background-color",cOptions[0]);
   SHAPE_TABS[0].mousePressed(SHAPE_ELLIPSE);
 
   // create button to create rectangle
@@ -349,7 +362,8 @@ TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
   SHAPE_TABS[1].parent('shapebar');
   SHAPE_TABS[1].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
   SHAPE_TABS[1].style('padding',SIDEBAR_SIZEX/16 + 'px');
-  styleButton(SHAPE_TABS[1]);
+  SHAPE_TABS[1].style("border","none");
+  SHAPE_TABS[1].style("background-color",cOptions[1]);
   SHAPE_TABS[1].mousePressed(SHAPE_RECT);
 
 
@@ -358,7 +372,8 @@ TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
   SHAPE_TABS[2].parent('shapebar');
   SHAPE_TABS[2].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
   SHAPE_TABS[2].style('padding',SIDEBAR_SIZEX/16 + 'px');
-  styleButton(SHAPE_TABS[2]);
+  SHAPE_TABS[2].style("border","none");
+  SHAPE_TABS[2].style("background-color",cOptions[0]);
   SHAPE_TABS[2].mousePressed(SHAPE_TRIANGLE);
 
 
@@ -367,7 +382,8 @@ TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
   SHAPE_TABS[3].parent('shapebar');
   SHAPE_TABS[3].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
   SHAPE_TABS[3].style('padding',SIDEBAR_SIZEX/16 + 'px');
-  styleButton(SHAPE_TABS[3]);
+  SHAPE_TABS[3].style("border","none");
+  SHAPE_TABS[3].style("background-color",cOptions[1]);
   SHAPE_TABS[3].mousePressed(SHAPE_ARROW);
 
 
@@ -379,8 +395,7 @@ TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
   GOBACK_BUTTON.style('position','absolute');
   GOBACK_BUTTON.style('left',str((2*SIDEBAR_SIZEX/3)) + 'px');
   GOBACK_BUTTON.style('bottom','0');
-  GOBACK_BUTTON.style("background-color",'#32cd32');
-  GOBACK_BUTTON.style("color","#ffffff");
+  GOBACK_BUTTON.style("background-color",'#9f9498');
   GOBACK_BUTTON.style("border","none");
   GOBACK_BUTTON.style('z-index', 11);
 
@@ -436,7 +451,7 @@ p5.slidesUI.prototype.display = function() {
 
 
     //define complementary colors for background and text
-    background(color(0, 0, 0));
+    background('#ffffff');
 
     if (TOGGLE_SAVE){
       this.saveSlides();
@@ -453,6 +468,7 @@ p5.slidesUI.prototype.display = function() {
     }
 
     this.togglePresentText();
+    this.toggleShapes();
 
     if (TOGGLED == true) {
       TOGGLED = false;
@@ -492,7 +508,7 @@ p5.slideDeck = function(name) {
   this.shapes = [];
   this.canvases = [];
   this.bColors = [];
-  this.colorOptions = [color(0,0,0), color(288,288,288)];
+  this.colorOptions = ['#ffffff', '#e7425b'];
 }
 
 // TEMPLATE CHARACTERISTICS
@@ -502,7 +518,6 @@ p5.slideDeck.prototype.slideTemplates = function(slide) {
   let template = this.templates[slide];
   let header = this.headings[slide];
   let subheader = this.subheadings[slide];
-  let textColor = color(0,0,0);
   let yRatio = null;
 
   // Determine header length for automatic sizing
@@ -612,11 +627,7 @@ p5.slideDeck.prototype.addSlides = function(num) {
       this.subheadings[this.deckLength ] = 'Expand your visual repertoire';
     }
 
-    // let options = [0,1];
-    // let choice = random(options);
-    let choice = 0;
-
-    this.bColors[this.deckLength] = this.colorOptions[choice];
+    this.bColors[this.deckLength] = this.colorOptions[0];
     this.slideTemplates(this.deckLength);
     this.deckLength += 1;
   }
@@ -668,15 +679,11 @@ p5.slidesUI.prototype.presentMode = function() {
 
 // Button Functionality
 function ON_HOVER() {
- this.style('background-color','green');
   this.style('opacity','.3');
-  this.style('color','white');
 }
 
 function OFF() {
-  this.style('background-color','transparent');
-  this.style('opacity','1');
-  this.style('color', 'transparent')
+  this.style('opacity','0');
 }
 
 function BACK_TO_SIDEBAR() {
@@ -730,12 +737,12 @@ function SKETCH_CHOSEN() {
   CHOSEN_SKETCH = this;
 
       this.style('border','solid');
-    this.style('border-color','#ffffff');
+    this.style('border-color','#aeaeae');
 }
 
 function BUTTON_CHOSEN() {
   this.style('border','solid');
-  this.style('border-color','#ffffff');
+  this.style('border-color','#aeaeae');
 }
 
 function TEXT_HEADER() {
@@ -821,15 +828,6 @@ function SWITCHDECK() {
   X_BOUNDS = [];
 }
 
-// Button Styling
-function styleButton(button){
-  colorMode(HSL,100);
-  button.style("background-color",color(random(0,100),random(25,95),random(35,65)));
-  button.style("color","#ffffff");
-  button.style("border","none");
-  //button.style('z-index', 10);
-}
-
 p5.slidesUI.prototype.showDeckTabs = function(decks){
   let tabDiff = (decks.length - DECK_TABS.length);
   // add new tabs if necessary
@@ -839,7 +837,7 @@ p5.slidesUI.prototype.showDeckTabs = function(decks){
     DECK_TABS[DECK_TABS.length-1].style('z-index', 9);
     DECK_TABS[DECK_TABS.length-1].parent('deckbar');
     DECK_TABS[DECK_TABS.length-1].size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-    styleButton(DECK_TABS[DECK_TABS.length-1]);
+    DECK_TABS[DECK_TABS.length-1].style("border","none");
   }
 }
 
@@ -880,7 +878,7 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.attribute('xRelative',field.position().x - SIDEBAR_SIZEX - MARGINS);
       field.attribute('yRelative',field.position().y - MARGINS);
       field.style("background", "transparent");
-      field.style("color", "white");
+      field.style("color", "#e7425b");
       field.style("border", "none");
       field.style('text-transform', 'uppercase');
       field.style('font-weight', 'bold');
@@ -900,7 +898,7 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.attribute('xRelative',field.position().x - SIDEBAR_SIZEX - MARGINS);
       field.attribute('yRelative',field.position().y - MARGINS);
       field.style("background", "transparent");
-      field.style("color", "grey");
+      field.style("color", "#6c6c6c");
       field.style("border", "none");
       field.style('font-style', 'italic');
       this.decks[CURRENTDECK - 1].created_text[1][CURRENTSLIDE-1].push(field);
@@ -920,7 +918,7 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.attribute('xRelative',field.position().x - SIDEBAR_SIZEX - MARGINS);
       field.attribute('yRelative',field.position().y - MARGINS);
       field.style("background", "transparent");
-      field.style("color", "white");
+      field.style("color", "#282828");
       field.style("border", "none");
       this.decks[CURRENTDECK - 1].created_text[2][CURRENTSLIDE-1].push(field);
       break;
@@ -938,7 +936,7 @@ p5.slidesUI.prototype.drawFromTouch = function() {
         SKETCH_TABS[i_] = createButton(this.loadedSketches[this.loadedSketches.length-1][0]);
         SKETCH_TABS[i_].attribute('url', CHOSEN_SKETCH.value());
         SKETCH_TABS[i_].id('sketchtab' + i_);
-        styleButton(SKETCH_TABS[i_]);
+        SKETCH_TABS[i_].style("border","none");
         SKETCH_TABS[i_].mousePressed(SKETCH_CHOSEN);
         SKETCH_TABS[i_].size(SIDEBAR_SIZEX, SIDEBAR_SIZEY);
         SKETCH_TABS[i_].parent('sketchbar');
@@ -969,18 +967,22 @@ p5.slidesUI.prototype.drawFromTouch = function() {
 
   let shapeTypes = ['ellipse','rectangle','triangle','arrow']
   if (shapeTypes.indexOf(DRAW_FROM_TOUCH) !== -1){
-    let relLC_X = (TRACKED_TOUCHES[0] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.width;
-    let relLC_Y = (TRACKED_TOUCHES[1] - MARGINS)/MAIN_CANVAS.height;
-    let relRC_X = (TRACKED_TOUCHES[2] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.height;
-    let relRC_Y = (TRACKED_TOUCHES[3] - MARGINS)/MAIN_CANVAS.width;
+    let relLC_X = min(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2])/MAIN_CANVAS.width;
+    let relLC_Y = min(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3])/MAIN_CANVAS.height;
+    let relRC_X = max(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2])/MAIN_CANVAS.height;
+    let relRC_Y = max(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3])/MAIN_CANVAS.width;
     if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] === undefined){
       this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] = [];
       if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] === undefined){
         this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] = [];
       }
     }
-    this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1].push(createVector(relLC_X,relLC_Y, relRC_X,relRC_Y));
-    console.log(this.decks[CURRENTDECK - 1].shapes);
+    let shape = {};
+    shape['relLC_X'] = relLC_X
+    shape['relLC_Y'] = relLC_Y
+    shape['relRC_X'] = relRC_X
+    shape['relRC_Y'] = relRC_Y
+    this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1].push(shape);
   }
   TRACKED_TOUCHES = '';
 }
@@ -1022,8 +1024,10 @@ function windowResized() {
 function drawShapeOutlines(){
   if (TRACKED_TOUCHES.length == 2) {
     noFill();
-    stroke('white');
-    let rects = ['heading', 'subheading', 'body', 'sketch', 'rectangle'];
+    let c = color('#afcad6');
+    strokeWeight(5);
+    stroke(c);
+    let rects = ['header', 'subheader', 'body', 'sketch', 'rectangle'];
     let x_shift = TRACKED_TOUCHES[0];
     let y_shift = TRACKED_TOUCHES[1];
     let x_diff = (mouseX - x_shift);
@@ -1041,22 +1045,15 @@ function drawShapeOutlines(){
       let d = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
       let x = (d / (sqrt(3)));
       rotate(a);
-      vertex(0, 0);
-      vertex(d, x);
-      vertex(d,- x);
+      triangle(0, 0,d, x,d, -x);
 
     } else if (DRAW_FROM_TOUCH == 'arrow') {
-      rotate(a+ PI/2);
+      rotate(a);
       let d_tot = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
       let d_tri = (d_tot / 3);
       let x_tri = (d_tri / (sqrt(3)));
-      vertex(0, 0);
-      vertex(- x_tri, - 2 * x_tri);
-      vertex(- x_tri / 2, - d_tri);
-      vertex(- x_tri / 2, - d_tot);
-      vertex(x_tri / 2, - d_tot);
-      vertex(x_tri / 2, - d_tri);
-      vertex(x_tri,- 2 * x_tri);
+      triangle(0, 0,d_tri, x_tri,d_tri, -x_tri);
+      rect(d_tri,x_tri/3,d_tot,-2*x_tri/3);
     }
     endShape(CLOSE);
     pop();
@@ -1064,65 +1061,52 @@ function drawShapeOutlines(){
 }
 
 
-p5.slidesUI.prototype.toggleShapes = function(){
-  let relLC_X = (TRACKED_TOUCHES[0] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.width;
-  let relLC_Y = (TRACKED_TOUCHES[1] - MARGINS)/MAIN_CANVAS.height;
-  let relRC_X = (TRACKED_TOUCHES[2] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.height;
-  let relRC_Y = (TRACKED_TOUCHES[3] - MARGINS)/MAIN_CANVAS.width;
-  if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] === undefined){
-    this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] = [];
-    if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] === undefined){
-      this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] = [];
+p5.slidesUI.prototype.toggleShapes = function() {
+
+  let c = color('#afcad6');
+  noStroke();
+  fill(c);
+
+  let keys = (Object.keys(this.decks[CURRENTDECK - 1].shapes));
+  let shapes = null;
+
+  for (k = 0; k < keys.length; k++) {
+    shapes = this.decks[CURRENTDECK - 1].shapes[keys[k]][CURRENTSLIDE - 1];
+    for (s = 0; s < shapes.length;s++) {
+      let lX = (shapes[s]['relLC_X']*MAIN_CANVAS.width) ;
+      let lY = (shapes[s]['relLC_Y']*MAIN_CANVAS.height);
+      let rX = (shapes[s]['relRC_X']*MAIN_CANVAS.width);
+      let rY = (shapes[s]['relRC_Y']*MAIN_CANVAS.height);
+    let x_diff = (rX - lX);
+    let y_diff = (rY - lY);
+    let a = atan2(y_diff, x_diff);
+
+    push();
+    translate(lX, lY);
+
+    if (keys[k] == 'rectangle') {
+      rect(0, 0, x_diff, y_diff);
+    } else if (keys[k] == 'ellipse') {
+      ellipse(x_diff / 2, y_diff / 2, abs(x_diff), abs(y_diff));
+    } else if (keys[k] == 'triangle') {
+      let d = int(dist(lX, lY, rX, rY));
+      let x = (d / (sqrt(3)));
+      rotate(a);
+      triangle(0, 0,d, x,d, -x);
+
+    } else if (keys[k] == 'arrow') {
+      rotate(a);
+      let d_tot = int(dist(lX, lY, rX, rY));
+      let d_tri = (d_tot / 3);
+      let x_tri = (d_tri / (sqrt(3)));
+      triangle(0, 0,d_tri, x_tri,d_tri, -x_tri);
+      rect(d_tri,x_tri/3,d_tot,-2*x_tri/3);
     }
+    endShape(CLOSE);
+    pop();
   }
-  this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1].push(createVector(relLC_X,relLC_Y, relRC_X,relRC_Y));
-
-  noFill();
-  stroke('white');
-  let rects = ['heading', 'subheading', 'body', 'sketch', 'rectangle'];
-  let x_shift = TRACKED_TOUCHES[0];
-  let y_shift = TRACKED_TOUCHES[1];
-  let x_diff = (mouseX - x_shift);
-  let y_diff = (mouseY - y_shift)
-  let a = atan2(y_diff,x_diff);
-
-  push();
-  translate(x_shift,y_shift);
-
-  if (rects.indexOf(DRAW_FROM_TOUCH) !== -1) {
-    rect(0, 0, x_diff, y_diff);
-  } else if (DRAW_FROM_TOUCH == 'ellipse') {
-    ellipse(x_diff / 2, y_diff / 2, abs(x_diff), abs(y_diff));
-  } else if (DRAW_FROM_TOUCH == 'triangle') {
-    let d = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
-    let x = (d / (sqrt(3)));
-    rotate(a);
-    vertex(0, 0);
-    vertex(d, x);
-    vertex(d,- x);
-
-  } else if (DRAW_FROM_TOUCH == 'arrow') {
-    rotate(a+ PI/2);
-    let d_tot = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
-    let d_tri = (d_tot / 3);
-    let x_tri = (d_tri / (sqrt(3)));
-    vertex(0, 0);
-    vertex(- x_tri, - 2 * x_tri);
-    vertex(- x_tri / 2, - d_tri);
-    vertex(- x_tri / 2, - d_tot);
-    vertex(x_tri / 2, - d_tot);
-    vertex(x_tri / 2, - d_tri);
-    vertex(x_tri,- 2 * x_tri);
-  }
-  endShape(CLOSE);
-  pop();
 }
-
-
-
-
 }
-
 
 
 
@@ -1549,12 +1533,9 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
     if (flag == false) {
       t.style('wrap', 'hard');
       t.style('background-color', 'transparent');
-      t.style('color', 'white');
       t.style('text-align', 'left');
     } else {
       textAlign(LEFT,TOP);
-      fill('white');
-      stroke('white');
       i_s = t.height;
       paddingY = i_s * .04;
       padding = int(match(t.style('padding'), "\\d+")[0]);
@@ -1564,9 +1545,13 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
       if (flag == false) {
         t.style('text-transform', 'uppercase');
         t.style('font-weight', 'bold');
+        t.style('color','#e7425b')
         t.style('z-index', 4);
       } else {
         textStyle(BOLD);
+        fill('#e7425b');
+        stroke('#e7425b');
+        strokeWeight(1);
         val = t.value();
         text(val.toUpperCase(), t.x + padding, t.y + paddingY);
       }
@@ -1574,14 +1559,23 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
     if (flag == false) {
       t.style('font-style', 'italic');
       t.style('z-index', 3);
+      t.style('color','#6c6c6c')
     } else {
+      fill('#6c6c6c');
+      stroke('#6c6c6c');
+      strokeWeight(1);
       textStyle(ITALIC);
       text(t.value(),t.x+padding,t.y+paddingY);
     }
   } else if (type == 2) {
 
       if (flag == true) {
+        fill('#282828');
+        stroke('#282828');
+        strokeWeight(1);
         text(t.value(), t.x + padding, t.y + paddingY);
+      } else{
+        t.style('color','#282828')
       }
     }
 
