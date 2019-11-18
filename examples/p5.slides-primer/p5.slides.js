@@ -45,22 +45,71 @@ p5.slidesUI = function(savedDecks,sketchesToLoad) {
   this.allGlobalVariables(3);
 }
 
+p5.slidesUI.prototype.allGlobalVariables = function(set){
+
+
+
+  if (set == 1) {
+    MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
+    TRACKED_TOUCHES = '';
+    if (this.margins !== undefined) {
+      MARGINS = this.margins;
+    } else {
+      MARGINS = null;
+    }
+  } else if (set == 2) {
+    if (this.margins !== undefined) {
+      MARGINS = this.margins;
+    }
+    CANVAS_TRANSPORTER = null;
+    TOGGLED = true;
+    TOGGLE_SAVE = false;
+    DRAW_FROM_TOUCH = '';
+    REVISION_TOGGLE = false;
+    CURRENTDECK = 1;
+    CURRENTSLIDE = 1;
+    PREVSLIDE = null;
+    PREVKEY = "";
+    Y_BOUNDS = [];
+    X_BOUNDS = [];
+    CHOSEN_SKETCH = null;
+    NEWOBJS_ = null;
+    DRAWNOW = false;
+
+    SIDEBAR_SIZEY = this.sidebar_y;
+    SIDEBAR_SIZEX = this.sidebar_x;
+  } else if (set == 3){
+    NUMDECKS = this.decks.length;
+    MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
+    LOGGED_SIZES = [];
+  }
+}
+
 
 p5.slidesUI.prototype.createSidebars = function(){
   // Create Sidebars
+  SIDEBAR = createDiv();
+  SIDEBAR.id("sidebar");
+  SIDEBAR.size(SIDEBAR_SIZEX,height);
+  SIDEBAR.position(0,0);
+  SIDEBAR.style("background-color",color(20));
+  SIDEBAR.style('z-index', 10);
+
+      // resize main canvas
+      MAIN_CANVAS.size(windowWidth-SIDEBAR_SIZEX,height);
+      MAIN_CANVAS.position(SIDEBAR_SIZEX,0);
+
   EDITSIDEBAR = createDiv();
-  EDITSIDEBAR.id("sidebar");
+  EDITSIDEBAR.id("editbar");
+  EDITSIDEBAR.parent("sidebar");
   EDITSIDEBAR.size(SIDEBAR_SIZEX,height);
   EDITSIDEBAR.position(0,0);
   EDITSIDEBAR.style("background-color",color(20));
   EDITSIDEBAR.style('z-index', 10);
 
-        // resize main canvas
-        MAIN_CANVAS.size(windowWidth-SIDEBAR_SIZEX,height);
-        MAIN_CANVAS.position(SIDEBAR_SIZEX,0);
-
   SKETCHBAR = createDiv();
   SKETCHBAR.id("sketchbar");
+  SKETCHBAR.parent("sidebar");
   SKETCHBAR.size(SIDEBAR_SIZEX,height);
   SKETCHBAR.position(0,0);
   SKETCHBAR.style("background-color",color(20));
@@ -69,6 +118,7 @@ p5.slidesUI.prototype.createSidebars = function(){
 
   TEXTBAR1 = createDiv();
   TEXTBAR1.id("textbar1");
+  TEXTBAR1.parent("sidebar");
   TEXTBAR1.size(SIDEBAR_SIZEX,height);
   TEXTBAR1.position(0,0);
   TEXTBAR1.style("background-color",color(20));
@@ -77,6 +127,7 @@ p5.slidesUI.prototype.createSidebars = function(){
 
   TEXTBAR2 = createDiv();
   TEXTBAR2.id("textbar2");
+  TEXTBAR2.parent("sidebar");
   TEXTBAR2.size(SIDEBAR_SIZEX,height);
   TEXTBAR2.position(0,0);
   TEXTBAR2.style("background-color",color(20));
@@ -85,6 +136,7 @@ p5.slidesUI.prototype.createSidebars = function(){
 
   DECKBAR = createDiv();
   DECKBAR.id("deckbar");
+  DECKBAR.parent("sidebar");
   DECKBAR.size(SIDEBAR_SIZEX,height);
   DECKBAR.position(0,0);
   DECKBAR.style("background-color",color(20));
@@ -104,7 +156,7 @@ p5.slidesUI.prototype.createSidebars = function(){
 
 // create "present mode" button
   PRESENT_BUTTON = createButton('Present Mode');
-  PRESENT_BUTTON.parent("sidebar");
+  PRESENT_BUTTON.parent("editbar");
   PRESENT_BUTTON.size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   styleButton(PRESENT_BUTTON);
   PRESENT_BUTTON.mousePressed(this.presentMode);
@@ -112,7 +164,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   // create new deck button
   VIEWDECKS_BUTTON = createButton('View Decks');
   VIEWDECKS_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  VIEWDECKS_BUTTON.parent('sidebar');
+  VIEWDECKS_BUTTON.parent('editbar');
   VIEWDECKS_BUTTON.style('position','absolute');
   VIEWDECKS_BUTTON.style('left','0');
   VIEWDECKS_BUTTON.style('bottom','0');
@@ -133,14 +185,14 @@ p5.slidesUI.prototype.createSidebars = function(){
   // create add slides button
   ADDSLIDE_BUTTON = createButton('Add Slide');
   ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  ADDSLIDE_BUTTON.parent('sidebar');
+  ADDSLIDE_BUTTON.parent('editbar');
   styleButton(ADDSLIDE_BUTTON);
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
 
   // create button to add text to your slides
   TEXT_BUTTON = createButton('Add Text');
   TEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  TEXT_BUTTON.parent('sidebar');
+  TEXT_BUTTON.parent('editbar');
   styleButton(TEXT_BUTTON);
   TEXT_BUTTON.mousePressed(TOGGLE_TEXTBAR1);
 
@@ -174,7 +226,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   // buttons to place sketches into the canvas
   ADDSKETCH_BUTTON = createButton('Draw Sketches');
   ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  ADDSKETCH_BUTTON.parent('sidebar');
+  ADDSKETCH_BUTTON.parent('editbar');
   styleButton(ADDSKETCH_BUTTON);
   ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
 
@@ -216,7 +268,7 @@ p5.slidesUI.prototype.createSidebars = function(){
   // create save button
   SAVE_BUTTON = createButton('Save Slides');
   SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  SAVE_BUTTON.parent('sidebar');
+  SAVE_BUTTON.parent('editbar');
   SAVE_BUTTON.style('position','absolute');
   SAVE_BUTTON.style('left','0');
   SAVE_BUTTON.style('bottom',str(SIDEBAR_SIZEY) + 'px');
@@ -314,7 +366,6 @@ p5.slidesUI.prototype.display = function() {
   // Resize Added Text
   if (this.decks.length != 0) {
 
-      // Does this work?
       this.textResizer();
 
     // add slides to existing decks if necessary
@@ -363,10 +414,10 @@ p5.slidesUI.prototype.display = function() {
 
 p5.slideDeck = function(name) {
 
-  if (MARGINS !== undefined){
+  if (MARGINS !== null){
     this.margins = MARGINS;
   } else {
-    this.margins = 0;
+    this.margins = width/24;;
   }
   this.name = name;
   this.sketches = []; // initialize the sketch array
@@ -399,61 +450,63 @@ p5.slideDeck.prototype.slideTemplates = function(slide) {
     // header
     let H = createElement('textarea',header);
     H.attribute('xRatio',1);
-    H.size(MAIN_CANVAS.width-2*this.margins-SIDEBAR_SIZEX,(2*MAIN_CANVAS.height/3)-this.margins);
-    H.position(SIDEBAR_SIZEX+this.margins,this.margins);
-    yRatio =  H.height/(MAIN_CANVAS.height- 2*this.margins);
+    H.size(MAIN_CANVAS.width-2*MARGINS,(2*MAIN_CANVAS.height/3)-MARGINS);
+    H.position(SIDEBAR_SIZEX+MARGINS,MARGINS);
+    yRatio =  H.height/(MAIN_CANVAS.height- 2*MARGINS);
     H.attribute('yRatio',yRatio);
     H.attribute('xRelative',H.position().x-SIDEBAR_SIZEX-MARGINS)
-    H.attribute('yRelative',H.position().y - this.margins);
-    H = formatText(H,0);
+    H.attribute('yRelative',H.position().y - MARGINS);
+    H = formatText(H,0,false);
     H.hide();
 
     this.created_text[0][slide].push(H);
 
    // subheader
     let S = createElement('textarea',subheader);
-    S.size(MAIN_CANVAS.width-2*this.margins-SIDEBAR_SIZEX,(MAIN_CANVAS.height/3)-2*this.margins);
-    S.position(SIDEBAR_SIZEX +this.margins, 2*height/3 + this.margins)
+    S.size(MAIN_CANVAS.width-2*MARGINS,(MAIN_CANVAS.height/3)-2*MARGINS);
+    S.position(SIDEBAR_SIZEX +MARGINS, 2*height/3 + MARGINS)
     S.attribute('xRatio',1);
-    yRatio =  S.height/(MAIN_CANVAS.height- 2*this.margins);
+    yRatio =  S.height/(MAIN_CANVAS.height- 2*MARGINS);
     S.attribute('yRatio',yRatio);
-    S.attribute('xRelative',S.position().x - SIDEBAR_SIZEX - this.margins);
-    S.attribute('yRelative',S.position().y - this.margins);
-    S = formatText(S,1);
+    S.attribute('xRelative',S.position().x - SIDEBAR_SIZEX - MARGINS);
+    S.attribute('yRelative',S.position().y - MARGINS);
+    S = formatText(S,1, false);
     S.hide();
+
+
     this.created_text[1][slide].push(S);
   }
 
   if (template == 'low-header') {
-    let ratio = 1/2;
-    let bothWidth = (MAIN_CANVAS.width-2*this.margins-SIDEBAR_SIZEX)*ratio;
-    let subheaderHeight = (MAIN_CANVAS.height - 2*this.margins)/12;
+    let ratio = 1;
+    let bothWidth = (MAIN_CANVAS.width-2*MARGINS)*ratio;
+    let subheaderHeight = (MAIN_CANVAS.height - 2*MARGINS)/12;
     // subheader
     let S = createElement('textarea',subheader);
     S.size(bothWidth,subheaderHeight);
     S.attribute('xRatio',ratio);
-    yRatio =  S.height/(MAIN_CANVAS.height- 2*this.margins);
+    yRatio =  S.height/(MAIN_CANVAS.height- 2*MARGINS);
     S.attribute('yRatio',yRatio);
-    S.position(SIDEBAR_SIZEX+this.margins, MAIN_CANVAS.height - subheaderHeight - this.margins);
-    S.attribute('xRelative',S.position().x - SIDEBAR_SIZEX - this.margins);
-    S.attribute('yRelative',S.position().y - this.margins);
-    S = formatText(S,1);
+    S.position(SIDEBAR_SIZEX+this.margins, MAIN_CANVAS.height - subheaderHeight - MARGINS);
+    S.attribute('xRelative',S.position().x - SIDEBAR_SIZEX - MARGINS);
+    S.attribute('yRelative',S.position().y - MARGINS);
+    S = formatText(S,1, false);
     S.hide();
     this.created_text[1][slide].push(S);
 
 // header
 
     let headerHeight = 2*subheaderHeight;
-    let headerPos = MAIN_CANVAS.height - subheaderHeight - headerHeight - this.margins;
+    let headerPos = MAIN_CANVAS.height - subheaderHeight - headerHeight - 3*MARGINS/2;
     let H = createElement('textarea',header);
     H.size(bothWidth,headerHeight);
     H.attribute('xRatio',1);
-    yRatio =  H.height/(MAIN_CANVAS.height- 2*this.margins);
+    yRatio =  H.height/(MAIN_CANVAS.height- 2*MARGINS);
     H.attribute('yRatio',yRatio);
-    H.position(SIDEBAR_SIZEX+this.margins,headerPos);
-    H.attribute('xRelative',H.position().x - SIDEBAR_SIZEX - this.margins);
-    H.attribute('yRelative',H.position().y - this.margins);
-    H = formatText(H,0);
+    H.position(SIDEBAR_SIZEX+MARGINS,headerPos);
+    H.attribute('xRelative',H.position().x - SIDEBAR_SIZEX - MARGINS);
+    H.attribute('yRelative',H.position().y - MARGINS);
+    H = formatText(H,0, false);
     H.hide();
 
     this.created_text[0][slide].push(H);
@@ -534,7 +587,7 @@ function keyReleased() {
 p5.slidesUI.prototype.editMode = function() {
   PRESENT_BUTTON.show();
   EDIT_BUTTON.hide();
-  EDITSIDEBAR.show();
+  SIDEBAR.show();
   MAIN_CANVAS.size(windowWidth - SIDEBAR_SIZEX, windowHeight);
   MAIN_CANVAS.position(SIDEBAR_SIZEX, 0);
   TOGGLED = true;
@@ -544,7 +597,7 @@ p5.slidesUI.prototype.editMode = function() {
 p5.slidesUI.prototype.presentMode = function() {
   PRESENT_BUTTON.hide();
   EDIT_BUTTON.show();
-  EDITSIDEBAR.hide();
+  SIDEBAR.hide();
   TOGGLED = true;
   PREVSLIDE = CURRENTSLIDE;
 
@@ -705,11 +758,6 @@ p5.slidesUI.prototype.showDeckTabs = function(decks){
     DECK_TABS[DECK_TABS.length-1].size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
     styleButton(DECK_TABS[DECK_TABS.length-1]);
   }
-
-// // update & show created decks
-//   for (let i = 0; i < DECK_TABS.length; i++) {
-//     DECK_TABS[i].size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-//   }
 }
 
 
@@ -849,6 +897,8 @@ p5.slidesUI.prototype.drawFromTouch = function() {
 
 p5.slidesUI.prototype.textResizer = function() {
 
+  let val = null;
+
   for (let i = 0; i < this.decks[CURRENTDECK - 1].created_text.length; i++) {
     // i = header / subheader / body
     let z = (CURRENTSLIDE - 1)
@@ -858,9 +908,10 @@ p5.slidesUI.prototype.textResizer = function() {
         // j = specific bit of text
         let font = 0;
         textSize(1);
-        let w = textWidth(this.decks[CURRENTDECK - 1].created_text[i][z][j].value());
+        val = this.decks[CURRENTDECK - 1].created_text[i][z][j].value();
+        let w = textWidth(val.toUpperCase());
         let h = this.decks[CURRENTDECK - 1].created_text[i][z][j].size();
-        font = min([(MAIN_CANVAS.width/w)*.9,h.height]);
+        font = min([(MAIN_CANVAS.width/w)*.9,h.height*.9]);
 
         this.decks[CURRENTDECK - 1].created_text[i][z][j].style("font-size", font + "px");
         this.decks[CURRENTDECK - 1].created_text[i][z][j].mousePressed(TOGGLE_TEXTBAR2);
@@ -957,9 +1008,9 @@ p5.slidesUI.prototype.toggleCanvases = function(){
       frame.attribute('src',this.loadedSketches[sketchesForSlide[i]][1]);
       frame.size(abs(dx*(i+1)-dx*(i)),abs(Y_BOUNDS[1]-Y_BOUNDS[0]));
       if (i == 0) {
-        frame.position(x_off + MARGINS + (dx*i), min(Y_BOUNDS));
+        frame.position(x_off + MARGINS + (dx*i), min(Y_BOUNDS) + MARGINS);
       } else {
-        frame.position(x_off + MARGINS + (spacing*i) + (dx*i), min(Y_BOUNDS));
+        frame.position(x_off + MARGINS + (spacing*i) + (dx*i), min(Y_BOUNDS) + MARGINS);
       }
       currentExtent = (MAIN_CANVAS.width);
       xRatio = frame.width/currentExtent;
@@ -974,6 +1025,7 @@ p5.slidesUI.prototype.toggleCanvases = function(){
       frame.style('scrolling',"no");
       frame.style('z-index', 1);
       frame.style('pointer-events','none');
+      frame.show();
       this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(frame);
     }
   } else {
@@ -988,7 +1040,7 @@ p5.slidesUI.prototype.toggleEditText = function() {
 
   LOGGED_SIZES = [];
 
-  if (EDITSIDEBAR.style('display') == 'block' || SKETCHBAR.style('display') == 'block') {
+  if (SIDEBAR.style('display') == 'block') {
 
   let allText = this.decks[CURRENTDECK - 1].created_text;
 
@@ -1023,7 +1075,7 @@ p5.slidesUI.prototype.toggleEditText = function() {
 
 p5.slidesUI.prototype.togglePresentText = function(){
 
-  if (EDITSIDEBAR.style('display') == 'none'&& SKETCHBAR.style('display') == 'none') {
+  if (SIDEBAR.style('display') == 'none') {
     let allText = this.decks[CURRENTDECK - 1].created_text;
 
     for (let text_iter = 0; text_iter < allText.length; text_iter++) {
@@ -1097,7 +1149,7 @@ let currentFrame = null;
       this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE - 1][i].size(currentExtent*xRatio, currentHeight*yRatio);
       xRel =  float(currentFrame.attribute('xRelative'));
       yRel = float(currentFrame.attribute('yRelative'));
-      if (EDITSIDEBAR.style('display') == 'none' && SKETCHBAR.style('display') == 'none') {
+      if (SIDEBAR.style('display') == 'none') {
         this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE - 1][i].position(MARGINS + xRel, yRel);
       } else {
         this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE - 1][i].position(MARGINS + SIDEBAR_SIZEX + xRel, yRel);
@@ -1129,7 +1181,7 @@ p5.slidesUI.prototype.inputRemapper = function() {
         text = this.decks[CURRENTDECK - 1].created_text[text_iter][CURRENTSLIDE - 1][t];
         yRatio = float(text.attribute('yRatio'));
         xRatio = float(text.attribute('xRatio'));
-        if (EDITSIDEBAR.style('display') == 'none' && SKETCHBAR.style('display') == 'none') {
+        if (SIDEBAR.style('display') == 'none') {
           xRel = MARGINS + float(text.attribute('xRelative'));
         } else {
           xRel = SIDEBAR_SIZEX + MARGINS + float(text.attribute('xRelative'));
@@ -1140,39 +1192,6 @@ p5.slidesUI.prototype.inputRemapper = function() {
 
       }
     }
-  }
-}
-
-p5.slidesUI.prototype.allGlobalVariables = function(set){
-
-
-
-  if (set == 1) {
-    MAIN_CANVAS = createCanvas(windowWidth, windowHeight);
-    TRACKED_TOUCHES = '';
-    MARGINS = this.margins;
-  } else if (set == 2) {
-    CANVAS_TRANSPORTER = null;
-    TOGGLED = true;
-    TOGGLE_SAVE = false;
-    DRAW_FROM_TOUCH = '';
-    REVISION_TOGGLE = false;
-    CURRENTDECK = 1;
-    CURRENTSLIDE = 1;
-    PREVSLIDE = null;
-    PREVKEY = "";
-    Y_BOUNDS = [];
-    X_BOUNDS = [];
-    CHOSEN_SKETCH = null;
-    NEWOBJS_ = null;
-    DRAWNOW = false;
-
-    SIDEBAR_SIZEY = this.sidebar_y;
-    SIDEBAR_SIZEX = this.sidebar_x;
-  } else if (set == 3){
-    NUMDECKS = this.decks.length;
-    MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
-    LOGGED_SIZES = [];
   }
 }
 
@@ -1298,7 +1317,7 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
               for (let box = 0; box < selectedText.length; box++) {
                 let textToPlace = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]][presentTypes[type]][selectedText[box]];
                 let thisText = createElement('textarea', textToPlace['text']);
-                thisText = formatText(thisText,ind_);
+                thisText = formatText(thisText,ind_, false);
                 thisText.attribute('xRatio', textToPlace['xRatio']);
                 thisText.attribute('yRatio', textToPlace['yRatio']);
                 thisText.attribute('xRelative', textToPlace['xRelative']);
@@ -1315,8 +1334,6 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
 
             let frames = Object.keys(JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]);
             for (let frame = 0; frame < frames.length; frame++) {
-              let ind_;
-
               let selectedFrame = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]][frames[frame]];
               let thisFrame = createElement('iframe');
               thisFrame.attribute('src',selectedFrame['url']);
@@ -1329,6 +1346,7 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
               thisFrame.style('scrolling',"no");
               thisFrame.style('z-index', 1);
               thisFrame.style('pointer-events','none');
+              thisFrame.hide();
               myDecks[deck].canvases[slideNum] = [];
               myDecks[deck].canvases[slideNum].push(thisFrame);
             }
@@ -1349,13 +1367,11 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
     let paddingY = null;
     let val = null;
 
-    if (flag === undefined) {
+    if (flag == false) {
       t.style('wrap', 'hard');
       t.style('background-color', 'transparent');
       t.style('color', 'white');
       t.style('text-align', 'left');
-      padding = t.height - int(match(t.style('font-size'), "\\d+")[0]);
-      console.log(padding);
     } else {
       textAlign(LEFT,TOP);
       fill('white');
@@ -1366,11 +1382,9 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
     }
 
     if (type == 0) {
-      if (flag === undefined) {
-        t.style('vertical-align', 'text-bottom');
+      if (flag == false) {
         t.style('text-transform', 'uppercase');
         t.style('font-weight', 'bold');
-        t.style('padding-top', padding);
         t.style('z-index', 4);
       } else {
         textStyle(BOLD);
@@ -1378,8 +1392,7 @@ p5.slidesUI.prototype.unpackJSON = function(JSON) {
         text(val.toUpperCase(), t.x + padding, t.y + paddingY);
       }
     } else if (type == 1) {
-    if (flag === undefined) {
-      t.style('vertical-align', 'text-top');
+    if (flag == false) {
       t.style('font-style', 'italic');
       t.style('z-index', 3);
     } else {

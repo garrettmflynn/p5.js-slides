@@ -73,12 +73,12 @@
       }
     ],
     "deckLength": 4,
-    "margins": 22,
+    "margins": 60,
     "slide0": {
       "createdText": {
         "headers": {
           "0": {
-            "yRatio": "0.6853448275862069",
+            "yRatio": "0.7055306427503737",
             "xRatio": "1",
             "xRelative": "0",
             "yRelative": "0",
@@ -87,10 +87,10 @@
         },
         "subheaders": {
           "0": {
-            "yRatio": "0.30028735632183906",
+            "yRatio": "0.2227204783258595",
             "xRatio": "1",
             "xRelative": "0",
-            "yRelative": "493",
+            "yRelative": "526",
             "text": "INTERACTIVE PRESENTATIONS FOR THE WEB"
           }
         }
@@ -136,29 +136,29 @@
       "createdText": {
         "headers": {
           "0": {
-            "yRatio": "0.1752873563218391",
+            "yRatio": "0.17638266068759342",
             "xRatio": "1",
             "xRelative": "0",
-            "yRelative": "522",
+            "yRelative": "472",
             "text": "Showcase Mode"
           }
         },
         "subheaders": {
           "0": {
-            "yRatio": "0.09195402298850575",
-            "xRatio": "0.5",
+            "yRatio": "0.09267563527653214",
+            "xRatio": "1",
             "xRelative": "0",
-            "yRelative": "638",
+            "yRelative": "613",
             "text": "Show off a single sketch"
           }
         }
       },
       "canvases": {
         "frame0": {
-          "yRatio": "0.7405405405405405",
-          "xRatio": "0.9090909090909091",
+          "yRatio": "0.679340937896071",
+          "xRatio": "0.9033333333333333",
           "xRelative": "0",
-          "yRelative": "-22",
+          "yRelative": "0",
           "url": "https://editor.p5js.org/gflynn/embed/GqaBRT1hi"
         }
       },
@@ -202,36 +202,36 @@
       "createdText": {
         "headers": {
           "0": {
-            "yRatio": "0.1752873563218391",
+            "yRatio": "0.17638266068759342",
             "xRatio": "1",
             "xRelative": "0",
-            "yRelative": "522",
+            "yRelative": "472",
             "text": "Panel Mode"
           }
         },
         "subheaders": {
           "0": {
-            "yRatio": "0.09195402298850575",
-            "xRatio": "0.5",
+            "yRatio": "0.09267563527653214",
+            "xRatio": "1",
             "xRelative": "0",
-            "yRelative": "638",
+            "yRelative": "613",
             "text": "Expand your visual repertoire"
           }
         }
       },
       "canvases": {
         "frame0": {
-          "yRatio": "0.7405405405405405",
-          "xRatio": "0.4340909090909091",
+          "yRatio": "0.679340937896071",
+          "xRatio": "0.42833333333333334",
           "xRelative": "0",
-          "yRelative": "-22",
+          "yRelative": "0",
           "url": "https://editor.p5js.org/gflynn/embed/3LLp5nyXP"
         },
         "frame1": {
-          "yRatio": "0.7405405405405405",
-          "xRatio": "0.4340909090909091",
-          "xRelative": "209",
-          "yRelative": "-22",
+          "yRatio": "0.679340937896071",
+          "xRatio": "0.42833333333333334",
+          "xRelative": "570",
+          "yRelative": "0",
           "url": "https://editor.p5js.org/gflynn/embed/3LLp5nyXP"
         }
       },
@@ -272,14 +272,33 @@
       }
     },
     "slide3": {
-      "createdText": {},
+      "createdText": {
+        "headers": {
+          "0": {
+            "yRatio": "0.2571001494768311",
+            "xRatio": "1.0231481481481481",
+            "xRelative": "-13",
+            "yRelative": "-33",
+            "text": "CustoM Slide"
+          }
+        },
+        "subheaders": {
+          "0": {
+            "yRatio": "0.07922272047832586",
+            "xRatio": "0.9629629629629629",
+            "xRelative": "8",
+            "yRelative": "140",
+            "text": "Does this work?"
+          }
+        }
+      },
       "canvases": {
         "frame0": {
-          "yRatio": "0.5962643678160919",
-          "xRatio": "0.4898989898989899",
-          "xRelative": "10",
-          "yRelative": "24",
-          "url": "https://editor.p5js.org/gflynn/embed/9HUV7T5IN"
+          "yRatio": "0.6920777279521674",
+          "xRatio": "1.05",
+          "xRelative": "-22",
+          "yRelative": "223",
+          "url": "https://editor.p5js.org/gflynn/embed/JabdDVj1V"
         }
       },
       "bColors": {
