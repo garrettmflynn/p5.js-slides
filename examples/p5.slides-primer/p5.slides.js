@@ -143,28 +143,40 @@ p5.slidesUI.prototype.createSidebars = function(){
   DECKBAR.style('z-index', 10);
   DECKBAR.hide();
 
+  SHAPEBAR = createDiv();
+  SHAPEBAR.id("shapebar");
+  SHAPEBAR.parent("sidebar");
+  SHAPEBAR.size(SIDEBAR_SIZEX,height);
+  SHAPEBAR.position(0,0);
+  SHAPEBAR.style("background-color",color(20));
+  SHAPEBAR.style('z-index', 10);
+  SHAPEBAR.hide();
+
 // create "edit mode" button
-  EDIT_BUTTON = createButton('Edit Mode');
+  EDIT_BUTTON = createImg('icons/edit-document.png');
   EDIT_BUTTON.position(0, 0);
-  EDIT_BUTTON.size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
+  EDIT_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   EDIT_BUTTON.style('z-index', 11);
-  styleButton(EDIT_BUTTON);
+  EDIT_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   EDIT_BUTTON.hide();
   EDIT_BUTTON.mousePressed(this.editMode);
   EDIT_BUTTON.mouseOver(ON_HOVER);
   EDIT_BUTTON.mouseOut(OFF);
 
 // create "present mode" button
-  PRESENT_BUTTON = createButton('Present Mode');
+  PRESENT_BUTTON = createImg('icons/monitor.png');
   PRESENT_BUTTON.parent("editbar");
-  PRESENT_BUTTON.size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
+  PRESENT_BUTTON.size(SIDEBAR_SIZEX/3,SIDEBAR_SIZEX/3);
+  PRESENT_BUTTON.style('padding-left',SIDEBAR_SIZEX/3 + 'px');
+  PRESENT_BUTTON.style('padding-right',SIDEBAR_SIZEX/3 + 'px');
   styleButton(PRESENT_BUTTON);
   PRESENT_BUTTON.mousePressed(this.presentMode);
 
   // create new deck button
-  VIEWDECKS_BUTTON = createButton('View Decks');
-  VIEWDECKS_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-  VIEWDECKS_BUTTON.parent('editbar');
+  VIEWDECKS_BUTTON = createImg('icons/slideshow-line.png');
+  VIEWDECKS_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
+  VIEWDECKS_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
+  VIEWDECKS_BUTTON.parent('editbar')
   VIEWDECKS_BUTTON.style('position','absolute');
   VIEWDECKS_BUTTON.style('left','0');
   VIEWDECKS_BUTTON.style('bottom','0');
@@ -173,9 +185,10 @@ p5.slidesUI.prototype.createSidebars = function(){
   VIEWDECKS_BUTTON.style("border","none");
   VIEWDECKS_BUTTON.mousePressed(TOGGLE_DECKBAR);
 
-  NEWDECK_BUTTON = createButton('Add Deck');
-  NEWDECK_BUTTON.size(SIDEBAR_SIZEX-2*SIDEBAR_SIZEY,2*SIDEBAR_SIZEY);
+  NEWDECK_BUTTON = createImg('icons/text-document-add.png');
+  NEWDECK_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   NEWDECK_BUTTON.parent('deckbar');
+  NEWDECK_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   NEWDECK_BUTTON.style('position','absolute');
   NEWDECK_BUTTON.style('left','0');
   NEWDECK_BUTTON.style('bottom','0');
@@ -183,18 +196,31 @@ p5.slidesUI.prototype.createSidebars = function(){
   NEWDECK_BUTTON.mousePressed(NEWDECK);
 
   // create add slides button
-  ADDSLIDE_BUTTON = createButton('Add Slide');
-  ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSLIDE_BUTTON = createImg('icons/plus-round-line.png');
+  ADDSLIDE_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   ADDSLIDE_BUTTON.parent('editbar');
+  ADDSLIDE_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
+  ADDSLIDE_BUTTON.style('position','absolute');
+  ADDSLIDE_BUTTON.style('left',str((SIDEBAR_SIZEX/3)) + 'px');
+  ADDSLIDE_BUTTON.style('bottom','0');
   styleButton(ADDSLIDE_BUTTON);
   ADDSLIDE_BUTTON.mousePressed(ADDSLIDE);
 
   // create button to add text to your slides
-  TEXT_BUTTON = createButton('Add Text');
-  TEXT_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  TEXT_BUTTON = createImg('icons/font.png');
+  TEXT_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   TEXT_BUTTON.parent('editbar');
+  TEXT_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   styleButton(TEXT_BUTTON);
   TEXT_BUTTON.mousePressed(TOGGLE_TEXTBAR1);
+
+  // create button to add text to your slides
+  SHAPE_BUTTON = createImg('icons/circle.png');
+  SHAPE_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
+  SHAPE_BUTTON.parent('editbar');
+  SHAPE_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
+  styleButton(SHAPE_BUTTON);
+  SHAPE_BUTTON.mousePressed(TOGGLE_SHAPEBAR);
 
 // create & display text types
 
@@ -224,9 +250,10 @@ p5.slidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[2].mousePressed(TEXT_BODY);
 
   // buttons to place sketches into the canvas
-  ADDSKETCH_BUTTON = createButton('Draw Sketches');
-  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  ADDSKETCH_BUTTON = createImg('icons/spark.png');
+  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   ADDSKETCH_BUTTON.parent('editbar');
+  ADDSKETCH_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   styleButton(ADDSKETCH_BUTTON);
   ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
 
@@ -266,12 +293,13 @@ p5.slidesUI.prototype.createSidebars = function(){
   URL_INPUT.mousePressed(SKETCH_CHOSEN);
 
   // create save button
-  SAVE_BUTTON = createButton('Save Slides');
-  SAVE_BUTTON.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
+  SAVE_BUTTON = createImg('icons/save.png');
+  SAVE_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
   SAVE_BUTTON.parent('editbar');
+  SAVE_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   SAVE_BUTTON.style('position','absolute');
-  SAVE_BUTTON.style('left','0');
-  SAVE_BUTTON.style('bottom',str(SIDEBAR_SIZEY) + 'px');
+  SAVE_BUTTON.style('right','0');
+  SAVE_BUTTON.style('bottom','0');
   SAVE_BUTTON.style("background-color",'#427bf5');
   SAVE_BUTTON.style("color","#ffffff");
   SAVE_BUTTON.style("border","none");
@@ -283,37 +311,73 @@ TEXT_TABS[0] = createButton('Move Text');
 TEXT_TABS[0].parent('textbar2');
 TEXT_TABS[0].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
 styleButton(TEXT_TABS[0]);
-TEXT_TABS[0].mousePressed(TEXT_CHOSEN);
+TEXT_TABS[0].mousePressed(BUTTON_CHOSEN);
 
   // create button to color text
 TEXT_TABS[1] = createButton('Color Text');
 TEXT_TABS[1].parent('textbar2');
 TEXT_TABS[1].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
 styleButton(TEXT_TABS[1]);
-TEXT_TABS[1].mousePressed(TEXT_CHOSEN);
+TEXT_TABS[1].mousePressed(BUTTON_CHOSEN);
 
   // create button to scale text (box)
 TEXT_TABS[2] = createButton('Scale Text');
 TEXT_TABS[2].parent('textbar2');
 TEXT_TABS[2].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
 styleButton(TEXT_TABS[2]);
-TEXT_TABS[2].mousePressed(TEXT_CHOSEN);
+TEXT_TABS[2].mousePressed(BUTTON_CHOSEN);
 
   // create button to animate text
 TEXT_TABS[3] = createButton('Animate Text');
 TEXT_TABS[3].parent('textbar2');
 TEXT_TABS[3].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
 styleButton(TEXT_TABS[3]);
-TEXT_TABS[3].mousePressed(TEXT_CHOSEN);
+TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
 
 
+// create tabs to signify shape creation
+  SHAPE_TABS = [];
+  SHAPE_TABS[0] = createImg('icons/circle.png');
+  SHAPE_TABS[0].parent('shapebar');
+  SHAPE_TABS[0].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
+  SHAPE_TABS[0].style('padding',SIDEBAR_SIZEX/16 + 'px');
+  styleButton(SHAPE_TABS[0]);
+  SHAPE_TABS[0].mousePressed(SHAPE_ELLIPSE);
 
-  GOBACK_BUTTON = createButton('Go Back');
-  GOBACK_BUTTON.size(2*SIDEBAR_SIZEY,2*SIDEBAR_SIZEY);
+  // create button to create rectangle
+  SHAPE_TABS[1] = createImg('icons/square.png');
+  SHAPE_TABS[1].parent('shapebar');
+  SHAPE_TABS[1].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
+  SHAPE_TABS[1].style('padding',SIDEBAR_SIZEX/16 + 'px');
+  styleButton(SHAPE_TABS[1]);
+  SHAPE_TABS[1].mousePressed(SHAPE_RECT);
+
+
+  // create button to create triangle
+  SHAPE_TABS[2] = createImg('icons/triangle-top-arrow.png');
+  SHAPE_TABS[2].parent('shapebar');
+  SHAPE_TABS[2].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
+  SHAPE_TABS[2].style('padding',SIDEBAR_SIZEX/16 + 'px');
+  styleButton(SHAPE_TABS[2]);
+  SHAPE_TABS[2].mousePressed(SHAPE_TRIANGLE);
+
+
+  // create button to create arrow
+  SHAPE_TABS[3] = createImg('icons/long-arrow-left.png');
+  SHAPE_TABS[3].parent('shapebar');
+  SHAPE_TABS[3].size(SIDEBAR_SIZEX/8,SIDEBAR_SIZEX/8);
+  SHAPE_TABS[3].style('padding',SIDEBAR_SIZEX/16 + 'px');
+  styleButton(SHAPE_TABS[3]);
+  SHAPE_TABS[3].mousePressed(SHAPE_ARROW);
+
+
+  GOBACK_BUTTON = createImg('icons/close-round.png');
+  GOBACK_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
+  GOBACK_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
   GOBACK_BUTTON.hide();
   GOBACK_BUTTON.mousePressed(BACK_TO_SIDEBAR);
   GOBACK_BUTTON.style('position','absolute');
-  GOBACK_BUTTON.style('left',str((SIDEBAR_SIZEX - 2*SIDEBAR_SIZEY)) + 'px');
+  GOBACK_BUTTON.style('left',str((2*SIDEBAR_SIZEX/3)) + 'px');
   GOBACK_BUTTON.style('bottom','0');
   GOBACK_BUTTON.style("background-color",'#32cd32');
   GOBACK_BUTTON.style("color","#ffffff");
@@ -326,11 +390,7 @@ DECK_TABS = [];
 // Interaction Checker
 p5.slidesUI.prototype.checkInteraction = function(){
 
-  if (TRACKED_TOUCHES.length == 2){
-    noFill();
-    stroke('white');
-    rect(TRACKED_TOUCHES[0],TRACKED_TOUCHES[1],mouseX-TRACKED_TOUCHES[0],mouseY-TRACKED_TOUCHES[1]);
-  }
+  drawShapeOutlines();
 
   if (NEWOBJS_ != null) {
     this.decks.push(NEWOBJS_);
@@ -429,6 +489,7 @@ p5.slideDeck = function(name) {
   this.created_text[0] = []; // header cache
   this.created_text[1] = []; // subheader cache
   this.created_text[2] = []; // body text cache
+  this.shapes = [];
   this.canvases = [];
   this.bColors = [];
   this.colorOptions = [color(0,0,0), color(288,288,288)];
@@ -618,27 +679,12 @@ function OFF() {
   this.style('color', 'transparent')
 }
 
-
-function TEXT_HEADER() {
-  TRACKED_TOUCHES = 'waituntilended';
-  DRAW_FROM_TOUCH = 'header';
-}
-
-function TEXT_SUBHEADER() {
-  TRACKED_TOUCHES = 'waituntilended';
-  DRAW_FROM_TOUCH = 'subheader';
-}
-
-function TEXT_BODY() {
-  TRACKED_TOUCHES = 'waituntilended';
-  DRAW_FROM_TOUCH = 'body';
-}
-
 function BACK_TO_SIDEBAR() {
   SKETCHBAR.hide();
   TEXTBAR1.hide();
   TEXTBAR2.hide();
   DECKBAR.hide();
+  SHAPEBAR.hide();
   EDITSIDEBAR.show();
   GOBACK_BUTTON.hide();
 }
@@ -668,6 +714,12 @@ function TOGGLE_DECKBAR() {
   GOBACK_BUTTON.show();
 }
 
+function TOGGLE_SHAPEBAR() {
+  SHAPEBAR.show();
+  EDITSIDEBAR.hide();
+  GOBACK_BUTTON.show();
+}
+
 function SKETCH_CHOSEN() {
 
   if (CHOSEN_SKETCH != null){
@@ -681,15 +733,46 @@ function SKETCH_CHOSEN() {
     this.style('border-color','#ffffff');
 }
 
-function SKETCH_PLACEMENT() {
-  TRACKED_TOUCHES = 'waituntilended';
-  DRAW_FROM_TOUCH = 'sketch';
-
-}
-
-function TEXT_CHOSEN() {
+function BUTTON_CHOSEN() {
   this.style('border','solid');
   this.style('border-color','#ffffff');
+}
+
+function TEXT_HEADER() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'header';
+}
+
+function TEXT_SUBHEADER() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'subheader';
+}
+
+function TEXT_BODY() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'body';
+}
+
+  function SKETCH_PLACEMENT() {
+    TRACKED_TOUCHES = 'waituntilended';
+    DRAW_FROM_TOUCH = 'sketch';
+  }
+
+function SHAPE_ELLIPSE() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'ellipse';
+}
+function SHAPE_RECT() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'rectangle';
+}
+function SHAPE_TRIANGLE() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'triangle';
+}
+function SHAPE_ARROW() {
+  TRACKED_TOUCHES = 'waituntilended';
+  DRAW_FROM_TOUCH = 'arrow';
 }
 
 p5.slidesUI.prototype.saveSlides = function() {
@@ -801,7 +884,6 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.style("border", "none");
       field.style('text-transform', 'uppercase');
       field.style('font-weight', 'bold');
-      TRACKED_TOUCHES = '';
       this.decks[CURRENTDECK - 1].created_text[0][CURRENTSLIDE-1].push(field);
       break;
 
@@ -821,7 +903,6 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.style("color", "grey");
       field.style("border", "none");
       field.style('font-style', 'italic');
-      TRACKED_TOUCHES = '';
       this.decks[CURRENTDECK - 1].created_text[1][CURRENTSLIDE-1].push(field);
       break;
 
@@ -841,7 +922,6 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       field.style("background", "transparent");
       field.style("color", "white");
       field.style("border", "none");
-      TRACKED_TOUCHES = '';
       this.decks[CURRENTDECK - 1].created_text[2][CURRENTSLIDE-1].push(field);
       break;
 
@@ -884,14 +964,25 @@ p5.slidesUI.prototype.drawFromTouch = function() {
       frame.style('z-index', 1);
       this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(frame);
       this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].push(this.loadedSketches.length-1);
-
-      EDITSIDEBAR.show();
-      SKETCHBAR.hide();
-      GOBACK_BUTTON.hide();
-
       break;
-
   }
+
+  let shapeTypes = ['ellipse','rectangle','triangle','arrow']
+  if (shapeTypes.indexOf(DRAW_FROM_TOUCH) !== -1){
+    let relLC_X = (TRACKED_TOUCHES[0] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.width;
+    let relLC_Y = (TRACKED_TOUCHES[1] - MARGINS)/MAIN_CANVAS.height;
+    let relRC_X = (TRACKED_TOUCHES[2] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.height;
+    let relRC_Y = (TRACKED_TOUCHES[3] - MARGINS)/MAIN_CANVAS.width;
+    if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] === undefined){
+      this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] = [];
+      if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] === undefined){
+        this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] = [];
+      }
+    }
+    this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1].push(createVector(relLC_X,relLC_Y, relRC_X,relRC_Y));
+    console.log(this.decks[CURRENTDECK - 1].shapes);
+  }
+  TRACKED_TOUCHES = '';
 }
 
 
@@ -928,20 +1019,108 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-// Add a blank sketch to your slide
-const blankSketch = (sketch) => {
-  sketch.w = width;
-  sketch.h = height;
+function drawShapeOutlines(){
+  if (TRACKED_TOUCHES.length == 2) {
+    noFill();
+    stroke('white');
+    let rects = ['heading', 'subheading', 'body', 'sketch', 'rectangle'];
+    let x_shift = TRACKED_TOUCHES[0];
+    let y_shift = TRACKED_TOUCHES[1];
+    let x_diff = (mouseX - x_shift);
+    let y_diff = (mouseY - y_shift)
+    let a = atan2(y_diff,x_diff);
 
-  sketch.setup = function() {
-    let myCanvas = sketch.createCanvas(sketch.w, sketch.h);
-    myCanvas.position(0, 0);
-    CANVAS_TRANSPORTER = myCanvas;
+    push();
+    translate(x_shift,y_shift);
+
+    if (rects.indexOf(DRAW_FROM_TOUCH) !== -1) {
+      rect(0, 0, x_diff, y_diff);
+    } else if (DRAW_FROM_TOUCH == 'ellipse') {
+      ellipse(x_diff / 2, y_diff / 2, abs(x_diff), abs(y_diff));
+    } else if (DRAW_FROM_TOUCH == 'triangle') {
+      let d = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
+      let x = (d / (sqrt(3)));
+      rotate(a);
+      vertex(0, 0);
+      vertex(d, x);
+      vertex(d,- x);
+
+    } else if (DRAW_FROM_TOUCH == 'arrow') {
+      rotate(a+ PI/2);
+      let d_tot = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
+      let d_tri = (d_tot / 3);
+      let x_tri = (d_tri / (sqrt(3)));
+      vertex(0, 0);
+      vertex(- x_tri, - 2 * x_tri);
+      vertex(- x_tri / 2, - d_tri);
+      vertex(- x_tri / 2, - d_tot);
+      vertex(x_tri / 2, - d_tot);
+      vertex(x_tri / 2, - d_tri);
+      vertex(x_tri,- 2 * x_tri);
+    }
+    endShape(CLOSE);
+    pop();
   }
+}
 
-  sketch.draw = function() {
 
+p5.slidesUI.prototype.toggleShapes = function(){
+  let relLC_X = (TRACKED_TOUCHES[0] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.width;
+  let relLC_Y = (TRACKED_TOUCHES[1] - MARGINS)/MAIN_CANVAS.height;
+  let relRC_X = (TRACKED_TOUCHES[2] - SIDEBAR_SIZEX - MARGINS)/MAIN_CANVAS.height;
+  let relRC_Y = (TRACKED_TOUCHES[3] - MARGINS)/MAIN_CANVAS.width;
+  if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] === undefined){
+    this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH] = [];
+    if (this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] === undefined){
+      this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1] = [];
+    }
   }
+  this.decks[CURRENTDECK - 1].shapes[DRAW_FROM_TOUCH][CURRENTSLIDE-1].push(createVector(relLC_X,relLC_Y, relRC_X,relRC_Y));
+
+  noFill();
+  stroke('white');
+  let rects = ['heading', 'subheading', 'body', 'sketch', 'rectangle'];
+  let x_shift = TRACKED_TOUCHES[0];
+  let y_shift = TRACKED_TOUCHES[1];
+  let x_diff = (mouseX - x_shift);
+  let y_diff = (mouseY - y_shift)
+  let a = atan2(y_diff,x_diff);
+
+  push();
+  translate(x_shift,y_shift);
+
+  if (rects.indexOf(DRAW_FROM_TOUCH) !== -1) {
+    rect(0, 0, x_diff, y_diff);
+  } else if (DRAW_FROM_TOUCH == 'ellipse') {
+    ellipse(x_diff / 2, y_diff / 2, abs(x_diff), abs(y_diff));
+  } else if (DRAW_FROM_TOUCH == 'triangle') {
+    let d = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
+    let x = (d / (sqrt(3)));
+    rotate(a);
+    vertex(0, 0);
+    vertex(d, x);
+    vertex(d,- x);
+
+  } else if (DRAW_FROM_TOUCH == 'arrow') {
+    rotate(a+ PI/2);
+    let d_tot = int(dist(TRACKED_TOUCHES[0], TRACKED_TOUCHES[1], mouseX, mouseY));
+    let d_tri = (d_tot / 3);
+    let x_tri = (d_tri / (sqrt(3)));
+    vertex(0, 0);
+    vertex(- x_tri, - 2 * x_tri);
+    vertex(- x_tri / 2, - d_tri);
+    vertex(- x_tri / 2, - d_tot);
+    vertex(x_tri / 2, - d_tot);
+    vertex(x_tri / 2, - d_tri);
+    vertex(x_tri,- 2 * x_tri);
+  }
+  endShape(CLOSE);
+  pop();
+}
+
+
+
+
 }
 
 
