@@ -1,22 +1,22 @@
-# [p5.js-slides](https://github.com/GarrettMFlynn/p5.js-slides)
-Create a slide deck for [p5.js](https://p5js.org/)
 
-Written by Garrett Flynn (gflynn@usc.edu)
-University of Southern California
+# [**p5.slides**](https://github.com/GarrettMFlynn/p5.js-slides)
+**p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
 
+ ![Gif Example](img/workflow.gif)
+ **Created by** Garrett Flynn (gflynn@usc.edu) at the University of Southern California
 
-**P5.slides** is a GUI for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
-
-**P5.slides** contains two objects:
- 1. **p5.slidesUI()**: The GUI and deck holder
- 2. **p5.slideDeck()**: Individual decks
  
- ## Download
- [Library Only](https://raw.githubusercontent.com/GarrettMFlynn/p5.js-slides/gh-pages/lib/p5.slides.js)
+ ## Getting Started
  
- ## Examples
+ ### Setup 
  
- ### Basic Sketch Format
+ 1. Link to the application in your HTML file:
+         
+         <script src="https://garrettmflynn.github.io/p5.js-slides/lib/p5.slides.js"></script>)
+         
+ 2. Paste the following code into your main sketch:
+        
+        
         let sketches = {};
         let myDecks = {};
           
@@ -36,9 +36,24 @@ University of Southern California
           UI.display();
           UI.checkInteraction();
         }
-        
+
+3. Use the GUI to start making slides!
+
+ ### Optional: Direct Download
+ [Library Only](https://raw.githubusercontent.com/GarrettMFlynn/p5.js-slides/gh-pages/lib/p5.slides.js)
+ 
+
+ ## Images
+ ![Showcase Example](/img/Showcase.png)
+ ![Panel Example](/img/Panels.png)
+ ![Custom Slide Example](img/Custom.png)
+ 
         
  ## Reference
+ 
+ **P5.slides** contains two objects:
+ 1. **p5.slidesUI()**: The GUI and deck holder
+ 2. **p5.slideDeck()**: Individual decks
  
  ### p5.slidesUI
  #### Methods
