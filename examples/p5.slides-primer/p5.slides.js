@@ -23,94 +23,153 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   this.text = null;
   this.font = null;
   this.color = color('#e7425b');
+  this.animation = null;
+  this.animatedObjects = [];
 }
 
-p5.PresentationAssets.prototype.display = function() {
+p5.PresentationAssets.prototype.display = function(animate) {
 
-  noStroke();
-  fill(this.color);
-        let lX = (this.relX * MAIN_CANVAS.width) + MARGINS;
-        let lY = (this.relY * MAIN_CANVAS.height) + MARGINS;
-        let w = this.relW * (MAIN_CANVAS.width-2*MARGINS);
-        let h = this.relH * (MAIN_CANVAS.height-2*MARGINS);
-        let a = atan2(h, w);
+  if (animate === undefined){
+    animate = false;
+  }
+
+  let lX = (this.relX * MAIN_CANVAS.width) + MARGINS;
+  let lY = (this.relY * MAIN_CANVAS.height) + MARGINS;
+  let w = this.relW * (MAIN_CANVAS.width - 2 * MARGINS);
+  let h = this.relH * (MAIN_CANVAS.height - 2 * MARGINS);
+  let a = atan2(h, w);
+
+  push();
+  translate(lX, lY);
+
+  let shapes = ['ellipse', 'rectangle', 'triangle', 'arrow'];
+  let texts = ['header', 'subheader', 'body'];
+  if (shapes.indexOf(this.type) !== -1) {
+    noStroke();
+    fill(this.color);
+
+    switch(this.type) {
+      case ('rectangle'):
+        rect(0, 0, w, h);
+        break;
+
+      case ('ellipse'):
+        ellipse(w / 2, h / 2, abs(w), abs(h));
+        break;
+
+      case ('triangle'):
+        let d = int(dist(lX, lY, abs(lX + w), abs(lY + h)));
+        let x = (d / (sqrt(3)));
+        rotate(a);
+        triangle(0, 0, d, x, d, -x);
+        break;
 
 
-  let types = ['header', 'subheader', 'body'];
-  if (types.indexOf(this.type) !== -1) {
+      case ('arrow'):
+        rotate(a);
+        let d_tot = int(dist(lX, lY, lX + w, lY + h));
+        let d_tri = (d_tot / 3);
+        let x_tri = (d_tri / (sqrt(3)));
+        triangle(0, 0, d_tri, x_tri, d_tri, -x_tri);
+        rect(d_tri, x_tri / 3, d_tot, -2 * x_tri / 3);
+        break;
+    }
+  } else if (texts.indexOf(this.type) !== -1) {
+
+    switch (this.type) {
+      case('header'):
+        textAlign(LEFT, TOP);
+        textStyle(BOLD);
+        fill('#e7425b');
+        stroke('#e7425b');
+        strokeWeight(1);
+        break;
+
+
+      case ('subheader'):
+        textAlign(LEFT, TOP);
+        fill('#6c6c6c');
+        stroke('#6c6c6c');
+        strokeWeight(1);
+        textStyle(ITALIC);
+        break;
+
+
+      case ('body'):
+        textStyle(NORMAL);
+        textAlign(LEFT, TOP);
+        fill('#282828');
+        stroke('#282828');
+        break;
+    }
+
+    let t = null;
     let tW = null;
-    if (this.type == 'header'){
-      tW = textWidth(this.type.toUpperCase());
-      this.fontSize = min([(w/tW)*.8,h*.8]);
-    } else{
-      tW = textWidth(this.type);
-      this.fontSize = min([(w/tW)*.8,h*.8]);
+    if (this.type == 'header') {
+      t = this.text.toUpperCase()
+      tW = textWidth(t);
+      this.fontSize = min([(w / tW) * .8, h * .8]);
+      textFont(FONTS[0]);
+    } else {
+      t = this.text;
+      tW = textWidth(t);
+      this.fontSize = min([(w / tW) * .8, h * .8]);
+      textFont(this.font);
+    }
+    textSize(this.fontSize);
+
+    if (animate == false || this.animation == null) {
+      text(t, 0, 0);
+      this.animatedObjects = [];
     }
   }
 
-        push();
-        translate(lX, lY);
+  pop();
 
-        switch (this.type) {
-          case ('rectangle'):
-            rect(0, 0, w, h);
-            break;
-
-          case ('ellipse'):
-            ellipse(w / 2, h / 2, abs(w), abs(h));
-            break;
-
-          case ('triangle'):
-            let d = int(dist(lX, lY, abs(lX + w), abs(lY + h)));
-            let x = (d / (sqrt(3)));
-            rotate(a);
-            triangle(0, 0, d, x, d, -x);
-            break;
-
-
-          case ('arrow'):
-            rotate(a);
-            let d_tot = int(dist(lX, lY, lX + w, lY + h));
-            let d_tri = (d_tot / 3);
-            let x_tri = (d_tri / (sqrt(3)));
-            triangle(0, 0, d_tri, x_tri, d_tri, -x_tri);
-            rect(d_tri, x_tri / 3, d_tot, -2 * x_tri / 3);
-            break;
-
-
-          case ('header'):
-            textAlign(LEFT, TOP);
-            textStyle(BOLD);
-            fill('#e7425b');
-            stroke('#e7425b');
-            strokeWeight(1);
-            textFont(this.font);
-            textSize(this.fontSize);
-            text(this.text.toUpperCase(), 0,0);
-            break;
-
-
-          case ('subheader'):
-            textAlign(LEFT, TOP);
-            fill('#6c6c6c');
-            stroke('#6c6c6c');
-            strokeWeight(1);
-            textStyle(ITALIC);
-            textFont(this.font);
-            textSize(this.fontSize);
-            text(this.text, 0,0);
-            break;
-
-
-          case ('body'):
-            textAlign(LEFT, TOP);
-            fill('#282828');
-            stroke('#282828');
-            textSize(this.fontSize);
-            text(this.text, 0,0);
-            break;
+  // do animations
+    let t = null;
+    switch (this.animation) {
+      case ('particles'):
+        if (animate == true && this.animatedObjects.length == 0) {
+          if (this.type == 'header') {
+            t = this.text.toUpperCase();
+          } else {
+            t = this.text;
+          }
+          textAlign(LEFT, TOP);
+          this.animatedObjects = FONTS[0].textToPoints(t, lX, lY+this.fontSize, this.fontSize);
+        } else if (animate == true && this.animatedObjects.length != 0){
+          this.particleDraw();
+          console.log('drawing');
         }
-        pop();
+    }
+  }
+
+
+p5.PresentationAssets.prototype.particleDraw = function() {
+  for (let p = 0; p < this.animatedObjects.length; p++) {
+
+    // Initialize particle variables
+    if (this.animatedObjects[p].noiseStart === undefined){
+      this.animatedObjects[p].noiseStart = random(0,1000);
+    }
+    if (this.animatedObjects[p].a === undefined){
+      this.animatedObjects[p].a = .5;
+    }
+    if (this.animatedObjects[p].v === undefined){
+      this.animatedObjects[p].v = 0;
+    }
+
+    ellipse(this.animatedObjects[p].x,this.animatedObjects[p].y,(this.relH * (MAIN_CANVAS.height - 2 * MARGINS))/50);
+
+
+    this.animatedObjects[p].v += this.animatedObjects[p].a;
+    this.animatedObjects[p].y += this.animatedObjects[p].v;
+
+    if (this.animatedObjects[p].y >= MAIN_CANVAS.height){
+      this.animatedObjects[p].v = -(1*this.animatedObjects[p].v/3);
+    }
+  }
 }
 
 
@@ -174,18 +233,26 @@ p5.SlidesUI.prototype.allGlobalVariables = function(set){
     CURRENTDECK = 1;
     CURRENTSLIDE = 1;
     PREVSLIDE = null;
-    PREVKEY = "";
     Y_BOUNDS = [];
     X_BOUNDS = [];
     TOGGLED = true;
-    CHOSEN_SKETCH = null;
+    CHOSEN_OBJ = null;
     NEWOBJS_ = null;
     DRAWNOW = false;
     TEXTCOUNT = 0;
 
+    // fonts
+    FONTS_2 = createElement('link');
+    FONTS_2.attribute('href','https://fonts.googleapis.com/css?family=Inconsolata:400,700&display=swap');
+    FONTS_2.attribute('rel','stylesheet');
+    FONTS = [loadFont('fonts/Inconsolata-Bold.otf'), loadFont('fonts/Inconsolata-Regular.otf')];
+
     SIDEBAR_SIZEY = height/20;;
-    SIDEBAR_SIZEX = width/6;;
+    SIDEBAR_SIZEX = width/6;
+
+    START_ANIMATION = [];
   } else if (set == 3){
+    DECKS = this.decks;
     NUMDECKS = this.decks.length;
     MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
     LOGGED_SIZES = [];
@@ -233,10 +300,8 @@ p5.SlidesUI.prototype.createSidebars = function(){
 
   TEXTBAR2 = createDiv();
   TEXTBAR2.id("textbar2");
-  TEXTBAR2.parent("sidebar");
-  TEXTBAR2.size(SIDEBAR_SIZEX,height);
-  TEXTBAR2.position(0,0);
-  TEXTBAR2.style("background-color",'#282828');
+  TEXTBAR2.size(SIDEBAR_SIZEX,SIDEBAR_SIZEX/4);
+  TEXTBAR2.style("background-color",'transparent');
   TEXTBAR2.style('z-index', 10);
   TEXTBAR2.hide();
 
@@ -354,13 +419,11 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[0].id('headerbutton')
   TEXT_TYPES[0].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[0].parent('textbar1');
-  TEXT_TYPES[0].style('text-transform', 'uppercase');
-  TEXT_TYPES[0].style('border', 'none');
-  TEXT_TYPES[0].style("box-sizing","border-box");
-  TEXT_TYPES[0].style('font-weight', 'bold');
-  TEXT_TYPES[0].style('color', '#282828');
+  TEXT_TYPES[0] = formatAllText(TEXT_TYPES[0]);
+  TEXT_TYPES[0] = formatHeader(TEXT_TYPES[0]);
   TEXT_TYPES[0].style('font-size', str(2*SIDEBAR_SIZEY/3) + 'px');
-  TEXT_TYPES[0].style("background-color",cOptions[0]);
+  TEXT_TYPES[0].style("background-color",cOptions[1]);
+  TEXT_TYPES[0].style("border",'none');
   TEXT_TYPES[0].mousePressed(TEXT_HEADER);
 
   // subheader text
@@ -368,12 +431,11 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[1].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[1].id('subheaderbutton')
   TEXT_TYPES[1].parent('textbar1');
-  TEXT_TYPES[1].style('border', 'none');
-  TEXT_TYPES[1].style("box-sizing","border-box");
-  TEXT_TYPES[1].style("background-color",cOptions[1]);
-  TEXT_TYPES[1].style('color', '#282828');
+  TEXT_TYPES[1] = formatAllText(TEXT_TYPES[1]);
+  TEXT_TYPES[1] = formatSubheader(TEXT_TYPES[1]);
+  TEXT_TYPES[1].style("background-color",cOptions[0]);
+  TEXT_TYPES[1].style("border",'none');
   TEXT_TYPES[1].style('font-size', str(2*SIDEBAR_SIZEY/3) + 'px');
-  TEXT_TYPES[1].style('font-style', 'italic');
   TEXT_TYPES[1].mousePressed(TEXT_SUBHEADER);
 
   // body text
@@ -381,11 +443,11 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[2].size(SIDEBAR_SIZEX,2*SIDEBAR_SIZEY);
   TEXT_TYPES[1].id('bodybutton')
   TEXT_TYPES[2].parent('textbar1');
-  TEXT_TYPES[2].style('border', 'none');
-  TEXT_TYPES[2].style("box-sizing","border-box");
-  TEXT_TYPES[2].style('color', '#282828');
+  TEXT_TYPES[2] = formatAllText(TEXT_TYPES[2]);
+  TEXT_TYPES[2] = formatBody(TEXT_TYPES[2]);
   TEXT_TYPES[2].style('font-size', str(2*SIDEBAR_SIZEY/3) + 'px');
-  TEXT_TYPES[2].style("background-color",cOptions[0]);
+  TEXT_TYPES[2].style("background-color",cOptions[1]);
+  TEXT_TYPES[2].style("border",'none');
   TEXT_TYPES[2].mousePressed(TEXT_BODY);
 
   // buttons to place sketches into the canvas
@@ -411,7 +473,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
     SKETCH_TABS[s].position(0,(s)*y_iter);
     SKETCH_TABS[s].style("box-sizing","border-box");
     //SKETCH_TABS[s].style("background-color",cOptions[s%2]);
-    SKETCH_TABS[s].mousePressed(SKETCH_CHOSEN);
+    SKETCH_TABS[s].mousePressed(OBJ_CHOSEN);
     SKETCH_TABS[s].size(5*SIDEBAR_SIZEX/6, y_iter);
     SKETCH_TABS[s].parent('sketchbar');
   }
@@ -423,7 +485,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
   SKETCH_TABS[l].size(5*SIDEBAR_SIZEX/6, y_iter);
   SKETCH_TABS[l].style("text-align","center");
   SKETCH_TABS[l].style("box-sizing","border-box");
-  SKETCH_TABS[l].mousePressed(SKETCH_CHOSEN);
+  SKETCH_TABS[l].mousePressed(OBJ_CHOSEN);
 
   SKETCH_TABS[l+1] = createImg('icons/object-selected.png');
   SKETCH_TABS[l+1].parent('sketchbar');
@@ -449,34 +511,46 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_TABS = [];
   TEXT_TABS[0] = createImg('icons/cross-arrows.png');
   TEXT_TABS[0].parent('textbar2');
-  TEXT_TABS[0].size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
-  TEXT_TABS[0].style('padding',SIDEBAR_SIZEX/12 + 'px');
+  TEXT_TABS[0].id('move');
+  TEXT_TABS[0].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  //TEXT_TABS[0].style('padding',SIDEBAR_SIZEX/6 + 'px');
+  TEXT_TABS[0].style("box-sizing","border-box");
+  TEXT_TABS[0].style("opacity",.6);
   TEXT_TABS[0].style("background-color",cOptions[0]);
-  TEXT_TABS[0].mousePressed(BUTTON_CHOSEN);
+  TEXT_TABS[0].mousePressed(OBJ_CHOSEN);
 
   // create button to color text
   TEXT_TABS[1] = createImg('icons/color-fill-tool.png');
   TEXT_TABS[1].parent('textbar2');
-  TEXT_TABS[1].size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
-  TEXT_TABS[1].style('padding',SIDEBAR_SIZEX/12 + 'px');
+  TEXT_TABS[1].id('color');
+  TEXT_TABS[1].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  TEXT_TABS[1].style("box-sizing","border-box");
+  TEXT_TABS[1].style("opacity",.6);
+  //TEXT_TABS[1].style('padding',SIDEBAR_SIZEX/6 + 'px');
   TEXT_TABS[1].style("background-color",cOptions[1]);
-  TEXT_TABS[1].mousePressed(BUTTON_CHOSEN);
+  TEXT_TABS[1].mousePressed(OBJ_CHOSEN);
 
   // create button to scale text (box)
   TEXT_TABS[2] = createImg('icons/magnifying-glass-zoom.png');
   TEXT_TABS[2].parent('textbar2');
-  TEXT_TABS[2].size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
-  TEXT_TABS[2].style('padding',SIDEBAR_SIZEX/12 + 'px');
-  TEXT_TABS[2].style("background-color",cOptions[0]);
-  TEXT_TABS[2].mousePressed(BUTTON_CHOSEN);
+  TEXT_TABS[2].id('scale');
+  TEXT_TABS[2].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  TEXT_TABS[2].style("box-sizing","border-box");
+  TEXT_TABS[2].style("opacity",.6);
+  //TEXT_TABS[2].style('padding',SIDEBAR_SIZEX/12 + 'px');
+  TEXT_TABS[2].style("background-color",cOptions[1]);
+  TEXT_TABS[2].mousePressed(OBJ_CHOSEN);
 
   // create button to animate text
   TEXT_TABS[3] = createImg('icons/spark.png');
   TEXT_TABS[3].parent('textbar2');
-  TEXT_TABS[3].size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
-  TEXT_TABS[3].style('padding',SIDEBAR_SIZEX/12 + 'px');
-  TEXT_TABS[3].style("background-color",cOptions[1]);
-  TEXT_TABS[3].mousePressed(BUTTON_CHOSEN);
+  TEXT_TABS[3].id('animate');
+  TEXT_TABS[3].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  TEXT_TABS[3].style("box-sizing","border-box");
+  TEXT_TABS[3].style("opacity",.6);
+  //TEXT_TABS[3].style('padding',SIDEBAR_SIZEX/12 + 'px');
+  TEXT_TABS[3].style("background-color",cOptions[0]);
+  TEXT_TABS[3].mousePressed(OBJ_CHOSEN);
 
 
   // create tabs to signify shape creation
@@ -535,6 +609,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
 p5.SlidesUI.prototype.checkInteraction = function(){
 
   drawShapeOutlines();
+  DECKS = this.decks;
 
   if (NEWOBJS_ != null) {
     this.decks.push(NEWOBJS_);
@@ -600,7 +675,6 @@ p5.SlidesUI.prototype.display = function() {
     // turn off toggle
     if (TOGGLED == true) {
       TOGGLED = false;
-      PREVKEY = "";
     }
 
     // Show available slides at the bottom left
@@ -621,13 +695,16 @@ p5.SlidesUI.prototype.editMode = function() {
   MAIN_CANVAS.position(SIDEBAR_SIZEX, 0);
   TOGGLED = true;
   PREVSLIDE = CURRENTSLIDE;
+  START_ANIMATION = [];
 }
 p5.SlidesUI.prototype.presentMode = function() {
   PRESENT_BUTTON.hide();
   EDIT_BUTTON.show();
+  TEXTBAR2.hide();
   SIDEBAR.hide();
   TOGGLED = true;
   PREVSLIDE = CURRENTSLIDE;
+  START_ANIMATION = [];
 
   MAIN_CANVAS.size(windowWidth,windowHeight);
   MAIN_CANVAS.position(0,0);
@@ -643,13 +720,8 @@ p5.SlidesUI.prototype.showDeckTabs = function(decks){
     tab.style('z-index', 7);
     tab.parent('deckbar');
     tab.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
-    tab.style('text-transform', 'uppercase');
-    tab.style('border', 'none');
-    tab.style("box-sizing","border-box");
-    tab.style('font-weight', 'bold');
-    tab.style('color', '#282828');
-    //tab.style('font-size', str(2*SIDEBAR_SIZEY/3) + 'px');
-    tab.style("border","none");
+    tab = formatAllText(tab);
+    tab = formatHeader(tab);
     DECK_TABS.push(tab);
     }
 
@@ -664,21 +736,24 @@ p5.SlidesUI.prototype.textResizer = function() {
   let s = null;
   let w = null;
   let font = null;
+  let currentText = null;
 
   if (this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1] !== undefined) {
     for (let j = 0; j < this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1].length; j++) {
       // j = specific bit of text
+      currentText = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j];
       textSize(1);
-      val = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j].value();
-      if (this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j].attribute('type') == 'header') {
+
+      val = currentText.value();
+      if (currentText.attribute('type') == 'header') {
         w = textWidth(val.toUpperCase());
       } else {
         w = textWidth(val);
       }
-      s = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j].size();
-      font = min([(s.width / w), s.height*.8]);
-      this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j].style("font-size", font + "px");
-      this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][j].mousePressed(TOGGLE_TEXTBAR2);
+      s = currentText.size();
+      font = min([(s.width / w)*.8, s.height*.8]);
+      currentText.style("font-size", font + "px");
+      currentText.mousePressed(TOGGLE_TEXTBAR2);
     }
   }
 }
@@ -728,10 +803,6 @@ p5.SlidesUI.prototype.toggleCanvases = function(){
     // place new sketches
 
     let p = this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].length;
-    let currentExtent = null;
-    let currentHeight = null;
-    let xRatio = null;
-    let yRatio = null;
     let frame = null;
     let x_off = null;
     let spacing = null;
@@ -759,12 +830,7 @@ p5.SlidesUI.prototype.toggleCanvases = function(){
       } else {
         frame.position(x_off + MARGINS + (spacing*i) + (dx*i), min(Y_BOUNDS) + MARGINS);
       }
-      xRatio = frame.width/MAIN_CANVAS.width;
-      frame.attribute('xRatio',xRatio);
-      yRatio = frame.height/MAIN_CANVAS.height;
-      frame.attribute('yRatio',yRatio);
-      frame.attribute('xRelative',(frame.position().x - SIDEBAR_SIZEX)/MAIN_CANVAS.width);
-      frame.attribute('yRelative',(frame.position().y)/MAIN_CANVAS.height);
+      frame = frameRels(frame);
       frame.style('border','transparent');
       frame.style('overflow', 'hidden');
       frame.style('scrolling',"no");
@@ -830,10 +896,13 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
         currentText = this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t];
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].text = select('#' + currentText.parent).value();
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].font = select('#' + currentText.parent).style('font-family');
-
+        this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].animation = select('#' + currentText.parent).attribute('animation');
         // draw presentation text
-
-        currentText.display();
+        if (START_ANIMATION.length != 0) {
+          currentText.display(START_ANIMATION[t]);
+        } else{
+          currentText.display();
+        }
       }
     }
 
@@ -919,98 +988,54 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
   let xRel = null;
       let yRel = null;
       let label = null;
-  let id_ = 'text' + TEXTCOUNT;
 
   switch (DRAW_FROM_TOUCH) {
     case 'header':
       label = 'Your header here';
       field = createElement('textarea',label);
-      field.id(id_);
-      yRatio = (abs(TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1]))/(MAIN_CANVAS.height- 2*MARGINS);
-      xRatio = (abs(TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0]))/ (MAIN_CANVAS.width- 2*MARGINS);
-      xRel = (min(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2]) - MARGINS)/MAIN_CANVAS.width;
-      yRel = (min(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]) - MARGINS)/MAIN_CANVAS.height;
-      field.attribute('xRatio',xRatio);
-      field.attribute('yRatio',yRatio);
-      field.attribute('xRelative',xRel);
-      field.attribute('yRelative',yRel);
-      field.style("box-sizing","border-box");
-      field.style("background", "transparent");
-      field.style("color", "#e7425b");
-      field.style("border", "none");
-      field.style('text-transform', 'uppercase');
-      field.style('font-weight', 'bold');
-      field.attribute('type', 'header');
-      field.style('overflow', "hidden");
+      field = textRels(field,TRACKED_TOUCHES,true);
+      field = formatAllText(field);
+      field = formatHeader(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,id_));
-      TEXTCOUNT++;
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
       break;
 
     case 'subheader':
       label = 'Your subheader here';
       field = createElement('textarea',label);
-      field.id(id_);
-      yRatio = (abs(TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1]))/(MAIN_CANVAS.height- 2*MARGINS);
-      xRatio = (abs(TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0]))/ (MAIN_CANVAS.width- 2*MARGINS);
-      xRel = (min(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2]) - MARGINS)/MAIN_CANVAS.width;
-      yRel = (min(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]) - MARGINS)/MAIN_CANVAS.height;
-      field.attribute('xRatio',xRatio);
-      field.attribute('yRatio',yRatio);
-      field.attribute('xRelative',xRel);
-      field.attribute('yRelative',yRel);
-      field.style("box-sizing","border-box");
-      field.style("background", "transparent");
-      field.style("color", "#6c6c6c");
-      field.style("border", "none");
-      field.style('font-style', 'italic');
-      field.attribute('type', 'subheader');
-      field.style('overflow', "hidden");
+      field = textRels(field,TRACKED_TOUCHES,true);
+      field = formatAllText(field);
+      field = formatSubheader(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,id_));
-      TEXTCOUNT++;
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
       break;
 
 
     case 'body':
       label = 'Your body text here';
       field = createElement('textarea',label);
-      id_ = 'text' + TEXTCOUNT;
-      field.id(id_);
-      yRatio = (abs(TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1]))/(MAIN_CANVAS.height- 2*MARGINS);
-      xRatio = (abs(TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0]))/ (MAIN_CANVAS.width- 2*MARGINS);
-      xRel = (min(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2]) - MARGINS)/MAIN_CANVAS.width;
-      yRel = (min(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]) - MARGINS)/MAIN_CANVAS.height;
-      field.attribute('xRatio',xRatio);
-      field.attribute('yRatio',yRatio);
-      field.attribute('xRelative',xRel);
-      field.attribute('yRelative',yRel);
-      field.style("box-sizing","border-box");
-      field.style("background", "transparent");
-      field.style("color", "#282828");
-      field.style("border", "none");
-      field.style('overflow', "hidden");
-      field.attribute('type', 'body');
+      field = textRels(field,TRACKED_TOUCHES,true);
+      field = formatAllText(field);
+      field = formatBody(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,id_));
-      TEXTCOUNT++;
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
       break;
 
 
     case 'sketch':
       let frame = createElement('iframe');
       let i_ = null; // holder for sketch choice
-      let id =  CHOSEN_SKETCH.id();
+      let id =  CHOSEN_OBJ;
 
       // if chosen sketch was not pre-loaded
       if (id == 'url_input'){
-        this.loadedSketches.push(['name',CHOSEN_SKETCH.value()]);
+        this.loadedSketches.push(['name',select('#' + id).value()]);
         i_ = SKETCH_TABS.length;
         SKETCH_TABS[i_] = createButton(this.loadedSketches[this.loadedSketches.length-1][0]);
-        SKETCH_TABS[i_].attribute('url', CHOSEN_SKETCH.value());
-        SKETCH_TABS[i_].id('sketchtab' + i_);
+        SKETCH_TABS[i_].attribute('url', select('#' + id).value());
+        SKETCH_TABS[i_].id('loaded sketch #' + i_);
         SKETCH_TABS[i_].style("border","none");
-        SKETCH_TABS[i_].mousePressed(SKETCH_CHOSEN);
+        SKETCH_TABS[i_].mousePressed(OBJ_CHOSEN);
         SKETCH_TABS[i_].size(SIDEBAR_SIZEX, SIDEBAR_SIZEY);
         SKETCH_TABS[i_].parent('sketchbar');
       } else {
@@ -1019,12 +1044,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
         i_ = i_[0];
       }
       frame.attribute('src',this.loadedSketches[i_][1]);
-      xRatio = (abs(TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0]))/MAIN_CANVAS.width;
-      yRatio = abs(TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1])/MAIN_CANVAS.height;
-      frame.attribute('xRatio',xRatio);
-      frame.attribute('yRatio',yRatio);
-      frame.attribute('xRelative',(min(TRACKED_TOUCHES[0],TRACKED_TOUCHES[2]))/MAIN_CANVAS.width);
-      frame.attribute('yRelative',(min(TRACKED_TOUCHES[1],TRACKED_TOUCHES[3]))/MAIN_CANVAS.height);
+      frame = frameRels(frame,TRACKED_TOUCHES);
       frame.style("box-sizing","border-box");
       frame.style('border',"transparent");
       frame.style('overflow', "hidden");
@@ -1290,54 +1310,37 @@ p5.SlideDeck.prototype.slideTemplates = function(slide) {
   let template = this.templates[slide];
   let header = this.headings[slide];
   let subheader = this.subheadings[slide];
-  let yRatio = null;
-  let yRel = null;
-  let id_;
+  let corners = [];
 
   // Determine header length for automatic sizing
   if (template == 'full-text') {
 
     // header
     let H = createElement('textarea',header);
-    id_ = 'text' + TEXTCOUNT;
-    H.id(id_)
-    H.attribute('xRatio',1);
-    yRatio = 1/3;
-    yRel = 1/3;
-    H.attribute('yRatio',yRatio);
-    H.style("box-sizing","border-box");
-    H.attribute('xRelative',(0));
-    H.attribute('yRelative',(yRel));
-    H.attribute('type', 'header');
-    H.style('overflow', 'hidden');
+    corners[0] = 0;
+    corners[1] = (MAIN_CANVAS.height/3);
+    corners[2] = corners[0] + (MAIN_CANVAS.width);
+    corners[3] = corners[1] + ((MAIN_CANVAS.height)/3);
+    H = textRels(H,corners);
     H = formatAllText(H);
     H = formatHeader(H);
     H.hide();
 
     this.created_text[slide].push(H);
-    this.presentationText[slide].push(new p5.PresentationAssets(0,yRel,1,yRatio,'header',id_));
-    TEXTCOUNT ++;
+    this.presentationText[slide].push(new p5.PresentationAssets(H.attribute('xRelative'),H.attribute('yRelative'),H.attribute('xRatio'),H.attribute('yRatio'),'header',H.id()));
 
     // subheader
-    //yRatio = 1/12
-    //yRel = ((1-yRatio) - (2*MARGINS/MAIN_CANVAS.height));
-    // subheader
     let S = createElement('textarea',subheader);
-    id_ = 'text' + TEXTCOUNT;
-    S.id(id_)
-    S.style("box-sizing","border-box");
-    S.attribute('xRatio',1);
-    S.attribute('yRatio',yRatio/6);
-    S.attribute('xRelative',(0));
-    S.attribute('yRelative',yRel+yRatio);
-    S.attribute('type', 'subheader');
-    S.style('overflow', 'hidden');
+    corners[0] = 0;
+    corners[1] = corners[1] + (MAIN_CANVAS.height/3);
+    corners[2] = corners[0] + (MAIN_CANVAS.width);
+    corners[3] = corners[1] + ((MAIN_CANVAS.height)/12);
+    S = textRels(S,corners);
     S = formatAllText(S);
     S = formatSubheader(S);
     S.hide();
     this.created_text[slide].push(S);
-    this.presentationText[slide].push(new p5.PresentationAssets(0,yRel+yRatio,1,yRatio/6,'subheader',id_));
-    TEXTCOUNT ++;
+    this.presentationText[slide].push(new p5.PresentationAssets(S.attribute('xRelative'),S.attribute('yRelative'),S.attribute('xRatio'),S.attribute('yRatio'),'subheader',S.id()));
 
     // image
     let img = createImg('icons/p5-asterisk.png');
@@ -1349,47 +1352,35 @@ p5.SlideDeck.prototype.slideTemplates = function(slide) {
 
   if (template == 'low-header') {
 
-    yRatio = 1/12
-    yRel = ((1-yRatio) - (2*MARGINS/MAIN_CANVAS.height));
     // subheader
     let S = createElement('textarea',subheader);
-    id_ = 'text' + TEXTCOUNT;
-    S.id(id_)
-    S.style("box-sizing","border-box");
-    S.attribute('xRatio',1);
-    S.attribute('yRatio',yRatio);
-    S.attribute('xRelative',(0));
-    S.attribute('yRelative',yRel);
-    S.attribute('type', 'subheader');
-    S.style('overflow', 'hidden');
+    corners[0] = 0;
+    corners[1] = 10*MAIN_CANVAS.height/12;
+    corners[2] = corners[0] + (MAIN_CANVAS.width);
+    corners[3] = 11*MAIN_CANVAS.height/12;
+    S = textRels(S,corners);
     S = formatAllText(S);
     S = formatSubheader(S);
     S.hide();
     this.created_text[slide].push(S);
-    this.presentationText[slide].push(new p5.PresentationAssets(0,yRel,1,yRatio,'subheader',id_));
-    TEXTCOUNT ++;
+    this.presentationText[slide].push(new p5.PresentationAssets(S.attribute('xRelative'),S.attribute('yRelative'),S.attribute('xRatio'),S.attribute('yRatio'),'subheader',S.id()));
 
     // header
 
     let H = createElement('textarea',header);
-    id_ = 'text' + TEXTCOUNT;
-    H.id(id_)
-    H.attribute('yRatio',2*yRatio);
-    H.attribute('xRatio',1);
-    H.style("box-sizing","border-box");
-    H.attribute('xRelative',(0));
-    H.attribute('yRelative',(yRel - 2*yRatio));
-    H.attribute('type', 'header');
-    H.style('overflow', 'hidden');
+    corners[0] = 0;
+    corners[3] = corners[1];
+    corners[1] = corners[1] - ((MAIN_CANVAS.height)/6);
+    corners[2] = corners[0] + (MAIN_CANVAS.width);
+    H = textRels(H,corners);
     H = formatAllText(H);
     H = formatHeader(H);
     H.hide();
 
     this.created_text[slide].push(H);
-    this.presentationText[slide].push(new p5.PresentationAssets(0,(yRel - 2*yRatio),1,2*yRatio,'header',id_));
-    TEXTCOUNT ++;
+    this.presentationText[slide].push(new p5.PresentationAssets(H.attribute('xRelative'),H.attribute('yRelative'),H.attribute('xRatio'),H.attribute('yRatio'),'header',H.id()));
 
-    Y_BOUNDS = [0, ((yRel - 2*yRatio)*MAIN_CANVAS.height) - MARGINS];
+    Y_BOUNDS = [0, corners[1] - MARGINS];
   }
 }
 
@@ -1439,22 +1430,37 @@ p5.SlideDeck.prototype.addSlides = function(num) {
 
 // Navigation
 function keyReleased() {
-  if ((key > 0) && (PREVKEY != key) && (key <= MAXSLIDE)) {
-    PREVSLIDE = CURRENTSLIDE;
-    CURRENTSLIDE = key;
-    TOGGLED = true;
-  } else if ((key === 'ArrowRight') && (PREVKEY != key) && (CURRENTSLIDE < MAXSLIDE)) {
-    PREVSLIDE = CURRENTSLIDE;
-    CURRENTSLIDE++;
-    TOGGLED = true;
-    PREVKEY = key;
-  } else if ((key === 'ArrowLeft') && (CURRENTSLIDE > 1) && (PREVKEY != key)) {
+ if ((key === 'ArrowRight') && (CURRENTSLIDE < MAXSLIDE)) {
+    let hit = false;
+    if (START_ANIMATION.length == 0) {
+      let currentText = DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1];
+      for (let t = 0; t < currentText.length; t++) {
+        START_ANIMATION[t] = false;
+        if (currentText[t].animation != null) {
+          START_ANIMATION[t] = true
+          hit = true;
+        }
+      }
+    }
+
+    if (hit == false) {
+      PREVSLIDE = CURRENTSLIDE;
+      CURRENTSLIDE++;
+      TOGGLED = true;
+      START_ANIMATION = [];
+    }
+
+  } else if ((key === 'ArrowLeft')) {
+    if ((CURRENTSLIDE > 1)) {
     PREVSLIDE = CURRENTSLIDE;
     CURRENTSLIDE--;
     TOGGLED = true;
-    PREVKEY = key;
+    } else if (START_ANIMATION.length != 0) {
+      START_ANIMATION = [];
+    }
   }
 }
+
 function SWITCHDECK() {
   let ID_ = this.id();
   let regexp = '\\d+';
@@ -1463,7 +1469,6 @@ function SWITCHDECK() {
   CURRENTSLIDE = 1;
   TOGGLED = true;
   PREVSLIDE = null;
-  PREVKEY = "";
   Y_BOUNDS = [];
   X_BOUNDS = [];
 }
@@ -1500,9 +1505,11 @@ function TOGGLE_TEXTBAR1() {
 }
 function TOGGLE_TEXTBAR2() {
   TEXTBAR2.show();
-  EDITSIDEBAR.hide();
-  GOBACK_BUTTON.show();
+  let tb2 =  select('#textbar2');
+  tb2.position(this.x,this.y - tb2.height);
+  tb2.attribute('currentText',this.id());
 }
+
 function TOGGLE_DECKBAR() {
   DECKBAR.show();
   EDITSIDEBAR.hide();
@@ -1514,23 +1521,38 @@ function TOGGLE_SHAPEBAR() {
   GOBACK_BUTTON.show();
 }
 
-// Trigger Events when Objects are Chosen
-function SKETCH_CHOSEN() {
 
-  if (CHOSEN_SKETCH != null){
-    CHOSEN_SKETCH.style('border','none');
-    this.style('margin-top', '0px');
+// Trigger Events when Objects are Chosen
+function OBJ_CHOSEN() {
+
+  if (CHOSEN_OBJ != null){
+    select('#' + CHOSEN_OBJ).style('border','none');
   }
 
-  CHOSEN_SKETCH = this;
+  CHOSEN_OBJ = this.id();
+  let ids = ['move','color','scale','animate'];
+  if (ids.indexOf(CHOSEN_OBJ) !== -1) {
+    let tb2 =  select('#textbar2');
+    let text = select('#' + tb2.attribute('currentText'));
+
+    if (CHOSEN_OBJ == ids[0]){
+      // text.position(tb2.position().x,tb2.position().y + tb2.height);
+      // text = textRels(text,[mouseX + SIDEBAR_SIZEX,mouseY,mouseX+ SIDEBAR_SIZEX+ text.width,mouseY+ text.height]);
+      // tb2.position(text.x,text.y - tb2.height);
+    } else if (CHOSEN_OBJ == ids[1]){
+      text.style('color','#000');
+    } else if (CHOSEN_OBJ == ids[2]){
+      // text.size(text.width + (text.x - mouseX),text.height + (text.y - mouseY));
+      // text = textRels(text,[text.x,text.y,text.x + text.width,text.y + text.height]);
+    } else if (CHOSEN_OBJ == ids[3]){
+      text.attribute('animation', 'particles');
+    }
+  }
 
   this.style('border','solid');
   this.style('border-color','#aeaeae');
 }
-function BUTTON_CHOSEN() {
-  this.style('border','solid');
-  this.style('border-color','#aeaeae');
-}
+
 function SAVE_DECKS(){
   TOGGLE_SAVE = true;
 }
@@ -1636,7 +1658,9 @@ function touchEnded() {
 
 function formatHeader(t) {
     t.style('text-transform', 'uppercase');
+    t.attribute('type', 'header');
     t.style('font-weight', 'bold');
+   t.style('font-family', "Inconsolata",'monospace');
     t.style('color', '#e7425b')
     t.style('z-index', 4);
   return t
@@ -1644,6 +1668,8 @@ function formatHeader(t) {
 
 function formatSubheader(t) {
     t.style('font-style', 'italic');
+  t.attribute('type', 'subheader');
+  t.style('font-family', 'sans-serif')
     t.style('z-index', 3);
     t.style('color','#6c6c6c')
 
@@ -1651,7 +1677,9 @@ function formatSubheader(t) {
 }
 
 function formatBody(t) {
-    t.style('color','#282828')
+  t.attribute('type', 'body');
+    t.style('color','#282828');
+  t.style('font-family', 'times')
   t.style('z-index', 2);
 
   return t
@@ -1659,9 +1687,14 @@ function formatBody(t) {
 
 
 function formatAllText(t) {
+  let id_ = 'text' + TEXTCOUNT;
+  t.id(id_)
+  t.style('overflow', 'hidden');
+  t.style("box-sizing","border-box");
     t.style('wrap', 'hard');
     t.style('background-color', 'transparent');
     t.style('text-align', 'left');
+    TEXTCOUNT++;
 
   return t
 }
@@ -1685,4 +1718,40 @@ function windowResized() {
   UI.toggleCanvases();
   UI.iframeRemapper();
   UI.inputRemapper();
+}
+
+
+function frameRels(frame,touches){
+
+  if (touches === undefined) {
+    frame.attribute('xRatio', frame.width / MAIN_CANVAS.width);
+    frame.attribute('yRatio', frame.height / MAIN_CANVAS.height);
+    frame.attribute('xRelative', (frame.position().x - SIDEBAR_SIZEX) / MAIN_CANVAS.width);
+    frame.attribute('yRelative', (frame.position().y) / MAIN_CANVAS.height);
+  } else{
+    frame.attribute('xRatio',abs(touches[2]-touches[0])/MAIN_CANVAS.width);
+    frame.attribute('yRatio',abs(touches[3]-touches[1])/MAIN_CANVAS.height);
+    frame.attribute('xRelative',min(touches[0],touches[2])/MAIN_CANVAS.width);
+    frame.attribute('yRelative',min(touches[1],touches[3])/MAIN_CANVAS.height);
+  }
+
+  return frame
+}
+
+function textRels(text, corners,flag){
+
+  if (flag == true) {
+    text.attribute('xRatio', (abs(corners[2] - corners[0])) / (MAIN_CANVAS.width-2*MARGINS));
+    text.attribute('yRatio', abs(corners[3] - corners[1]) / (MAIN_CANVAS.height-2*MARGINS));
+    text.attribute('xRelative', (min(corners[0], corners[2]) - MARGINS) / MAIN_CANVAS.width);
+    text.attribute('yRelative', (min(corners[1], corners[3]) - MARGINS) / MAIN_CANVAS.height);
+  } else{
+    text.attribute('xRatio', abs(corners[2] - corners[0]) / MAIN_CANVAS.width);
+    text.attribute('yRatio', abs(corners[3] - corners[1]) / MAIN_CANVAS.height);
+    text.attribute('xRelative', min(corners[0], corners[2]) / MAIN_CANVAS.width);
+    text.attribute('yRelative', min(corners[1], corners[3]) / MAIN_CANVAS.height);
+  }
+
+return text
+
 }
