@@ -2,6 +2,7 @@
 
 let sketches = {};
 let myDecks = {};
+let UI;
 // img;
 
 function preload() {
@@ -14,7 +15,7 @@ function setup() {
      // img.filter(INVERT);
      // image(img,width/2,0);
      // img.save('object-selected','png');
-  UI = new p5.slidesUI([],sketches);
+    UI = new p5.SlidesUI([],sketches);
 }
 
 // START PRESENTATION LOOP
