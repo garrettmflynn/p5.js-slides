@@ -998,7 +998,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
       field = formatAllText(field);
       field = formatHeader(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(field.attribute('xRelative'), field.attribute('yRelative'), field.attribute('xRatio'), field.attribute('yRatio'),DRAW_FROM_TOUCH,field.id()));
       break;
 
     case 'subheader':
@@ -1008,7 +1008,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
       field = formatAllText(field);
       field = formatSubheader(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(field.attribute('xRelative'), field.attribute('yRelative'), field.attribute('xRatio'), field.attribute('yRatio'),DRAW_FROM_TOUCH,field.id()))
       break;
 
 
@@ -1019,7 +1019,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
       field = formatAllText(field);
       field = formatBody(field);
       this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE-1].push(field);
-      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(xRel, yRel, xRatio, yRatio,DRAW_FROM_TOUCH,field.id()));
+      this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1].push(new p5.PresentationAssets(field.attribute('xRelative'), field.attribute('yRelative'), field.attribute('xRatio'), field.attribute('yRatio'),DRAW_FROM_TOUCH,field.id()))
       break;
 
 
@@ -1059,15 +1059,16 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
 
   let shapeTypes = ['ellipse','rectangle','triangle','arrow']
   if (shapeTypes.indexOf(DRAW_FROM_TOUCH) !== -1){
-    let relLC_X = TRACKED_TOUCHES[0]/MAIN_CANVAS.width;
-    let relLC_Y = TRACKED_TOUCHES[1]/MAIN_CANVAS.height;
-    let relRC_X = TRACKED_TOUCHES[2]/MAIN_CANVAS.width;
-    let relRC_Y = TRACKED_TOUCHES[3]/MAIN_CANVAS.height;
+    let relLC_X = (TRACKED_TOUCHES[0]-MARGINS)/MAIN_CANVAS.width;
+    let relLC_Y = (TRACKED_TOUCHES[1]-MARGINS)/MAIN_CANVAS.height;
+    let relW = (TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0])/(MAIN_CANVAS.width-2*MARGINS);
+    let relH = (TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1])/(MAIN_CANVAS.height-2*MARGINS);
 
       if (this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] === undefined){
         this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] = [];
     }
-    OBJ = new p5.PresentationAssets(relLC_X,relLC_Y,relRC_X-relLC_X,relRC_Y-relLC_Y,DRAW_FROM_TOUCH)
+
+    OBJ = new p5.PresentationAssets(relLC_X,relLC_Y,relW,relH,DRAW_FROM_TOUCH)
     this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1].push(OBJ);
     this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1][this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1].length-1].display();
   }
@@ -1745,7 +1746,7 @@ function frameRels(frame,touches){
 function textRels(text, corners,flag){
 
   if (flag == true) {
-    text.attribute('xRatio', (abs(corners[2] - corners[0])) / (MAIN_CANVAS.width-2*MARGINS));
+    text.attribute('xRatio', abs(corners[2] - corners[0]) / (MAIN_CANVAS.width-2*MARGINS));
     text.attribute('yRatio', abs(corners[3] - corners[1]) / (MAIN_CANVAS.height-2*MARGINS));
     text.attribute('xRelative', (min(corners[0], corners[2]) - MARGINS) / MAIN_CANVAS.width);
     text.attribute('yRelative', (min(corners[1], corners[3]) - MARGINS) / MAIN_CANVAS.height);
