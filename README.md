@@ -2,6 +2,8 @@
 # [**p5.slides**](https://github.com/GarrettMFlynn/p5.js-slides)
 **p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
 
+Test out the alpha release [**here**](https://garrettmflynn.github.io/p5.js-slides/examples/p5.slides-primer/)
+
  ![Gif Example](img/Gif1.gif)
  **Created by** Garrett Flynn (gflynn@usc.edu) at the University of Southern California
 
