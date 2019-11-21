@@ -140,7 +140,6 @@ p5.PresentationAssets.prototype.display = function(animate) {
           this.animatedObjects = FONTS[0].textToPoints(t, lX, lY+this.fontSize, this.fontSize);
         } else if (animate == true && this.animatedObjects.length != 0){
           this.particleDraw();
-          console.log('drawing');
         }
     }
   }
@@ -466,8 +465,14 @@ p5.SlidesUI.prototype.createSidebars = function(){
   SKETCH_TABS = [];
   let l = this.loadedSketches.length
   let y_iter = SIDEBAR_SIZEX/4;
+  let path = '';
   for (let s = 0; s < l; s++) {
-    SKETCH_TABS[s] = createImg('icons/sketches/'+ this.loadedSketches[s][0] + '.png') ;
+    if (s < 4) {
+      path = 'icons/sketches/' + this.loadedSketches[s][0] + '.png';
+    } else{
+      path = 'icons/sketches/DefaultIcon.png';
+    }
+    SKETCH_TABS[s] = createImg(path) ;
     SKETCH_TABS[s].attribute('url', this.loadedSketches[s][1]);
     SKETCH_TABS[s].id('sketchtab' + s);
     SKETCH_TABS[s].position(0,(s)*y_iter);
@@ -807,7 +812,7 @@ p5.SlidesUI.prototype.toggleCanvases = function(){
     let x_off = null;
     let spacing = null;
 
-    if (EDITSIDEBAR.style('display') == 'none') {
+    if (SIDEBAR.style('display') == 'none') {
       x_off = 0;
     } else{
       x_off = SIDEBAR_SIZEX;
@@ -1030,7 +1035,6 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
 
       // if chosen sketch was not pre-loaded
       if (id == 'url_input'){
-        console.log(SKETCH_TABS)
         i_ = this.loadedSketches.length;
         SKETCH_TABS[i_] = createButton(this.loadedSketches[this.loadedSketches.length-1][0]);
         SKETCH_TABS[i_].attribute('url', select('#' + id).value());
@@ -1043,7 +1047,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
       } else {
         let regex = "\\d+";
         i_= match(id,regex);
-        i_ = i_[0]-1;
+        i_ = i_[0];
       }
 
       frame.attribute('src',this.loadedSketches[i_][1]);
@@ -1053,7 +1057,7 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
       frame.style('overflow', "hidden");
       frame.style('z-index', 1);
       this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].push(frame);
-      this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].push(this.loadedSketches.length-1);
+      this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].push(this.loadedSketches.length);
       break;
   }
 
@@ -1131,6 +1135,7 @@ p5.SlidesUI.prototype.JSONify = function(deckObj){
           deckJSON[topKey][subKey]['createdText'][box]['text'] = deckObj[deck].created_text[slide][box].value();
           deckJSON[topKey][subKey]['createdText'][box]['type'] = deckObj[deck].created_text[slide][box].attribute('type');
           deckJSON[topKey][subKey]['createdText'][box]['id'] = deckObj[deck].created_text[slide][box].id();
+          deckJSON[topKey][subKey]['createdText'][box]['animation'] = deckObj[deck].created_text[slide][box].attribute('animation');
         }
       }
 
@@ -1201,10 +1206,6 @@ p5.SlidesUI.prototype.unpackJSON = function(JSON) {
 
           // load background colors
           if (match(tertiaryKeys[key3_], 'bColors')) {
-            //let mode = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]['mode'];
-            //let max = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]['maxes'][mode];
-            //let levels = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]['levels'];
-            //colorMode(mode,max[0])
             myDecks[deck][tertiaryKeys[key3_]][slideNum] = color(JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]);
           }
 
@@ -1230,6 +1231,9 @@ p5.SlidesUI.prototype.unpackJSON = function(JSON) {
                 thisText.attribute('xRelative', textToPlace['xRelative']);
                 thisText.attribute('yRelative', textToPlace['yRelative']);
                 thisText.id(textToPlace['id']);
+                if (textToPlace['animation'] != null) {
+                  thisText.attribute('animation', textToPlace['animation']);
+                }
                 thisText.hide();
                 myDecks[deck].created_text[slideNum].push(thisText);
               }
@@ -1416,7 +1420,7 @@ p5.SlideDeck.prototype.addSlides = function(num) {
       this.headings[this.deckLength] = '';
       this.subheadings[this.deckLength] = '';
     } else if (this.deckLength == 2) {
-      this.sketches[this.deckLength] = [1,1];
+      this.sketches[this.deckLength] = [0,0];
       this.templates[this.deckLength] = 'low-header';
       this.headings[this.deckLength] = 'Panel Mode';
       this.subheadings[this.deckLength ] = 'Expand your visual repertoire';
