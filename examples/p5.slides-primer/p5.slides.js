@@ -127,22 +127,22 @@ p5.PresentationAssets.prototype.display = function(animate) {
   pop();
 
   // do animations
-    let t = null;
-    switch (this.animation) {
-      case ('particles'):
-        if (animate == true && this.animatedObjects.length == 0) {
-          if (this.type == 'header') {
-            t = this.text.toUpperCase();
-          } else {
-            t = this.text;
-          }
-          textAlign(LEFT, TOP);
-          this.animatedObjects = FONTS[0].textToPoints(t, lX, lY+this.fontSize, this.fontSize);
-        } else if (animate == true && this.animatedObjects.length != 0){
-          this.particleDraw();
+  let t = null;
+  switch (this.animation) {
+    case ('particles'):
+      if (animate == true && this.animatedObjects.length == 0) {
+        if (this.type == 'header') {
+          t = this.text.toUpperCase();
+        } else {
+          t = this.text;
         }
-    }
+        textAlign(LEFT, TOP);
+        this.animatedObjects = FONTS[0].textToPoints(t, lX, lY+this.fontSize, this.fontSize);
+      } else if (animate == true && this.animatedObjects.length != 0){
+        this.particleDraw();
+      }
   }
+}
 
 
 p5.PresentationAssets.prototype.particleDraw = function() {
@@ -199,10 +199,10 @@ p5.SlidesUI = function(savedDecks,sketchesToLoad) {
     // create first deck tab
     this.showDeckTabs(this.decks);
   } else {
-      this.unpackJSON(savedDecks);
-      this.allGlobalVariables(2);
-      this.createSidebars();
-      this.showDeckTabs(this.decks);
+    this.unpackJSON(savedDecks);
+    this.allGlobalVariables(2);
+    this.createSidebars();
+    this.showDeckTabs(this.decks);
   }
 
   this.allGlobalVariables(3);
@@ -728,7 +728,7 @@ p5.SlidesUI.prototype.showDeckTabs = function(decks){
     tab = formatAllText(tab);
     tab = formatHeader(tab);
     DECK_TABS.push(tab);
-    }
+  }
 
   for (let j = 0; j < decks.length; j++){
     DECK_TABS[j].style("background-color",cOptions[j%2]);
@@ -859,31 +859,31 @@ p5.SlidesUI.prototype.toggleEditText = function() {
   if (SIDEBAR.style('display') == 'block') {
 
     let allText = this.decks[CURRENTDECK - 1].created_text;
-      // hide previous text
-      if (PREVSLIDE != null) {
-        let text = allText[PREVSLIDE - 1];
-        if (text !== undefined) {
-          if (text.length != 0) {
-            for (let t = 0; t < text.length; t++) {
-              this.decks[CURRENTDECK - 1].created_text[PREVSLIDE - 1][t].hide();
-            }
-          }
-        }
-      }
-
-      let textForSlide = allText[CURRENTSLIDE - 1];
-
-      // initialize text if necessary
-      if (textForSlide !== undefined) {
-        if (textForSlide.length != 0) {
-          for (let t = 0; t < textForSlide.length; t++) {
-            this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].show();
-            this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].style('z-index', 4);
+    // hide previous text
+    if (PREVSLIDE != null) {
+      let text = allText[PREVSLIDE - 1];
+      if (text !== undefined) {
+        if (text.length != 0) {
+          for (let t = 0; t < text.length; t++) {
+            this.decks[CURRENTDECK - 1].created_text[PREVSLIDE - 1][t].hide();
           }
         }
       }
     }
+
+    let textForSlide = allText[CURRENTSLIDE - 1];
+
+    // initialize text if necessary
+    if (textForSlide !== undefined) {
+      if (textForSlide.length != 0) {
+        for (let t = 0; t < textForSlide.length; t++) {
+          this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].show();
+          this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].style('z-index', 4);
+        }
+      }
+    }
   }
+}
 
 p5.SlidesUI.prototype.togglePresentationAssets = function() {
 
@@ -896,7 +896,7 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
 
   if (SIDEBAR.style('display') == 'none') {
 
-  let currentText = null;
+    let currentText = null;
     if (this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1] !== undefined) {
       for (let t = 0; t < this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1].length; t++) {
         currentText = this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t];
@@ -925,7 +925,7 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
       }
     }
   }
-  }
+}
 
 p5.SlidesUI.prototype.iframeRemapper = function(){
   // Dynamically Resize IFrames
@@ -962,38 +962,38 @@ p5.SlidesUI.prototype.iframeRemapper = function(){
 p5.SlidesUI.prototype.inputRemapper = function() {
 
 
-    let textForSlide = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1];
-    if (textForSlide !== undefined) {
-      for (let t = 0; t < textForSlide.length; t++) {
-        let ySize = null;
-        let xSize = null;
-        let xRel = null;
-        let yRel = null;
-        let text = null;
+  let textForSlide = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1];
+  if (textForSlide !== undefined) {
+    for (let t = 0; t < textForSlide.length; t++) {
+      let ySize = null;
+      let xSize = null;
+      let xRel = null;
+      let yRel = null;
+      let text = null;
 
-        text = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t];
-        ySize = (MAIN_CANVAS.height-2*MARGINS) * float(text.attribute('yRatio'));
-        xSize = (MAIN_CANVAS.width-2*MARGINS) * float(text.attribute('xRatio'));
-        if (SIDEBAR.style('display') == 'none') {
-          xRel = (float(text.attribute('xRelative')) * MAIN_CANVAS.width) + MARGINS;
-        } else {
-          xRel = SIDEBAR_SIZEX + MARGINS + (float(text.attribute('xRelative')) * MAIN_CANVAS.width);
-        }
-        yRel = (float(text.attribute('yRelative')) * MAIN_CANVAS.height) + MARGINS;
-        this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].size(xSize, ySize);
-        this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].position(xRel, yRel);
-
+      text = this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t];
+      ySize = (MAIN_CANVAS.height-2*MARGINS) * float(text.attribute('yRatio'));
+      xSize = (MAIN_CANVAS.width-2*MARGINS) * float(text.attribute('xRatio'));
+      if (SIDEBAR.style('display') == 'none') {
+        xRel = (float(text.attribute('xRelative')) * MAIN_CANVAS.width) + MARGINS;
+      } else {
+        xRel = SIDEBAR_SIZEX + MARGINS + (float(text.attribute('xRelative')) * MAIN_CANVAS.width);
       }
+      yRel = (float(text.attribute('yRelative')) * MAIN_CANVAS.height) + MARGINS;
+      this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].size(xSize, ySize);
+      this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1][t].position(xRel, yRel);
+
     }
   }
+}
 
 p5.SlidesUI.prototype.drawFromTouch = function() {
   let field = null;
   let xRatio = null;
   let yRatio = null;
   let xRel = null;
-      let yRel = null;
-      let label = null;
+  let yRel = null;
+  let label = null;
 
   switch (DRAW_FROM_TOUCH) {
     case 'header':
@@ -1068,8 +1068,8 @@ p5.SlidesUI.prototype.drawFromTouch = function() {
     let relW = (TRACKED_TOUCHES[2]-TRACKED_TOUCHES[0])/(MAIN_CANVAS.width-2*MARGINS);
     let relH = (TRACKED_TOUCHES[3]-TRACKED_TOUCHES[1])/(MAIN_CANVAS.height-2*MARGINS);
 
-      if (this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] === undefined){
-        this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] = [];
+    if (this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] === undefined){
+      this.decks[CURRENTDECK - 1].shapes[CURRENTSLIDE-1] = [];
     }
 
     OBJ = new p5.PresentationAssets(relLC_X,relLC_Y,relW,relH,DRAW_FROM_TOUCH)
@@ -1214,29 +1214,29 @@ p5.SlidesUI.prototype.unpackJSON = function(JSON) {
           else if (match(tertiaryKeys[key3_], 'createdText')) {
             myDecks[deck].created_text[slideNum] = [];
             let boxes = Object.keys(JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]);
-              for (let box = 0; box < boxes.length; box++) {
-                let textToPlace = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]][boxes[box]];
-                let thisText = createElement('textarea', textToPlace['text']);
-                thisText.attribute('type', textToPlace['type']);
-                thisText = formatAllText(thisText);
-                if (thisText.attribute('type') == 'header'){
-                  thisText = formatHeader(thisText)
-                } else if (thisText.attribute('type') == 'subheader'){
-                  thisText = formatSubheader(thisText)
-                } else if (thisText.attribute('type') == 'body'){
-                  thisText = formatBody(thisText)
-                }
-                thisText.attribute('xRatio', textToPlace['xRatio']);
-                thisText.attribute('yRatio', textToPlace['yRatio']);
-                thisText.attribute('xRelative', textToPlace['xRelative']);
-                thisText.attribute('yRelative', textToPlace['yRelative']);
-                thisText.id(textToPlace['id']);
-                if (textToPlace['animation'] != null) {
-                  thisText.attribute('animation', textToPlace['animation']);
-                }
-                thisText.hide();
-                myDecks[deck].created_text[slideNum].push(thisText);
+            for (let box = 0; box < boxes.length; box++) {
+              let textToPlace = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]][boxes[box]];
+              let thisText = createElement('textarea', textToPlace['text']);
+              thisText.attribute('type', textToPlace['type']);
+              thisText = formatAllText(thisText);
+              if (thisText.attribute('type') == 'header'){
+                thisText = formatHeader(thisText)
+              } else if (thisText.attribute('type') == 'subheader'){
+                thisText = formatSubheader(thisText)
+              } else if (thisText.attribute('type') == 'body'){
+                thisText = formatBody(thisText)
               }
+              thisText.attribute('xRatio', textToPlace['xRatio']);
+              thisText.attribute('yRatio', textToPlace['yRatio']);
+              thisText.attribute('xRelative', textToPlace['xRelative']);
+              thisText.attribute('yRelative', textToPlace['yRelative']);
+              thisText.id(textToPlace['id']);
+              if (textToPlace['animation'] != null) {
+                thisText.attribute('animation', textToPlace['animation']);
+              }
+              thisText.hide();
+              myDecks[deck].created_text[slideNum].push(thisText);
+            }
 
 
             // load canvases
@@ -1398,7 +1398,7 @@ p5.SlideDeck.prototype.addSlides = function(num) {
   let len = this.deckLength;
   for (let j = len; j < len + num; j++) {
     this.presentationText[j] = [];
-      this.created_text[j] = [];
+    this.created_text[j] = [];
   }
 
   for (let i = 0; i < num; i++) {
@@ -1438,7 +1438,7 @@ p5.SlideDeck.prototype.addSlides = function(num) {
 
 // Navigation
 function keyReleased() {
- if ((key === 'ArrowRight') && (CURRENTSLIDE < MAXSLIDE)) {
+  if ((key === 'ArrowRight') && (CURRENTSLIDE < MAXSLIDE)) {
     let hit = false;
     if (START_ANIMATION.length == 0) {
       let currentText = DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1];
@@ -1460,9 +1460,9 @@ function keyReleased() {
 
   } else if ((key === 'ArrowLeft')) {
     if ((CURRENTSLIDE > 1)) {
-    PREVSLIDE = CURRENTSLIDE;
-    CURRENTSLIDE--;
-    TOGGLED = true;
+      PREVSLIDE = CURRENTSLIDE;
+      CURRENTSLIDE--;
+      TOGGLED = true;
     } else if (START_ANIMATION.length != 0) {
       START_ANIMATION = [];
     }
@@ -1665,28 +1665,28 @@ function touchEnded() {
 // Text Formatting
 
 function formatHeader(t) {
-    t.style('text-transform', 'uppercase');
-    t.attribute('type', 'header');
-    t.style('font-weight', 'bold');
-   t.style('font-family', "Inconsolata",'monospace');
-    t.style('color', '#e7425b')
-    t.style('z-index', 4);
+  t.style('text-transform', 'uppercase');
+  t.attribute('type', 'header');
+  t.style('font-weight', 'bold');
+  t.style('font-family', "Inconsolata",'monospace');
+  t.style('color', '#e7425b')
+  t.style('z-index', 4);
   return t
 }
 
 function formatSubheader(t) {
-    t.style('font-style', 'italic');
+  t.style('font-style', 'italic');
   t.attribute('type', 'subheader');
   t.style('font-family', 'sans-serif')
-    t.style('z-index', 3);
-    t.style('color','#6c6c6c')
+  t.style('z-index', 3);
+  t.style('color','#6c6c6c')
 
   return t
 }
 
 function formatBody(t) {
   t.attribute('type', 'body');
-    t.style('color','#282828');
+  t.style('color','#282828');
   t.style('font-family', 'times')
   t.style('z-index', 2);
 
@@ -1700,10 +1700,10 @@ function formatAllText(t) {
   t.style('border', 'none');
   t.style('overflow', 'hidden');
   t.style("box-sizing","border-box");
-    t.style('wrap', 'hard');
-    t.style('background-color', 'transparent');
-    t.style('text-align', 'left');
-    TEXTCOUNT++;
+  t.style('wrap', 'hard');
+  t.style('background-color', 'transparent');
+  t.style('text-align', 'left');
+  TEXTCOUNT++;
 
   return t
 }
@@ -1761,6 +1761,6 @@ function textRels(text, corners,flag){
     text.attribute('yRelative', min(corners[1], corners[3]) / MAIN_CANVAS.height);
   }
 
-return text
+  return text
 
 }
