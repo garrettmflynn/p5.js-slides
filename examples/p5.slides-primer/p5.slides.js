@@ -188,7 +188,7 @@ p5.PresentationAssets.prototype.display = function(animate, transition) {
           this.toTransition = 'in';
           IN_OR_OUT = 'in';
           this.startTime = millis();
-        } else if ((abs(millis()-this.startTime) > 10000) && transition == 'in') {
+        } else if ((abs(millis()-this.startTime) > 1000) && transition == 'in') {
           this.startTime = null;
           IN_OR_OUT = '';
           this.toTransition = '';
