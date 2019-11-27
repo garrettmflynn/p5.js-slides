@@ -2,6 +2,13 @@
 /*
   PS.SLIDES
   Written by Garrett Flynn | November 2019
+  
+ES6 code syntax is used
+Use single quotes (rather than double quotes)
+Indentation is done with two spaces
+All variables defined in the code should be used at least once, or removed completely
+Do not compare x == true or x == false. Use (x) or (!x) instead. x == true, is certainly different from if (x)! Compare objects to null, numbers to 0 or strings to "", if there is chance for confusion.
+Comment your code whenever there is ambiguity or complexity in the function you are writing
 */
 
 
@@ -23,14 +30,23 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   this.text = null;
   this.font = null;
   this.color = color('#e7425b');
+  this.transitions = {};
+  this.transitions['in'] = 'particles';
+  this.transitions['out'] = 'particles';
   this.animation = null;
+  this.toTransition = '';
   this.animatedObjects = [];
+  this.startTime = null;
+  this.nextPos = null;
 }
 
-p5.PresentationAssets.prototype.display = function(animate) {
+p5.PresentationAssets.prototype.display = function(animate, transition) {
 
-  if (animate === undefined){
+  if (animate === undefined) {
     animate = false;
+  }
+  if (transition === undefined) {
+    transition = '';
   }
 
   let lX = (this.relX * MAIN_CANVAS.width) + MARGINS;
@@ -48,7 +64,7 @@ p5.PresentationAssets.prototype.display = function(animate) {
     noStroke();
     fill(this.color);
 
-    switch(this.type) {
+    switch (this.type) {
       case ('rectangle'):
         rect(0, 0, w, h);
         break;
@@ -108,65 +124,115 @@ p5.PresentationAssets.prototype.display = function(animate) {
     if (this.type == 'header') {
       t = this.text.toUpperCase()
       tW = textWidth(t);
-      this.fontSize = min([(w / tW)*.9, h * .8]);
+      this.fontSize = min([(w / tW) * .9, h * .8]);
       textFont(FONTS[0]);
     } else {
       t = this.text;
       tW = textWidth(t);
-      this.fontSize = min([(w / tW)*.9, h * .8]);
+      this.fontSize = min([(w / tW) * .9, h * .8]);
       textFont(this.font);
     }
     textSize(this.fontSize);
 
-    if (animate == false || this.animation == null) {
+    console.log(transition);
+    console.log(animate);
+
+    if (transition == '' && animate == false) {
       text(t, 0, 0);
-      this.animatedObjects = [];
     }
   }
 
   pop();
 
-  // do animations
+  // do transitions
   let t = null;
-  switch (this.animation) {
+  let flag = null;
+
+  if (IN_OR_OUT == ''){
+    flag = IN_OR_OUT;
+  } else {
+    if (this.toTransition == '') {
+      this.toTransition = IN_OR_OUT;
+    }
+    flag = this.toTransition;
+  }
+
+  switch (this.transitions[flag]) {
     case ('particles'):
-      if (animate == true && this.animatedObjects.length == 0) {
+      if (this.animatedObjects.length == 0) {
         if (this.type == 'header') {
           t = this.text.toUpperCase();
         } else {
           t = this.text;
         }
         textAlign(LEFT, TOP);
-        this.animatedObjects = FONTS[0].textToPoints(t, lX, lY+this.fontSize, this.fontSize);
-      } else if (animate == true && this.animatedObjects.length != 0){
-        this.particleDraw();
+        this.animatedObjects = FONTS[0].textToPoints(t, lX, lY + this.fontSize, this.fontSize);
+        if ( transition == 'in') {
+          for (let p = 0; p < this.animatedObjects.length; p++) {
+            this.animatedObjects[p].homeX = this.animatedObjects[p].x;
+            this.animatedObjects[p].homeY = this.animatedObjects[p].y;
+            this.animatedObjects[p].x = 0;
+            this.animatedObjects[p].y = 0;
+          }
+        }
+      } else if ((transition != '') && (this.animatedObjects.length != 0)) {
+
+        if (abs(this.startTime - millis()) < 1000) {
+          this.particleDraw(IN_OR_OUT);
+        } else if ((abs(millis()-this.startTime) > 1000) && transition == 'out') {
+          if (PREVSLIDE != CURRENTSLIDE || CURRENTSLIDE == 1) {
+            PREVSLIDE = CURRENTSLIDE;
+            CURRENTSLIDE++;
+          }
+          TOGGLED = true;
+          this.toTransition = 'in';
+          IN_OR_OUT = 'in';
+          this.startTime = millis();
+        } else if ((abs(millis()-this.startTime) > 10000) && transition == 'in') {
+          this.startTime = null;
+          IN_OR_OUT = '';
+          this.toTransition = '';
+        }
       }
   }
 }
 
 
-p5.PresentationAssets.prototype.particleDraw = function() {
+p5.PresentationAssets.prototype.particleDraw = function(movement) {
   for (let p = 0; p < this.animatedObjects.length; p++) {
 
-    // Initialize particle variables
-    if (this.animatedObjects[p].noiseStart === undefined){
-      this.animatedObjects[p].noiseStart = random(0,1000);
-    }
-    if (this.animatedObjects[p].a === undefined){
-      this.animatedObjects[p].a = .5;
-    }
-    if (this.animatedObjects[p].v === undefined){
-      this.animatedObjects[p].v = 0;
+    // // Initialize particle variables
+    // if (this.animatedObjects[p].noiseStart === undefined){
+    //   this.animatedObjects[p].noiseStart = random(0,1000);
+    // }
+    if (this.animatedObjects[p].ax === undefined) {
+      if (movement == 'out') {
+        this.animatedObjects[p].ax = 0;
+        this.animatedObjects[p].ay = .5;
+      } else {
+        this.animatedObjects[p].ax = this.animatedObjects[p].homeX - this.animatedObjects[p].x;
+        this.animatedObjects[p].ay = this.animatedObjects[p].homeY - this.animatedObjects[p].y;
+      }
     }
 
-    ellipse(this.animatedObjects[p].x,this.animatedObjects[p].y,(this.relH * (MAIN_CANVAS.height - 2 * MARGINS))/50);
+    if (this.animatedObjects[p].vx === undefined){
+      this.animatedObjects[p].vx = 0;
+      this.animatedObjects[p].vy = 0;
+    }
+
+    ellipse(this.animatedObjects[p].x,this.animatedObjects[p].y,(MAIN_CANVAS.height/100));
 
 
-    this.animatedObjects[p].v += this.animatedObjects[p].a;
-    this.animatedObjects[p].y += this.animatedObjects[p].v;
+    this.animatedObjects[p].vx += this.animatedObjects[p].ax;
+    this.animatedObjects[p].vy += this.animatedObjects[p].ay;
+    this.animatedObjects[p].x += this.animatedObjects[p].vx;
+    this.animatedObjects[p].y += this.animatedObjects[p].vy;
 
     if (this.animatedObjects[p].y >= MAIN_CANVAS.height){
-      this.animatedObjects[p].v = -(1*this.animatedObjects[p].v/3);
+      this.animatedObjects[p].vy = -(1*this.animatedObjects[p].vy/3);
+    }
+    if (this.animatedObjects[p].x >= MAIN_CANVAS.width){
+      this.animatedObjects[p].vx = -(1*this.animatedObjects[p].vx/3);
     }
   }
 }
@@ -239,6 +305,7 @@ p5.SlidesUI.prototype.allGlobalVariables = function(set){
     CHOSEN_OBJ = null;
     NEWOBJS_ = null;
     DRAWNOW = false;
+    IN_OR_OUT = '';
 
     // fonts
     FONTS_2 = createElement('link');
@@ -665,6 +732,8 @@ p5.SlidesUI.prototype.display = function() {
       TOGGLE_SAVE = false;
     }
 
+    // toggle non-HTML elements
+    this.togglePresentationAssets();
 
     // toggle created elements
     if (TOGGLED == true) {
@@ -674,8 +743,6 @@ p5.SlidesUI.prototype.display = function() {
       this.toggleEditText();
     }
 
-    // toggle non-HTML elements
-    this.togglePresentationAssets();
 
     // turn off toggle
     if (TOGGLED == true) {
@@ -700,7 +767,6 @@ p5.SlidesUI.prototype.editMode = function() {
   MAIN_CANVAS.position(SIDEBAR_SIZEX, 0);
   TOGGLED = true;
   PREVSLIDE = CURRENTSLIDE;
-  START_ANIMATION = [];
 }
 p5.SlidesUI.prototype.presentMode = function() {
   PRESENT_BUTTON.hide();
@@ -709,7 +775,7 @@ p5.SlidesUI.prototype.presentMode = function() {
   SIDEBAR.hide();
   TOGGLED = true;
   PREVSLIDE = CURRENTSLIDE;
-  START_ANIMATION = [];
+  IN_OR_OUT = '';
 
   MAIN_CANVAS.size(windowWidth,windowHeight);
   MAIN_CANVAS.position(0,0);
@@ -806,17 +872,16 @@ p5.SlidesUI.prototype.toggleCanvases = function(){
   if (this.decks[CURRENTDECK - 1].canvases[CURRENTSLIDE-1].length == 0 && sketchesForSlide.length > 0) {
 
     // place new sketches
-
+    let x_off;
     let p = this.decks[CURRENTDECK - 1].sketches[CURRENTSLIDE - 1].length;
     let frame = null;
-    let x_off = null;
-    let spacing = null;
-
-    if (SIDEBAR.style('display') == 'none') {
-      x_off = 0;
-    } else{
+    if (SIDEBAR.style('display') == 'block') {
+      x_off = SIDEBAR_SIZEX;
+    } else {
       x_off = SIDEBAR_SIZEX;
     }
+    let spacing = null;
+
 
     if (p > 1){
       spacing = MARGINS;
@@ -903,9 +968,13 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].text = select('#' + currentText.parent).value();
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].font = select('#' + currentText.parent).style('font-family');
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].animation = select('#' + currentText.parent).attribute('animation');
+        this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].transitions = this.decks[CURRENTDECK - 1].transitions[CURRENTSLIDE - 1];
+
         // draw presentation text
-        if (START_ANIMATION.length != 0) {
-          currentText.display(START_ANIMATION[t]);
+        if (IN_OR_OUT != '') {
+          currentText.display(false,IN_OR_OUT);
+        }else if (START_ANIMATION.length != 0){
+          currentText.display(START_ANIMATION[t],IN_OR_OUT);
         } else{
           currentText.display();
         }
@@ -1281,6 +1350,15 @@ p5.SlidesUI.prototype.unpackJSON = function(JSON) {
               let thisText = new p5.PresentationAssets(selectedText['relX'],selectedText['relY'],selectedText['relW'],selectedText['relH'],selectedText['type'],selectedText['parent']);
               myDecks[deck].presentationText[slideNum].push(thisText);
             }
+          } else if (match(tertiaryKeys[key3_], 'transitions')) {
+
+            let transitions = Object.keys(JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]]);
+            myDecks[deck].transitions[slideNum] = [];
+
+            for (let t = 0; t < transitions.length; t++) {
+              let selectedT = JSON[firstIndex][secondKeys[key2_]][tertiaryKeys[key3_]][transitions[t]];
+              myDecks[deck].transitions[slideNum] = selectedT;
+            }
           }
         }
       }else {
@@ -1306,6 +1384,8 @@ p5.SlideDeck = function(name) {
   this.subheadings = [];
   this.created_text = [];
   this.presentationText = [];
+  this.transitions = [];
+  this.transitions[CURRENTSLIDE-1] = {};
   this.shapes = [];
   this.canvases = [];
   this.bColors = [];
@@ -1399,31 +1479,29 @@ p5.SlideDeck.prototype.addSlides = function(num) {
   for (let j = len; j < len + num; j++) {
     this.presentationText[j] = [];
     this.created_text[j] = [];
-  }
-
-  for (let i = 0; i < num; i++) {
+    this.transitions[j] = {'in':'particles', 'out':'particles'};
 
     // define template creation order
-    if (this.deckLength == 1){
-      this.sketches[this.deckLength] = [0]; //[blankSketch]; //
-      this.templates[this.deckLength] = 'low-header';
-      this.headings[this.deckLength] = 'Showcase Mode';
-      this.subheadings[this.deckLength] = 'Show off a single sketch';
-    } else if (this.deckLength == 0) {
-      this.sketches[this.deckLength] = []; //[blankSketch]; //
-      this.templates[this.deckLength] = 'full-text';
-      this.headings[this.deckLength] = 'P5.SLIDES';
-      this.subheadings[this.deckLength] = 'INTERACTIVE PRESENTATIONS FOR THE WEB';
-    } else if (this.deckLength > 2) {
-      this.sketches[this.deckLength] = [];
-      this.templates[this.deckLength] = 'full-sketch';
-      this.headings[this.deckLength] = '';
-      this.subheadings[this.deckLength] = '';
-    } else if (this.deckLength == 2) {
-      this.sketches[this.deckLength] = [0,0];
-      this.templates[this.deckLength] = 'low-header';
-      this.headings[this.deckLength] = 'Panel Mode';
-      this.subheadings[this.deckLength ] = 'Expand your visual repertoire';
+    if (j == 1){
+      this.sketches[j] = [0]; //[blankSketch]; //
+      this.templates[j] = 'low-header';
+      this.headings[j] = 'Showcase Mode';
+      this.subheadings[j] = 'Show off a single sketch';
+    } else if (j == 0) {
+      this.sketches[j] = []; //[blankSketch]; //
+      this.templates[j] = 'full-text';
+      this.headings[j] = 'P5.SLIDES';
+      this.subheadings[j] = 'INTERACTIVE PRESENTATIONS FOR THE WEB';
+    } else if (j > 2) {
+      this.sketches[j] = [];
+      this.templates[j] = 'full-sketch';
+      this.headings[j] = '';
+      this.subheadings[j] = '';
+    } else if (j == 2) {
+      this.sketches[j] = [0,0];
+      this.templates[j] = 'low-header';
+      this.headings[j] = 'Panel Mode';
+      this.subheadings[j] = 'Expand your visual repertoire';
     }
 
     this.bColors[this.deckLength] = this.colorOptions[0];
@@ -1439,32 +1517,32 @@ p5.SlideDeck.prototype.addSlides = function(num) {
 // Navigation
 function keyReleased() {
   if ((key === 'ArrowRight') && (CURRENTSLIDE < MAXSLIDE)) {
-    let hit = false;
-    if (START_ANIMATION.length == 0) {
-      let currentText = DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE-1];
-      for (let t = 0; t < currentText.length; t++) {
-        START_ANIMATION[t] = false;
-        if (currentText[t].animation != null) {
-          START_ANIMATION[t] = true
-          hit = true;
-        }
-      }
-    }
 
-    if (hit == false) {
+    if (SIDEBAR.style('display') == 'none') {
+      let currentText = DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1];
+      let transition = DECKS[CURRENTDECK - 1].transitions[CURRENTSLIDE - 1][IN_OR_OUT];
+
+      if (transition != '') {
+        for (let t = 0; t < currentText.length; t++) {
+          currentText[t].startTime = millis();
+        }
+        IN_OR_OUT = 'out';
+        TOGGLED = true;
+      }
+    } else{
       PREVSLIDE = CURRENTSLIDE;
       CURRENTSLIDE++;
       TOGGLED = true;
-      START_ANIMATION = [];
     }
-
   } else if ((key === 'ArrowLeft')) {
     if ((CURRENTSLIDE > 1)) {
       PREVSLIDE = CURRENTSLIDE;
       CURRENTSLIDE--;
       TOGGLED = true;
-    } else if (START_ANIMATION.length != 0) {
-      START_ANIMATION = [];
+      IN_OR_OUT = '';
+      // for (let t = 0; t < currentText.length; t++) {
+      //   currentText[t].toAnimate = false;
+      // }
     }
   }
 }
