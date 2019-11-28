@@ -31,7 +31,7 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   this.font = null;
   this.color = color('#e7425b');
   this.transitions = {};
-  this.transitions['in'] = '';
+  this.transitions['in'] = 'in';
   this.transitions['out'] = 'particles';
   this.animation = null;
   this.toTransition = '';
@@ -188,10 +188,12 @@ p5.PresentationAssets.prototype.display = function(animate, transition) {
           this.toTransition = 'in';
           IN_OR_OUT = 'in';
           this.startTime = millis();
+          this.animatedObjects = [];
         } else if ((abs(millis()-this.startTime) > 1000) && transition == 'in') {
           this.startTime = null;
           IN_OR_OUT = '';
           this.toTransition = '';
+          this.animatedObjects = [];
         }
       }
   }
