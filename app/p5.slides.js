@@ -839,7 +839,7 @@ p5.SlidesUI.prototype.saveSlides = function() {
   for (let i = 0; i < this.loadedSketches.length; i++) {
     sketchJSON[this.loadedSketches[i][0]] = this.loadedSketches[i][1]
   }
-  saveJSON(sketchJSON, 'mySketches.json');
+  saveJSON(sketchJSON, 'defaultSketches.json');
 
 }
 
@@ -1498,7 +1498,7 @@ p5.SlideDeck.prototype.addSlides = function(num) {
       this.headings[j] = '';
       this.subheadings[j] = '';
     } else if (j == 2) {
-      this.sketches[j] = [0,0];
+      this.sketches[j] = [1,2,1];
       this.templates[j] = 'low-header';
       this.headings[j] = 'Panel Mode';
       this.subheadings[j] = 'Expand your visual repertoire';
