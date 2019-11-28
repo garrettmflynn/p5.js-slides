@@ -1525,8 +1525,12 @@ function keyReleased() {
       if (transition != '') {
         for (let t = 0; t < currentText.length; t++) {
           currentText[t].startTime = millis();
+          IN_OR_OUT = 'out';
+          TOGGLED = true;
         }
-        IN_OR_OUT = 'out';
+      }else {
+        PREVSLIDE = CURRENTSLIDE;
+        CURRENTSLIDE++;
         TOGGLED = true;
       }
     } else{
