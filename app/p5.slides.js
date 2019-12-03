@@ -29,7 +29,7 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   }
   this.text = null;
   this.font = null;
-  this.color = color('#e7425b');
+  this.color = color('#ED225D');
   this.transitions = {};
   this.animation = null;
   this.toTransition = '';
@@ -87,8 +87,8 @@ p5.PresentationAssets.prototype.display = function(animate) {
       case('header'):
         textAlign(LEFT, TOP);
         textStyle(BOLD);
-        fill('#e7425b');
-        stroke('#e7425b');
+        fill('#ED225D');
+        stroke('#ED225D');
         strokeWeight(1);
         break;
 
@@ -465,7 +465,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_BUTTON.style('position','absolute');
   TEXT_BUTTON.style('top','0');
   TEXT_BUTTON.style('right','0');
-  TEXT_BUTTON.style("background-color",'#e7425b');
+  TEXT_BUTTON.style("background-color",'#ED225D');
   TEXT_BUTTON.mousePressed(TOGGLE_TEXTBAR1);
 
   // create button to add text to your slides
@@ -476,7 +476,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
   SHAPE_BUTTON.style('position','absolute');
   SHAPE_BUTTON.style('top',SIDEBAR_SIZEX/3 + 'px');
   SHAPE_BUTTON.style('right','0');
-  SHAPE_BUTTON.style("background-color",'#e7425b');
+  SHAPE_BUTTON.style("background-color",'#ED225D');
   SHAPE_BUTTON.mousePressed(TOGGLE_SHAPEBAR);
 
   // create button to animate text
@@ -488,7 +488,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TRANSITION_BUTTON.style('position','absolute');
   TRANSITION_BUTTON.style('top',2*SIDEBAR_SIZEX/3 + 'px');
   TRANSITION_BUTTON.style('left','0');
-  TRANSITION_BUTTON.style("background-color",'#e7425b');
+  TRANSITION_BUTTON.style("background-color",'#ED225D');
   TRANSITION_BUTTON.mousePressed(TOGGLE_TRANSITION);
 
   // empty button
@@ -508,11 +508,11 @@ p5.SlidesUI.prototype.createSidebars = function(){
   ADDSKETCH_BUTTON.style('position','absolute');
   ADDSKETCH_BUTTON.style('top',2*SIDEBAR_SIZEX/3 + 'px');
   ADDSKETCH_BUTTON.style('left',SIDEBAR_SIZEX/3 + 'px');
-  ADDSKETCH_BUTTON.style("background-color",'#e7425b');
+  ADDSKETCH_BUTTON.style("background-color",'#ED225D');
   ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
 
   // create & display (text) types
-  let cOptions = ['#e7425b','#eb7899'];
+  let cOptions = ['#ED225D','#eb7899'];
 
   // header text
   TEXT_TYPES = [];
@@ -595,7 +595,7 @@ p5.SlidesUI.prototype.createSidebars = function(){
   SKETCH_TABS[l+1].style('padding-top',y_pad + 'px');
   SKETCH_TABS[l+1].style('padding-bottom',y_pad + 'px');
   SKETCH_TABS[l+1].size(s_, s_);
-  SKETCH_TABS[l+1].style("background-color",'#e7425b');
+  SKETCH_TABS[l+1].style("background-color",'#ED225D');
   SKETCH_TABS[l+1].style("text-align","center");
   SKETCH_TABS[l+1].style('position','absolute');
   SKETCH_TABS[l+1].style('top','0');
@@ -1403,7 +1403,7 @@ p5.SlideDeck = function(name) {
   this.shapes = [];
   this.canvases = [];
   this.bColors = [];
-  this.colorOptions = ['#ffffff', '#e7425b'];
+  this.colorOptions = ['#ffffff', '#ED225D'];
 }
 
 p5.SlideDeck.prototype.slideTemplates = function(slide) {
@@ -1723,7 +1723,7 @@ function touchStarted(){
 function drawShapeOutlines(){
   if (TRACKED_TOUCHES.length == 2) {
     noFill();
-    let c = color('#e7425b');
+    let c = color('#ED225D');
     strokeWeight(5);
     stroke(c);
     let rects = ['header', 'subheader', 'body', 'sketch', 'rectangle'];
@@ -1774,7 +1774,7 @@ function formatHeader(t) {
   t.attribute('type', 'header');
   t.style('font-weight', 'bold');
   t.style('font-family', "Inconsolata",'monospace');
-  t.style('color', '#e7425b')
+  t.style('color', '#ED225D')
   t.style('z-index', 4);
   return t
 }
