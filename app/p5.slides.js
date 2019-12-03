@@ -181,7 +181,7 @@ p5.PresentationAssets.prototype.display = function(animate) {
         }
       } else if ((IN_OR_OUT != '') && (this.animatedObjects.length != 0)) {
 
-        if (abs(this.startTime - millis()) < 1000) {
+        if (abs(this.startTime - millis()) < 3000) {
           this.particleDraw(IN_OR_OUT);
         } else if ((abs(millis()-this.startTime) > 1000) && IN_OR_OUT == 'out') {
             PREVSLIDE = CURRENTSLIDE;
