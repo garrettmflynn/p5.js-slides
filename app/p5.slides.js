@@ -698,6 +698,7 @@ p5.SlidesUI.prototype.checkInteraction = function(){
 
   if (NEWOBJS_ != null) {
     this.decks.push(NEWOBJS_);
+    this.decks[this.decks.length-1].addSlides(1);
     this.showDeckTabs(this.decks);
   }
 
@@ -713,12 +714,6 @@ p5.SlidesUI.prototype.display = function() {
 
   if (this.decks.length != 0) {
     background('#ffffff');
-
-    // Variable Passing
-    NUMDECKS = this.decks.length;
-    this.decks[CURRENTDECK-1].currentSlide = CURRENTSLIDE;
-    MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
-    MARGINS = this.decks[CURRENTDECK-1].margins;
 
 
     // Toggles
@@ -762,6 +757,12 @@ p5.SlidesUI.prototype.display = function() {
       TOGGLED = false;
     }
 
+    // Variable Passing
+    NUMDECKS = this.decks.length;
+    this.decks[CURRENTDECK-1].currentSlide = CURRENTSLIDE;
+    MAXSLIDE = this.decks[CURRENTDECK-1].deckLength;
+    MARGINS = this.decks[CURRENTDECK-1].margins;
+
     // Show available slides at the bottom left
     textSize(20);
     textAlign(RIGHT,BOTTOM);
@@ -800,7 +801,8 @@ p5.SlidesUI.prototype.showDeckTabs = function(decks){
   // add new tabs if necessary
   for (let j = tabDiff; j > 0; j--){
     tab = createButton(decks[decks.length-j].name);
-    tab.id('decktab' + (j+1));
+    console.log(DECK_TABS.length);
+    tab.id('decktab' + DECK_TABS.length);
     tab.style('z-index', 7);
     tab.parent('deckbar');
     tab.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
@@ -822,6 +824,8 @@ p5.SlidesUI.prototype.textResizer = function() {
   let w = null;
   let font = null;
   let currentText = null;
+
+  console.log(CURRENTDECK);
 
   if (this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1] !== undefined) {
     for (let j = 0; j < this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1].length; j++) {
@@ -1397,6 +1401,7 @@ p5.SlideDeck = function(name) {
   this.headings = [];
   this.subheadings = [];
   this.created_text = [];
+  this.currentSlide = 1;
   this.presentationText = [];
   this.transitions = [];
   this.transitions[CURRENTSLIDE-1] = {};
@@ -1571,7 +1576,7 @@ function SWITCHDECK() {
   let ID_ = this.id();
   let regexp = '\\d+';
   ID_ = match(ID_, regexp);
-  CURRENTDECK = int(ID_[0])-1;
+  CURRENTDECK = int(ID_);
   CURRENTSLIDE = 1;
   TOGGLED = true;
   PREVSLIDE = null;
@@ -1801,7 +1806,7 @@ function formatBody(t) {
 
 function formatAllText(t) {
   let id_ = 'text' + TEXTCOUNT;
-  t.id(id_);
+  //t.id(id_);
   t.style('border', 'none');
   t.style('overflow', 'hidden');
   t.style("box-sizing","border-box");
