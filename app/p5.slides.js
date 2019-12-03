@@ -138,7 +138,6 @@ p5.PresentationAssets.prototype.display = function(animate) {
 
   switch (this.transitions) {
     case (''):
-      console.log('nothing');
       if (IN_OR_OUT == 'in') {
         this.startTime = null;
         IN_OR_OUT = '';
@@ -158,7 +157,6 @@ p5.PresentationAssets.prototype.display = function(animate) {
 
     case ('particles'):
       if (this.animatedObjects.length == 0) {
-        console.log('make objs');
         if (this.type == 'header') {
           t = this.text.toUpperCase();
         } else {
@@ -175,7 +173,6 @@ p5.PresentationAssets.prototype.display = function(animate) {
             this.animatedObjects[p].x = 0;
             this.animatedObjects[p].y = 0;
           }
-          console.log('in_objs');
         }else{
           this.animatedObjects = points;
         }
@@ -194,7 +191,6 @@ p5.PresentationAssets.prototype.display = function(animate) {
           this.startTime = null;
           IN_OR_OUT = '';
           this.animatedObjects = [];
-          console.log('in_finished');
         }
       }
   }
@@ -801,7 +797,6 @@ p5.SlidesUI.prototype.showDeckTabs = function(decks){
   // add new tabs if necessary
   for (let j = tabDiff; j > 0; j--){
     tab = createButton(decks[decks.length-j].name);
-    console.log(DECK_TABS.length);
     tab.id('decktab' + DECK_TABS.length);
     tab.style('z-index', 7);
     tab.parent('deckbar');
@@ -825,7 +820,6 @@ p5.SlidesUI.prototype.textResizer = function() {
   let font = null;
   let currentText = null;
 
-  console.log(CURRENTDECK);
 
   if (this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1] !== undefined) {
     for (let j = 0; j < this.decks[CURRENTDECK - 1].created_text[CURRENTSLIDE - 1].length; j++) {
@@ -983,7 +977,6 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
     if (this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1] !== undefined) {
       for (let t = 0; t < this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1].length; t++) {
         currentText = this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t];
-        console.log(currentText);
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].text = select('#' + currentText.parent).value();
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].font = select('#' + currentText.parent).style('font-family');
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].animation = select('#' + currentText.parent).attribute('animation');
@@ -1548,7 +1541,6 @@ function keyReleased() {
           DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].startTime = millis();
           IN_OR_OUT = 'out';
           TOGGLED = true;
-          console.log('outing');
         }
       }else {
         PREVSLIDE = CURRENTSLIDE;
