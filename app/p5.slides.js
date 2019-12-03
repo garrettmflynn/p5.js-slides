@@ -31,8 +31,6 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   this.font = null;
   this.color = color('#e7425b');
   this.transitions = {};
-  this.transitions['in'] = 'in';
-  this.transitions['out'] = 'particles';
   this.animation = null;
   this.toTransition = '';
   this.animatedObjects = [];
@@ -40,14 +38,7 @@ p5.PresentationAssets = function(relX,relY,relW,relH,type,parent) {
   this.nextPos = null;
 }
 
-p5.PresentationAssets.prototype.display = function(animate, transition) {
-
-  if (animate === undefined) {
-    animate = false;
-  }
-  if (transition === undefined) {
-    transition = '';
-  }
+p5.PresentationAssets.prototype.display = function(animate) {
 
   let lX = (this.relX * MAIN_CANVAS.width) + MARGINS;
   let lY = (this.relY * MAIN_CANVAS.height) + MARGINS;
@@ -134,10 +125,7 @@ p5.PresentationAssets.prototype.display = function(animate, transition) {
     }
     textSize(this.fontSize);
 
-    console.log(transition);
-    console.log(animate);
-
-    if (transition == '' && animate == false) {
+    if (IN_OR_OUT == '') {
       text(t, 0, 0);
     }
   }
@@ -146,54 +134,67 @@ p5.PresentationAssets.prototype.display = function(animate, transition) {
 
   // do transitions
   let t = null;
-  let flag = null;
+  this.transitions = START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE-1][IN_OR_OUT];
 
-  if (IN_OR_OUT == ''){
-    flag = IN_OR_OUT;
-  } else {
-    if (this.toTransition == '') {
-      this.toTransition = IN_OR_OUT;
-    }
-    flag = this.toTransition;
-  }
+  switch (this.transitions) {
+    case (''):
+      console.log('nothing');
+      if (IN_OR_OUT == 'in') {
+        this.startTime = null;
+        IN_OR_OUT = '';
+        this.toTransition = '';
+        this.animatedObjects = [];
+      }else if (IN_OR_OUT == 'out') {
+        if (PREVSLIDE != CURRENTSLIDE || CURRENTSLIDE == 1) {
+          PREVSLIDE = CURRENTSLIDE;
+          CURRENTSLIDE++;
+        }
+        TOGGLED = true;
+        this.toTransition = 'in';
+        IN_OR_OUT = 'in';
+        this.startTime = millis();
+        this.animatedObjects = [];
+      }
 
-  switch (this.transitions[flag]) {
     case ('particles'):
       if (this.animatedObjects.length == 0) {
+        console.log('make objs');
         if (this.type == 'header') {
           t = this.text.toUpperCase();
         } else {
           t = this.text;
         }
         textAlign(LEFT, TOP);
-        this.animatedObjects = FONTS[0].textToPoints(t, lX, lY + this.fontSize, this.fontSize);
-        if ( transition == 'in') {
-          for (let p = 0; p < this.animatedObjects.length; p++) {
-            this.animatedObjects[p].homeX = this.animatedObjects[p].x;
-            this.animatedObjects[p].homeY = this.animatedObjects[p].y;
+        let points = FONTS[0].textToPoints(t, lX, lY + this.fontSize, this.fontSize);
+        if (IN_OR_OUT == 'in') {
+          this.animatedObjects = [];
+          for (let p = 0; p < points.length; p++) {
+            this.animatedObjects[p] = {};
+            this.animatedObjects[p].homeX = points[p].x;
+            this.animatedObjects[p].homeY = points[p].y;
             this.animatedObjects[p].x = 0;
             this.animatedObjects[p].y = 0;
           }
+          console.log('in_objs');
+        }else{
+          this.animatedObjects = points;
         }
-      } else if ((transition != '') && (this.animatedObjects.length != 0)) {
+      } else if ((IN_OR_OUT != '') && (this.animatedObjects.length != 0)) {
 
         if (abs(this.startTime - millis()) < 1000) {
           this.particleDraw(IN_OR_OUT);
-        } else if ((abs(millis()-this.startTime) > 1000) && transition == 'out') {
-          if (PREVSLIDE != CURRENTSLIDE || CURRENTSLIDE == 1) {
+        } else if ((abs(millis()-this.startTime) > 1000) && IN_OR_OUT == 'out') {
             PREVSLIDE = CURRENTSLIDE;
             CURRENTSLIDE++;
-          }
           TOGGLED = true;
-          this.toTransition = 'in';
           IN_OR_OUT = 'in';
           this.startTime = millis();
           this.animatedObjects = [];
-        } else if ((abs(millis()-this.startTime) > 1000) && transition == 'in') {
+        } else if ((abs(millis()-this.startTime) > 1000) && IN_OR_OUT == 'in') {
           this.startTime = null;
           IN_OR_OUT = '';
-          this.toTransition = '';
           this.animatedObjects = [];
+          console.log('in_finished');
         }
       }
   }
@@ -318,7 +319,7 @@ p5.SlidesUI.prototype.allGlobalVariables = function(set){
     SIDEBAR_SIZEY = height/20;;
     SIDEBAR_SIZEX = width/6;
 
-    START_ANIMATION = [];
+    START_ANIMATION = [[]];
   } else if (set == 3){
     DECKS = this.decks;
     NUMDECKS = this.decks.length;
@@ -478,6 +479,38 @@ p5.SlidesUI.prototype.createSidebars = function(){
   SHAPE_BUTTON.style("background-color",'#e7425b');
   SHAPE_BUTTON.mousePressed(TOGGLE_SHAPEBAR);
 
+  // create button to animate text
+  TRANSITION_BUTTON = createImg('icons/spark.png');
+  TRANSITION_BUTTON.parent('editbar');
+  TRANSITION_BUTTON.id('animate');
+  TRANSITION_BUTTON.size(SIDEBAR_SIZEX/6,SIDEBAR_SIZEX/6);
+  TRANSITION_BUTTON.style('padding',SIDEBAR_SIZEX/12 + 'px');
+  TRANSITION_BUTTON.style('position','absolute');
+  TRANSITION_BUTTON.style('top',2*SIDEBAR_SIZEX/3 + 'px');
+  TRANSITION_BUTTON.style('left','0');
+  TRANSITION_BUTTON.style("background-color",'#e7425b');
+  TRANSITION_BUTTON.mousePressed(TOGGLE_TRANSITION);
+
+  // empty button
+  EMPTY_DIV = createDiv();
+  EMPTY_DIV.parent('editbar');
+  EMPTY_DIV.size(SIDEBAR_SIZEX/3,SIDEBAR_SIZEX/3);
+  EMPTY_DIV.style('position','absolute');
+  EMPTY_DIV.style('top',2*SIDEBAR_SIZEX/3 + 'px');
+  EMPTY_DIV.style('right','0');
+  EMPTY_DIV.style("background-color",'#eb7899');
+
+  // buttons to place sketches into the canvas
+  ADDSKETCH_BUTTON = createImg('icons/p5-sq-reverse-filled.png');
+  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  ADDSKETCH_BUTTON.parent('editbar');
+  ADDSKETCH_BUTTON.style('padding',SIDEBAR_SIZEX/24 + 'px');
+  ADDSKETCH_BUTTON.style('position','absolute');
+  ADDSKETCH_BUTTON.style('top',2*SIDEBAR_SIZEX/3 + 'px');
+  ADDSKETCH_BUTTON.style('left',SIDEBAR_SIZEX/3 + 'px');
+  ADDSKETCH_BUTTON.style("background-color",'#e7425b');
+  ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
+
   // create & display (text) types
   let cOptions = ['#e7425b','#eb7899'];
 
@@ -517,17 +550,6 @@ p5.SlidesUI.prototype.createSidebars = function(){
   TEXT_TYPES[2].style("background-color",cOptions[1]);
   TEXT_TYPES[2].style("border",'none');
   TEXT_TYPES[2].mousePressed(TEXT_BODY);
-
-  // buttons to place sketches into the canvas
-  ADDSKETCH_BUTTON = createImg('icons/p5-sq-reverse-filled.png');
-  ADDSKETCH_BUTTON.size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
-  ADDSKETCH_BUTTON.parent('editbar');
-  ADDSKETCH_BUTTON.style('padding',SIDEBAR_SIZEX/24 + 'px');
-  ADDSKETCH_BUTTON.style('position','absolute');
-  ADDSKETCH_BUTTON.style('top',2*SIDEBAR_SIZEX/3 + 'px');
-  ADDSKETCH_BUTTON.style('right','0');
-  ADDSKETCH_BUTTON.style("background-color",'#e7425b');
-  ADDSKETCH_BUTTON.mousePressed(TOGGLE_SKETCHBAR);
 
 
   // create tabs to signify loaded sketch URLs
@@ -582,49 +604,38 @@ p5.SlidesUI.prototype.createSidebars = function(){
 
 
   // create tabs to signify text manipulation
-  TEXT_TABS = [];
-  TEXT_TABS[0] = createImg('icons/cross-arrows.png');
-  TEXT_TABS[0].parent('textbar2');
-  TEXT_TABS[0].id('move');
-  TEXT_TABS[0].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
-  //TEXT_TABS[0].style('padding',SIDEBAR_SIZEX/6 + 'px');
-  TEXT_TABS[0].style("box-sizing","border-box");
-  TEXT_TABS[0].style("opacity",.6);
-  TEXT_TABS[0].style("background-color",cOptions[0]);
-  TEXT_TABS[0].mousePressed(OBJ_CHOSEN);
+  // TEXT_TABS = [];
+  // TEXT_TABS[0] = createImg('icons/cross-arrows.png');
+  // TEXT_TABS[0].parent('textbar2');
+  // TEXT_TABS[0].id('move');
+  // TEXT_TABS[0].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  // //TEXT_TABS[0].style('padding',SIDEBAR_SIZEX/6 + 'px');
+  // TEXT_TABS[0].style("box-sizing","border-box");
+  // TEXT_TABS[0].style("opacity",.6);
+  // TEXT_TABS[0].style("background-color",cOptions[0]);
+  // TEXT_TABS[0].mousePressed(OBJ_CHOSEN);
 
   // create button to color text
-  TEXT_TABS[1] = createImg('icons/color-fill-tool.png');
-  TEXT_TABS[1].parent('textbar2');
-  TEXT_TABS[1].id('color');
-  TEXT_TABS[1].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
-  TEXT_TABS[1].style("box-sizing","border-box");
-  TEXT_TABS[1].style("opacity",.6);
-  //TEXT_TABS[1].style('padding',SIDEBAR_SIZEX/6 + 'px');
-  TEXT_TABS[1].style("background-color",cOptions[1]);
-  TEXT_TABS[1].mousePressed(OBJ_CHOSEN);
+  // TEXT_TABS[1] = createImg('icons/color-fill-tool.png');
+  // TEXT_TABS[1].parent('textbar2');
+  // TEXT_TABS[1].id('color');
+  // TEXT_TABS[1].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  // TEXT_TABS[1].style("box-sizing","border-box");
+  // TEXT_TABS[1].style("opacity",.6);
+  // //TEXT_TABS[1].style('padding',SIDEBAR_SIZEX/6 + 'px');
+  // TEXT_TABS[1].style("background-color",cOptions[1]);
+  // TEXT_TABS[1].mousePressed(OBJ_CHOSEN);
 
   // create button to scale text (box)
-  TEXT_TABS[2] = createImg('icons/magnifying-glass-zoom.png');
-  TEXT_TABS[2].parent('textbar2');
-  TEXT_TABS[2].id('scale');
-  TEXT_TABS[2].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
-  TEXT_TABS[2].style("box-sizing","border-box");
-  TEXT_TABS[2].style("opacity",.6);
-  //TEXT_TABS[2].style('padding',SIDEBAR_SIZEX/12 + 'px');
-  TEXT_TABS[2].style("background-color",cOptions[1]);
-  TEXT_TABS[2].mousePressed(OBJ_CHOSEN);
-
-  // create button to animate text
-  TEXT_TABS[3] = createImg('icons/spark.png');
-  TEXT_TABS[3].parent('textbar2');
-  TEXT_TABS[3].id('animate');
-  TEXT_TABS[3].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
-  TEXT_TABS[3].style("box-sizing","border-box");
-  TEXT_TABS[3].style("opacity",.6);
-  //TEXT_TABS[3].style('padding',SIDEBAR_SIZEX/12 + 'px');
-  TEXT_TABS[3].style("background-color",cOptions[0]);
-  TEXT_TABS[3].mousePressed(OBJ_CHOSEN);
+  // TEXT_TABS[2] = createImg('icons/magnifying-glass-zoom.png');
+  // TEXT_TABS[2].parent('textbar2');
+  // TEXT_TABS[2].id('scale');
+  // TEXT_TABS[2].size(SIDEBAR_SIZEX/4,SIDEBAR_SIZEX/4);
+  // TEXT_TABS[2].style("box-sizing","border-box");
+  // TEXT_TABS[2].style("opacity",.6);
+  // //TEXT_TABS[2].style('padding',SIDEBAR_SIZEX/12 + 'px');
+  // TEXT_TABS[2].style("background-color",cOptions[1]);
+  // TEXT_TABS[2].mousePressed(OBJ_CHOSEN);
 
 
   // create tabs to signify shape creation
@@ -795,6 +806,7 @@ p5.SlidesUI.prototype.showDeckTabs = function(decks){
     tab.size(SIDEBAR_SIZEX,SIDEBAR_SIZEY);
     tab = formatAllText(tab);
     tab = formatHeader(tab);
+    tab.style('color','#fff')
     DECK_TABS.push(tab);
   }
 
@@ -976,7 +988,7 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
         if (IN_OR_OUT != '') {
           currentText.display(false,IN_OR_OUT);
         }else if (START_ANIMATION.length != 0){
-          currentText.display(START_ANIMATION[t],IN_OR_OUT);
+          currentText.display(START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE - 1],IN_OR_OUT);
         } else{
           currentText.display();
         }
@@ -1481,7 +1493,9 @@ p5.SlideDeck.prototype.addSlides = function(num) {
   for (let j = len; j < len + num; j++) {
     this.presentationText[j] = [];
     this.created_text[j] = [];
-    this.transitions[j] = {'in':'particles', 'out':'particles'};
+    this.transitions[j] = {'in':'', 'out':''};
+    START_ANIMATION[CURRENTDECK-1][j] = {'in':'', 'out':''};
+    START_ANIMATION[CURRENTDECK-1][j+1] = {'in':'', 'out':''};
 
     // define template creation order
     if (j == 1){
@@ -1522,13 +1536,13 @@ function keyReleased() {
 
     if (SIDEBAR.style('display') == 'none') {
       let currentText = DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1];
-      let transition = DECKS[CURRENTDECK - 1].transitions[CURRENTSLIDE - 1][IN_OR_OUT];
 
-      if (transition != '') {
+      if (START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE-1]['out'] != '') {
         for (let t = 0; t < currentText.length; t++) {
-          currentText[t].startTime = millis();
+          DECKS[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].startTime = millis();
           IN_OR_OUT = 'out';
           TOGGLED = true;
+          console.log('outing');
         }
       }else {
         PREVSLIDE = CURRENTSLIDE;
@@ -1611,6 +1625,13 @@ function TOGGLE_SHAPEBAR() {
   SHAPEBAR.show();
   EDITSIDEBAR.hide();
   GOBACK_BUTTON.show();
+}
+
+function TOGGLE_TRANSITION() {
+  START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE] = {};
+  START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE]['in'] = 'particles';
+  START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE]['out'] = '';
+  START_ANIMATION[CURRENTDECK - 1][CURRENTSLIDE - 1]['out'] = 'particles';
 }
 
 

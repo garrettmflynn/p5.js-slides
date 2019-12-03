@@ -2,54 +2,35 @@
 # [**p5.slides**](https://github.com/GarrettMFlynn/p5.js-slides)
 **p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
 
-Test out the alpha release [**here**](https://garrettmflynn.github.io/p5.js-slides/examples/p5.slides-primer/)
-
  ![Gif Example](img/Gif1.gif)
  **Created by** Garrett Flynn (gflynn@usc.edu) at the University of Southern California
+ 
+  ### Known Bugs
 
  
  ## Getting Started
  
- ### Setup 
+ ### Playtest
+ [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
+
+ ### Full Functionality
+
+ #### Download the Library from Github
  
- 1. Link to the application in your HTML file:
-         
-         <script src="https://garrettmflynn.github.io/p5.js-slides/lib/p5.slides.js"></script>)
-         
- 2. Paste the following code into your main sketch:
-        
-        
-        let sketches = {};
-        let myDecks = {};
-          
-        // LOAD OLD DATA
-        function preload() {
-         sketches = loadJSON('defaultSketches.json');
-         myDecks = loadJSON('myDecks.json');
-        }
-        
-        // INITIALIZE GUI
-        function setup() {
-          UI = new p5.slidesUI(myDecks,sketches);
-        }
-
-        // START PRESENTATION LOOP
-        function draw() {
-          UI.display();
-          UI.checkInteraction();
-        }
-
-3. Use the GUI to start making slides!
-
- ### Optional: Direct Download
- [Library Only](https://raw.githubusercontent.com/GarrettMFlynn/p5.js-slides/gh-pages/lib/p5.slides.js)
  
+ #### Edit your Slides
+ 1. Interact with Template Elements
+ 2. Draw your own objects
+ 3. Draw sketches
+ 4. Add decks, add slides
+ 5. Toggle transitions
 
- ## Images
- ![Showcase Example](/img/Gif2.gif)
- ![Showcase Example](/img/Gif3.gif)
+ #### Save and Reload your Slides
  
-        
+ #### Present your Slides
+
+
+
  ## Reference
  
  **P5.slides** contains two objects:
