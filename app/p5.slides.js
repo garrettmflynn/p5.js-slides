@@ -184,8 +184,8 @@ p5.PresentationAssets.prototype.display = function(animate) {
         if (abs(this.startTime - millis()) < 3000) {
           this.particleDraw(IN_OR_OUT);
         } else if ((abs(millis()-this.startTime) > 1000) && IN_OR_OUT == 'out') {
-            PREVSLIDE = CURRENTSLIDE;
-            CURRENTSLIDE++;
+          PREVSLIDE = CURRENTSLIDE;
+          CURRENTSLIDE++;
           TOGGLED = true;
           IN_OR_OUT = 'in';
           this.startTime = millis();
@@ -316,7 +316,7 @@ p5.SlidesUI.prototype.allGlobalVariables = function(set){
     FONTS_2.attribute('rel','stylesheet');
     FONTS = [loadFont('fonts/Inconsolata-Bold.otf'), loadFont('fonts/Inconsolata-Regular.otf')];
 
-    SIDEBAR_SIZEY = height/20;;
+    SIDEBAR_SIZEY = height/20;
     SIDEBAR_SIZEX = width/6;
 
     START_ANIMATION = [[]];
@@ -983,6 +983,7 @@ p5.SlidesUI.prototype.togglePresentationAssets = function() {
     if (this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1] !== undefined) {
       for (let t = 0; t < this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1].length; t++) {
         currentText = this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t];
+        console.log(currentText);
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].text = select('#' + currentText.parent).value();
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].font = select('#' + currentText.parent).style('font-family');
         this.decks[CURRENTDECK - 1].presentationText[CURRENTSLIDE - 1][t].animation = select('#' + currentText.parent).attribute('animation');
@@ -1806,7 +1807,7 @@ function formatBody(t) {
 
 function formatAllText(t) {
   let id_ = 'text' + TEXTCOUNT;
-  //t.id(id_);
+  t.id(id_);
   t.style('border', 'none');
   t.style('overflow', 'hidden');
   t.style("box-sizing","border-box");

@@ -17,6 +17,6 @@ function setup() {
 // START PRESENTATION LOOP
 
 function draw() {
-  UI.display();
-  UI.checkInteraction();
+    UI.display();
+    UI.checkInteraction();
 }
