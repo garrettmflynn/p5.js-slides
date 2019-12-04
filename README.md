@@ -3,33 +3,26 @@
 **p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
 
  ![Gif Example](img/Gif1.gif)
+ 
  **Created by** Garrett Flynn (gflynn@usc.edu) at the University of Southern California
  
   ### Known Bugs
+#### Saving
+1. Does not maintain shapes or transitions
+2. Does not allow for presenting
 
+#### Editing
+1. Content (i.e. text boxes, sketches, shapes, etc) cannot be removed once added
+2. Content (i.e. text boxes, sketches, shapes, etc) cannot be translated once added
+3. No way to change color palette
+
+#### Presenting
+1. Severe performance issues when adding many sketches to a slide deck
  
  ## Getting Started
  
  ### Playtest
  [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
-
- ### Full Functionality
-
- #### Download the Library from Github
- 
- 
- #### Edit your Slides
- 1. Interact with Template Elements
- 2. Draw your own objects
- 3. Draw sketches
- 4. Add decks, add slides
- 5. Toggle transitions
-
- #### Save and Reload your Slides
- 
- #### Present your Slides
-
-
 
  ## Reference
  
