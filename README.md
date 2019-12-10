@@ -8,9 +8,8 @@ University of Southern California
 
 **p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes. Press [here](https://garrettmflynn.github.io/p5.js-slides/app/) to try it out!
 
- [![Youtube Video](p5_slides.png)](https://youtu.be/AZN1mE8sXXU)
- 
  ## Getting Started
+  [![Youtube Video](p5_slides.png)](https://youtu.be/AZN1mE8sXXU)
  [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
  
 ### Known Bugs
