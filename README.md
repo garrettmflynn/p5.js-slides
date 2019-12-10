@@ -10,9 +10,9 @@ University of Southern California
 
  ## Getting Started
   [![Youtube Video](p5_slides.png)](https://youtu.be/AZN1mE8sXXU)   
-  **Video Introduction:** 10 Most Common Actions, Skills Learned, Lessons Learned, and A Call to Contribute  
+  **Video Introduction:** 10 Most Common Actions, Skills Learned, Lessons Learned, and How to Contribute.  
     
- Try out the [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
+ Try out the [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/).
  
 ### Known Bugs
 #### Saving
@@ -75,7 +75,6 @@ University of Southern California
  
  ### p5.PresentationAssets
  #### Methods
- ##### Global Variables
  * **display**: Display presentation assets in the specified format
    * Current formats include shapes and text (which can further be converted into particles)
  * **particleDraw**: Calculate particle animations
