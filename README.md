@@ -14,17 +14,17 @@ University of Southern California
     
  Try out the [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/).
  
-### Known Bugs
-#### Saving
+## Known Bugs
+### Saving
 1. Does not maintain shapes or transitions
 2. Does not allow for presenting
 
-#### Editing
+### Editing
 1. Content (i.e. text boxes, sketches, shapes, etc) cannot be removed once added
 2. Content (i.e. text boxes, sketches, shapes, etc) cannot be translated once added
 3. No way to change color palette
 
-#### Presenting
+### Presenting
 1. Severe performance issues when adding many sketches to a slide deck
 
  ## Reference
