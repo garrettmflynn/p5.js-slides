@@ -1,12 +1,19 @@
 
 # [**p5.slides**](https://github.com/GarrettMFlynn/p5.js-slides)
-**p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes.
+Interactive Presentations for the Web
 
- ![Gif Example](img/Gif1.gif)
+Garrett Flynn (gflynn@usc.edu)  
+IML 288: Critical Thinking and Procedural Media  
+University of Southern California  
+
+**p5.slides** is a [p5.js](https://p5js.org/) application for the design of custom slide decks with dynamic content. You may find this useful for everything from class presentations to professional keynotes. Press [here](https://garrettmflynn.github.io/p5.js-slides/app/) to try it out!
+
+ [![Youtube Video](p5_slides.png)](https://youtu.be/AZN1mE8sXXU)
  
- **Created by** Garrett Flynn (gflynn@usc.edu) at the University of Southern California
+ ## Getting Started
+ [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
  
-  ### Known Bugs
+### Known Bugs
 #### Saving
 1. Does not maintain shapes or transitions
 2. Does not allow for presenting
@@ -18,43 +25,56 @@
 
 #### Presenting
 1. Severe performance issues when adding many sketches to a slide deck
- 
- ## Getting Started
- 
- ### Playtest
- [Alpha Release](https://garrettmflynn.github.io/p5.js-slides/app/)
 
  ## Reference
  
- **P5.slides** contains two objects:
+ **P5.slides** contains three objects:
  1. **p5.slidesUI()**: The GUI and deck holder
  2. **p5.slideDeck()**: Individual decks
+ 3. **p5.PresentationAssets()**: Holder for P5 parameters (text/shapes)
  
  ### p5.slidesUI
+ #### Methods
+ ##### Global Variables
+ * **allGlobalVariables**: Initialize global variables 
+ 
+ ##### Main Looping Functions
+ * **display**: Display current slide on the GUI
+ * **checkInteraction**: Check whether any interactions have occurred during the past loop
+ 
+ ##### Populate the UI with Buttons
+ * **createSidebars**: Create and populate GUI sidebars
+ * **showDeckTabs**: Update existing deck tabs
+ 
+ ##### Display Modes
+ * **editMode**: Switch GUI to edit mode
+ * **presentMode**: Switch GUI to present mode
+ 
+ ##### Change the Elements on the Screen
+ * **textResizer**: Resize text to (sub)header or body text specifications
+ * **toggleCanvases**: Remove and add canvases to the GUI
+ * **toggleEditText**: Remove p5 text text and add HTML input boxes to the GUI
+ * **togglePresentationAssets**: Convert HTML to P5 (for use in animations/transitions)
+ * **togglePresentText**: Remove HTML input boxes and add p5 text to the GUI
+ * **drawFromTouch**: Place text OR sketches based on mouse input
+ 
+ ##### Remap Current Elements after Window Size Changes
+ * **iframeRemapper**: Resize iframe objects in relation to current window
+ * **textRemapper**: Resize current text objects in relation to current window
+ 
+ ##### Save Slides
+ * **saveSlides**: Save all slide decks
+ * **JSONify**: Convert deck array into a JSON-able format
+ * **unpackJSON**: Convert a saved JSON into the deck array for a new GUI session
+ 
+  ### p5.slideDeck
  #### Methods
  * **addSlides**: Add new slide to deck
  * **slideTemplates**: Determine which template to apply to current slide
  
- 
- ### p5.slideDeck
+ ### p5.PresentationAssets
  #### Methods
- * **display**: Display current slide on the GUI
- * **checkInteraction**: Check whether any interactions have occurred during the past loop
- * **createSidebars**: Create and populate GUI sidebars
- * **editMode**: Switch GUI to edit mode
- * **presentMode**: Switch GUI to present mode
- * **saveSlides**: Save all slide decks
- * **showDeckTabs**: Update existing deck tabs
- * **drawFromTouch**: Place text OR sketches based on mouse input
- * **textResizer**: Resize text to (sub)header or body text specifications
- * **toggleCanvases**: Remove and add canvases to the GUI
- * **toggleEditText**: Remove p5 text text and add HTML input boxes to the GUI
- * **togglePresentText**: Remove HTML input boxes and add p5 text to the GUI
- * **iframeRemapper**: Resize iframe objects in relation to current window
- * **textRemapper**: Resize current text objects in relation to current window
- * **allGlobalVariables**: Initialize global variables 
- * **JSONify**: Convert deck array into a JSON-able format
- * **unpackJSON**: Convert a saved JSON into the deck array for a new GUI session
- 
- 
- 
+ ##### Global Variables
+ * **display**: Display presentation assets in the specified format
+   * Current formats include shapes and text (which can further be converted into particles)
+ * **particleDraw**: Calculate particle animations
