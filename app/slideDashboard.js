@@ -3,7 +3,6 @@
 let sketches = {};
 let myDecks = {};
 let UI;
-// img;
 
 function preload() {
     sketches = loadJSON('defaultSketches.json');
